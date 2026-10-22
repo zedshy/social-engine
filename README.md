@@ -10,7 +10,7 @@ Social Engine is a white-label AI content desk for small brands and communities.
 2. **Research** — live web search and RSS, with trusted-source rules and link checks.
 3. **Write** — drafts for Monday / Wednesday / Friday slots in the profile voice.
 4. **Fact-check and lint** — every sentence must rest on supplied facts; hype, emoji and unsourced claims are flagged.
-5. **Post library** — edit, revise, brief images, and copy to LinkedIn. Nothing publishes until a human presses Post.
+5. **Post library** — edit, revise, brief images, and hand off to LinkedIn or Instagram. Nothing publishes until a human presses Post.
 
 The default demo profile is a **London developer / hackathon community**, not a vendor brand.
 
@@ -24,7 +24,7 @@ Social Engine is built the other way around:
 - **A second checker.** A separate pass flags anything the draft added.
 - **Brand-shaped, not prompt-shaped.** Voice, banned wording, hashtags, research topics and image scenes live in a profile JSON — swap the profile, swap the brand.
 - **Demo without a key.** Judges can click through the Classic week and the Studio UI with no OpenAI account. Live generation is opt-in.
-- **Human approval is the product.** Statuses, LinkedIn hand-off and analytics ingest are manual on purpose.
+- **Human approval is the product.** Statuses, the LinkedIn hand-off, Instagram's confirm step and analytics ingest stay manual on purpose.
 
 That is the difference between “write me some posts” and an editor’s desk that a community can actually trust.
 
@@ -62,6 +62,31 @@ Copy `.env.example` to `.env`. Never commit `.env`.
 | `BRAND_PROFILE` | `profiles/default.json` | Active brand profile path |
 | `APP_PASSWORD` | none | Required for hosted deployments so a public URL cannot spend the key |
 | `HOST` | `127.0.0.1` | Bind address (`0.0.0.0` on most hosts) |
+| `INSTAGRAM_ACCESS_TOKEN` | none | Instagram user token. Leave empty for a dry-run. |
+| `INSTAGRAM_USER_ID` | none | Numeric Instagram professional account id |
+| `INSTAGRAM_GRAPH_VERSION` | `v26.0` | Optional Graph API version, for example `v26.0` |
+| `PUBLIC_BASE_URL` | none | Public https origin Instagram can use to download a generated image |
+
+## Instagram plug-in
+
+Publish one JPEG and its caption with the [Instagram API with Instagram Login](https://developers.facebook.com/docs/instagram-platform/instagram-api-with-instagram-login/content-publishing/) (content publishing). On a Studio post, **Post to Instagram** sits next to **Post to LinkedIn**. The dialog shows the caption (Instagram's 2,200 characters and 30 hashtags, shortened with a warning when needed). Nothing is sent until you press **Post** there.
+
+**Setup**
+
+1. In the [Meta app dashboard](https://developers.facebook.com/apps/), create a Business app and add Instagram.
+2. Open **Instagram → API setup with Instagram login** and add the professional account you want to publish as.
+3. Generate a token. Dashboard tokens last about 60 days. The account needs `instagram_business_basic` and `instagram_business_content_publish`.
+4. Copy the numeric Instagram professional account id (not the @handle). That is `INSTAGRAM_USER_ID`.
+5. Put `INSTAGRAM_ACCESS_TOKEN` and `INSTAGRAM_USER_ID` in `.env`. Restart the server. Never commit `.env`.
+
+Instagram downloads the image from a public URL. JPEG is the only format it accepts.
+
+- If the post image is already a public https JPEG, paste that URL in the dialog.
+- If the image was generated or chosen from the photo library, set `PUBLIC_BASE_URL` to an https address that reaches this server. For a laptop demo, point a tunnel (for example ngrok) at the server and use that https URL. The server then hosts the JPEG at `{PUBLIC_BASE_URL}/api/instagram/media/<id>` for a short time. That media URL is unguessable and is not behind `APP_PASSWORD`, because Instagram's servers cannot send the password.
+
+Leave the token and user id empty to demo without an account. The same button runs a labelled dry-run, shows the two Graph requests (`/{ig-user-id}/media`, then `/{ig-user-id}/media_publish`), and does not call Instagram. **Copy caption** works either way.
+
+Optional: `INSTAGRAM_GRAPH_VERSION` (default `v26.0`).
 
 ## Deploy to Vercel
 
@@ -76,7 +101,8 @@ Copy `.env.example` to `.env`. Never commit `.env`.
 ```
 app.html              Content Studio (dashboard, research, write, library, analytics)
 index.html            Classic weekly-posts view (works without a key)
-server.js             HTTP server, profile APIs, Classic generate route
+server.js             HTTP server, profile APIs, Classic generate route, Instagram routes
+instagram-publisher.js  Instagram Graph content publishing (single image) and dry-run
 studio.js             Studio routes: research, write, images, extract
 studio-content.js     Prompts, fact-check, lint
 studio-extract.js     URL / screenshot / document extraction

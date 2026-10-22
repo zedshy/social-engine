@@ -145,6 +145,18 @@
   button.btn.primary:hover:not(:disabled) { background: #d4d4d8; border-color: #d4d4d8; color: #0b0b0c; }
   [data-theme="light"] button.btn.primary { background: #111113; color: #fafafa; }
   button.btn.li { background: #0a66c2; border-color: #0a66c2; color: #fff; }
+  button.btn.ig { background: #C13584; border-color: #C13584; color: #fff; }
+  button.btn.ig:hover:not(:disabled) { background: #8E245F; border-color: #8E245F; }
+  .ig-dialog { position: fixed; inset: 0; z-index: 100; background: rgba(11, 11, 12, .55); display: flex; align-items: center; justify-content: center; padding: 24px; }
+  .ig-dialog[hidden] { display: none; }
+  .ig-panel { background: var(--bg-2); color: var(--ink); border: 1px solid var(--line); border-radius: 8px; width: min(560px, 100%); max-height: min(90vh, 760px); overflow: auto; padding: 16px; }
+  .ig-panel h2 { font-size: 18px; margin: 8px 0 10px; letter-spacing: -.03em; }
+  .ig-panel p { margin: 8px 0; }
+  .ig-caption, .ig-requests { white-space: pre-wrap; background: var(--surface-2); padding: 10px 12px; font-size: 13px; max-height: 200px; overflow: auto; margin: 8px 0; border-radius: 6px; border: 1px solid var(--line); }
+  .ig-requests { font-family: var(--mono); font-size: 12px; }
+  .ig-panel label { display: block; font-size: 11px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-top: 12px; }
+  .ig-panel input[type="url"] { width: 100%; margin-top: 6px; padding: 7px 10px; border: 1px solid var(--line); background: var(--input); border-radius: 6px; }
+  .ig-panel ul { margin: 6px 0; padding-left: 18px; color: var(--warn); }
   button.btn.sm { padding: 4px 8px; font-size: 12px; }
   button.btn svg { width: 14px; height: 14px; }
   button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible { outline: 1px solid var(--ink); outline-offset: 1px; }
@@ -684,7 +696,7 @@
       <div class="guide">
         <nav class="toc glass pad" aria-label="On this page">
           <div class="eyebrow" style="margin-bottom:10px">On this page</div>
-          <a href="#g-start">Quick start</a><a href="#g-source">Your own article, document or screenshot</a><a href="#g-drop">Dragging files in</a><a href="#g-photos">Photos and editing</a><a href="#g-analytics">Analytics</a><a href="#g-assistant">The Assistant</a><a href="#g-studio">The weekly Studio</a><a href="#g-trust">How accuracy works</a><a href="#g-linkedin">Posting to LinkedIn</a><a href="#g-setup">Setup and settings</a><a href="#g-help">Troubleshooting</a>
+          <a href="#g-start">Quick start</a><a href="#g-source">Your own article, document or screenshot</a><a href="#g-drop">Dragging files in</a><a href="#g-photos">Photos and editing</a><a href="#g-analytics">Analytics</a><a href="#g-assistant">The Assistant</a><a href="#g-studio">The weekly Studio</a><a href="#g-trust">How accuracy works</a><a href="#g-linkedin">Posting to LinkedIn</a><a href="#g-instagram">Posting to Instagram</a><a href="#g-setup">Setup and settings</a><a href="#g-help">Troubleshooting</a>
         </nav>
         <div class="doc">
           <h2 id="g-start">Quick start</h2>
@@ -693,7 +705,7 @@
             <li><b>Studio → Find latest topics.</b> Runs one research search of trade press and official sources, about 15 seconds. Each click covers the next area (events and meetups, tech news, then community and learning) and adds new ideas to the list. <b>Search all areas</b> runs all three at once at three times the cost. A search already made today is reused for free.</li>
             <li><b>Pick three ideas.</b> Use Auto-fill week, or press Mon / Wed / Fri on any idea. ★ marks the day the research suggests.</li>
             <li><b>Write my week.</b> Writes three posts and checks each one against its sources.</li>
-            <li><b>Create image, then Post to LinkedIn.</b> Review the text, make the image, and send it to LinkedIn's composer. You press Post yourself.</li>
+            <li><b>Create image, then Post to LinkedIn or Post to Instagram.</b> Review the text and the image. LinkedIn opens its composer. Instagram publishes only after you press Post in the confirm dialog.</li>
           </ol>
 
           <h2 id="g-source">Build a post from your own article or screenshot</h2>
@@ -788,10 +800,20 @@
             <li>Post as the your company page using a page-admin role. Never share personal LinkedIn passwords with any tool.</li>
           </ol>
 
+          <h2 id="g-instagram">Posting to Instagram</h2>
+          <p>Single-image posts go out through Instagram's official API. Nothing is sent until you press <b>Post</b> in the confirm dialog.</p>
+          <ol class="steps-list">
+            <li>On a post, press <b>Post to Instagram</b> (next to Post to LinkedIn).</li>
+            <li>Read the caption. Instagram allows 2,200 characters and 30 hashtags; the preview shortens anything over those limits and says so.</li>
+            <li>The image has to be a JPEG on a public https address. A generated or library image needs <code>PUBLIC_BASE_URL</code> in <code>.env</code> (a tunnel such as ngrok works for a local demo). Or paste a public JPEG URL in the dialog.</li>
+            <li>Press <b>Post</b>. If <code>INSTAGRAM_ACCESS_TOKEN</code> and <code>INSTAGRAM_USER_ID</code> are not set, this is a labelled dry-run: you see the exact request, and nothing is sent. <b>Copy caption</b> still works.</li>
+          </ol>
+
           <h2 id="g-setup">Setup and settings</h2>
           <p>For whoever installs it. Full details are in <code>README.md</code>.</p>
           <ul>
             <li>Copy <code>.env.example</code> to <code>.env</code> and put your OpenAI key in <code>.env</code>, never in <code>.env.example</code>. Restart the server after changes.</li>
+            <li>Instagram uses <code>INSTAGRAM_ACCESS_TOKEN</code> and <code>INSTAGRAM_USER_ID</code>. Generated images also need <code>PUBLIC_BASE_URL</code>. Leave the token blank for a dry-run. Details are in the README.</li>
             <li><code>OPENAI_RESEARCH_MODEL</code> (default <code>gpt-4.1-mini</code>) controls research and reading. <code>OPENAI_WRITER_MODEL</code> (default <code>gpt-4.1</code>) writes each post's first draft. <code>OPENAI_MODEL</code> (default <code>gpt-4.1-mini</code>) runs the fact-checks and the Assistant. <code>OPENAI_IMAGE_MODEL</code> and <code>OPENAI_IMAGE_QUALITY</code> (default <code>low</code>) control images.</li>
             <li>In the sidebar, <b>Image quality</b> switches between Draft (cheapest) and Final, and the line below it counts this session's calls, tokens, searches and images. OpenAI's own usage page has the true spend.</li>
             <li>The older version of the app is still available under "Classic view" in the sidebar.</li>
@@ -804,6 +826,7 @@
             <tr><td>Page says it can't be reached</td><td>The server has stopped. Start it again with <code>npm start</code> and use the address it prints.</td></tr>
             <tr><td>Very few topics found</td><td>Press Find latest topics again, or use Add your own with facts you hold.</td></tr>
             <tr><td>Image paste does nothing in LinkedIn</td><td>Use the photo icon in LinkedIn and pick the downloaded file.</td></tr>
+            <tr><td>Instagram says the image is not public</td><td>Set <code>PUBLIC_BASE_URL</code> to an https tunnel, or paste a public JPEG URL. A dry-run still shows the request.</td></tr>
             <tr><td>"Search did not run" style errors</td><td>The account or model may not allow web search. Check <code>OPENAI_RESEARCH_MODEL</code>.</td></tr>
           </table>
           <p class="hint" style="max-width:none">Cost: a search is a few cents, a week of posts a few cents more, and a draft image about a cent or two (Final quality costs more). Nothing runs until you press a button.</p>
@@ -851,6 +874,30 @@
       </div>
     </section>
   </main>
+  </div>
+</div>
+
+<div id="igDialog" class="ig-dialog" hidden>
+  <div class="ig-panel" role="dialog" aria-modal="true" aria-labelledby="igTitle">
+    <div class="eyebrow">Instagram</div>
+    <h2 id="igTitle">Post to Instagram</h2>
+    <p id="igMode" class="badge warn">Preparing…</p>
+    <p>Check the caption and image, then press Post. Nothing is published before that.</p>
+    <div id="igCaption" class="ig-caption" aria-label="Caption preview"></div>
+    <p id="igMeta" class="hint" style="max-width:none"></p>
+    <ul id="igWarnings"></ul>
+    <p id="igImageNote" class="status" role="status"></p>
+    <label for="igImageUrl">Public JPEG URL (optional)</label>
+    <input id="igImageUrl" type="url" maxlength="2000" placeholder="https://…/photo.jpg" autocomplete="off">
+    <p class="hint" style="max-width:none">Leave this blank to use the post image. Instagram downloads a JPEG from a public https address, so a generated or local image needs PUBLIC_BASE_URL, or paste a URL here.</p>
+    <p id="igRequestLabel" class="eyebrow" style="margin-top:14px">Preview of the request</p>
+    <pre id="igRequests" class="ig-requests"></pre>
+    <p id="igResult" class="status" role="status" aria-live="polite"></p>
+    <div class="row" style="margin-top:12px">
+      <button id="igPost" type="button" class="btn primary sm ig">Post</button>
+      <button id="igCopy" type="button" class="btn sm">Copy caption</button>
+      <button id="igCancel" type="button" class="btn sm">Cancel</button>
+    </div>
   </div>
 </div>
 
@@ -1545,6 +1592,129 @@
     stamp(day, ok ? LINKEDIN_OK : LINKEDIN_BLOCKED, ok ? 'ok' : 'err');
   }
 
+  var igJob = null, igTimer = null;
+  function openInstagram(canvas, text, statusEl) {
+    igJob = { canvas: canvas, text: text || '', statusEl: statusEl, seq: 0, focus: true, preview: null };
+    $('igImageUrl').value = '';
+    $('igCaption').textContent = 'Preparing preview…';
+    $('igWarnings').textContent = '';
+    $('igRequests').textContent = '';
+    $('igImageNote').textContent = '';
+    $('igResult').textContent = '';
+    $('igResult').className = 'status';
+    $('igDialog').hidden = false;
+    $('igPost').disabled = true;
+    refreshIgPreview();
+  }
+  function paintIg(data, done) {
+    var mode = $('igMode');
+    mode.textContent = data.dryRun ? 'Demo dry-run — nothing is sent to Instagram' : 'Live — Instagram publishes only after you press Post';
+    mode.className = 'badge ' + (data.dryRun ? 'warn' : 'good');
+    $('igCaption').textContent = data.caption || '(empty caption)';
+    $('igMeta').textContent = (data.length || 0) + ' / 2,200 characters · ' + (data.hashtagCount || 0) + ' / 30 hashtags';
+    var warnings = $('igWarnings');
+    warnings.textContent = '';
+    (data.warnings || []).forEach(function (warning) { warnings.appendChild(h('li', { text: warning })); });
+    var note = $('igImageNote');
+    note.textContent = data.imageProblem || (data.imageUrl ? 'Image: ' + data.imageUrl : '');
+    note.className = 'status' + (data.imageProblem ? ' err' : ' ok');
+    $('igRequestLabel').textContent = done ? (data.dryRun ? 'Exactly what would be sent' : 'Sent to Instagram') : 'Preview of the request';
+    $('igRequests').textContent = JSON.stringify(data.requests || [], null, 2);
+    var result = $('igResult');
+    var finished = done && (data.published || data.dryRun);
+    if (done) {
+      var ok = data.published || data.dryRun;
+      result.className = 'status ' + (ok ? 'ok' : 'err');
+      result.textContent = data.published ? 'Posted to Instagram. Media id ' + data.mediaId + '.' : data.dryRun ? 'Dry-run complete. Nothing was sent to Instagram.' : (data.error || 'Instagram did not publish this post.');
+      if (igJob && igJob.statusEl) setStatus(igJob.statusEl, result.textContent, ok ? 'ok' : 'err');
+    } else {
+      result.className = 'status';
+      result.textContent = data.dryRun ? 'Instagram is not configured. Press Post to finish the dry-run, or copy the caption.' : 'Nothing is published until you press Post.';
+    }
+    $('igPost').disabled = finished || !data.canPublish;
+    $('igPost').textContent = finished ? 'Done' : 'Post';
+    if (igJob && igJob.focus) {
+      igJob.focus = false;
+      var focusEl = $('igPost').disabled ? $('igImageUrl') : $('igPost');
+      if (focusEl) focusEl.focus();
+    }
+  }
+  function refreshIgPreview() {
+    if (!igJob) return;
+    var seq = (igJob.seq += 1);
+    $('igPost').disabled = true;
+    post('/api/instagram/preview', { caption: igJob.text, hasImage: true, imageUrl: $('igImageUrl').value.trim() }).then(function (data) {
+      if (!igJob || igJob.seq !== seq) return;
+      igJob.preview = data;
+      paintIg(data, false);
+    }).catch(function (e) {
+      if (!igJob || igJob.seq !== seq) return;
+      $('igResult').textContent = e.message;
+      $('igResult').className = 'status err';
+      $('igPost').disabled = true;
+    });
+  }
+  function closeIg() { $('igDialog').hidden = true; igJob = null; clearTimeout(igTimer); }
+  async function confirmInstagram() {
+    if (!igJob || $('igPost').disabled) return;
+    $('igPost').disabled = true;
+    var dry = igJob.preview && igJob.preview.dryRun;
+    $('igResult').className = 'status';
+    $('igResult').textContent = dry ? 'Running the dry-run…' : 'Publishing to Instagram…';
+    try {
+      var imageUrl = $('igImageUrl').value.trim();
+      var imageData = '';
+      if (!imageUrl && igJob.canvas && igJob.canvas.toDataURL) {
+        try { imageData = igJob.canvas.toDataURL('image/jpeg', 0.86); } catch (e) { imageData = ''; }
+      }
+      var data = await post('/api/instagram/publish', { caption: igJob.text, imageUrl: imageUrl, imageData: imageData, hasImage: true });
+      if (!igJob) return;
+      igJob.preview = data;
+      paintIg(data, true);
+      if (data.published) log('Posted to Instagram');
+      else if (data.dryRun) log('Instagram dry-run — nothing was sent');
+    } catch (e) {
+      $('igResult').textContent = e.message;
+      $('igResult').className = 'status err';
+      $('igPost').disabled = false;
+      $('igPost').textContent = 'Post';
+      if (igJob && igJob.statusEl) setStatus(igJob.statusEl, e.message, 'err');
+    }
+  }
+  $('igCancel').addEventListener('click', closeIg);
+  function copyCaption(text) {
+    function fallback() {
+      var area = document.createElement('textarea');
+      area.value = text;
+      area.setAttribute('readonly', '');
+      area.style.position = 'fixed';
+      area.style.left = '-9999px';
+      document.body.appendChild(area);
+      area.select();
+      var ok = false;
+      try { ok = document.execCommand('copy'); } catch (e) { ok = false; }
+      area.remove();
+      if (!ok) throw new Error('copy failed');
+    }
+    if (navigator.clipboard && window.isSecureContext) return navigator.clipboard.writeText(text).catch(fallback);
+    return Promise.resolve().then(fallback);
+  }
+  $('igCopy').addEventListener('click', function () {
+    var text = igJob && igJob.preview ? igJob.preview.caption : '';
+    if (!text) { $('igResult').textContent = 'Nothing to copy yet.'; $('igResult').className = 'status err'; return; }
+    copyCaption(text).then(function () {
+      $('igResult').textContent = 'Caption copied.';
+      $('igResult').className = 'status ok';
+    }).catch(function () {
+      $('igResult').textContent = 'Could not copy. Select the caption and copy it manually.';
+      $('igResult').className = 'status err';
+    });
+  });
+  $('igPost').addEventListener('click', confirmInstagram);
+  $('igDialog').addEventListener('click', function (event) { if (event.target === $('igDialog')) closeIg(); });
+  $('igImageUrl').addEventListener('input', function () { clearTimeout(igTimer); igTimer = setTimeout(refreshIgPreview, 300); });
+  document.addEventListener('keydown', function (event) { if (event.key === 'Escape' && !$('igDialog').hidden) closeIg(); });
+
   function postCard(d) {
     var p = state.posts[d.id], topic = state.week[d.id], img = runtime.images[d.id];
     var count = h('div', { class: 'wc', 'aria-live': 'polite' });
@@ -1582,13 +1752,14 @@
       h('div', { class: 'row', style: 'margin-top:12px' },
         h('button', { id: 'img-' + d.id, type: 'button', class: 'btn primary sm', text: img ? 'Make a new image' : 'Create image', onclick: function () { makeImage(d.id, ''); } }),
         h('button', { type: 'button', class: 'btn sm', text: 'Download', onclick: function () { download(d.id); } }),
-        h('button', { type: 'button', class: 'btn sm li', text: 'Post to LinkedIn', onclick: function () { toLinkedIn(d.id); } })),
+        h('button', { type: 'button', class: 'btn sm li', text: 'Post to LinkedIn', onclick: function () { toLinkedIn(d.id); } }),
+        h('button', { type: 'button', class: 'btn sm ig', text: 'Post to Instagram', onclick: function () { openInstagram(document.getElementById('cv-' + d.id), fullText(d.id), document.getElementById('st-' + d.id)); } })),
       photoTools({ get: function () { return runtime.images[d.id]; }, set: function (v) { runtime.images[d.id] = v; }, repaint: function () { paint(d.id); }, status: function (t, k) { stamp(d.id, t, k); }, after: function () { renderDash(); renderWeek(); },
         avoid: function () { return otherVisuals(d.id); },
         story: function () { return { title: topic ? topic.title : p.headline, facts: topic ? topic.facts.slice(0, 3).map(function (f) { return f.text; }) : [] }; } }),
       (img && !img.source) ? h('div', { class: 'fields' }, correction, h('button', { id: 'fix-' + d.id, type: 'button', class: 'btn sm', style: 'margin-top:8px', text: 'Fix and remake', onclick: function () { var c = correction.value.trim(); if (!c) { stamp(d.id, 'Say what is wrong first.', 'err'); return; } makeImage(d.id, c); } })) : null,
       brief, h('div', { id: 'st-' + d.id, class: 'status', role: 'status', 'aria-live': 'polite', style: 'max-width:380px;margin-top:8px' }),
-      h('p', { class: 'hint', text: 'Post to LinkedIn opens LinkedIn’s composer with your text; you attach the image and press Post yourself.' }));
+      h('p', { class: 'hint', text: 'Post to LinkedIn opens LinkedIn’s composer; you attach the image and press Post yourself. Post to Instagram asks you to confirm. Without Instagram credentials it runs a labelled dry-run.' }));
     return h('article', { class: 'glass post' }, left, right);
   }
   function renderPosts() {
@@ -2052,12 +2223,13 @@
       h('div', { class: 'row', style: 'margin-top:12px' },
         h('button', { id: 'imgc-' + i, type: 'button', class: 'btn primary sm', text: img ? 'Make a new image' : 'Create image', onclick: function () { chatImage(i, ''); } }),
         h('button', { type: 'button', class: 'btn sm', text: 'Download', onclick: function () { downloadCanvas(cv, 'your brand-assistant-post.png'); } }),
-        h('button', { type: 'button', class: 'btn sm li', text: 'Post to LinkedIn', onclick: function () { var ok = sendToLinkedIn(cv, chatFullText(i), 'your brand-assistant-post.png'); chatStamp(i, ok ? LINKEDIN_OK : LINKEDIN_BLOCKED, ok ? 'ok' : 'err'); log('Sent an Assistant draft to LinkedIn’s composer'); } })),
+        h('button', { type: 'button', class: 'btn sm li', text: 'Post to LinkedIn', onclick: function () { var ok = sendToLinkedIn(cv, chatFullText(i), 'your brand-assistant-post.png'); chatStamp(i, ok ? LINKEDIN_OK : LINKEDIN_BLOCKED, ok ? 'ok' : 'err'); log('Sent an Assistant draft to LinkedIn’s composer'); } }),
+        h('button', { type: 'button', class: 'btn sm ig', text: 'Post to Instagram', onclick: function () { openInstagram(cv, chatFullText(i), document.getElementById('stc-' + i)); } })),
       photoTools({ get: function () { return runtime.chatImages[i]; }, set: function (v) { runtime.chatImages[i] = v; }, repaint: function () { paintTo(cv, (runtime.chatImages[i] || {}).img, d, runtime.chatImages[i]); }, status: function (t, k) { chatStamp(i, t, k); },
         story: function () { return { title: d.headline || '', facts: [d.post.slice(0, 220)] }; } }),
       (img && !img.source) ? h('div', { class: 'fields' }, correction, h('button', { id: 'fixc-' + i, type: 'button', class: 'btn sm', style: 'margin-top:8px', text: 'Fix and remake', onclick: function () { var c = correction.value.trim(); if (!c) { chatStamp(i, 'Say what is wrong first.', 'err'); return; } chatImage(i, c); } })) : null,
       brief, h('div', { id: 'stc-' + i, class: 'status', role: 'status', 'aria-live': 'polite', style: 'max-width:340px;margin-top:8px' }),
-      h('p', { class: 'hint', text: 'Images the studio makes are AI-generated illustrations: check it them before publishing.' }));
+      h('p', { class: 'hint', text: 'Images the studio makes are AI-generated illustrations: check them before publishing. Post to Instagram asks you to confirm, and runs a labelled dry-run when Instagram is not configured.' }));
     return h('article', { class: 'glass draft' }, left, right);
   }
   function renderChat() {
