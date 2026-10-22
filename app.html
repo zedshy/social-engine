@@ -78,21 +78,24 @@
     border-radius: 4px; padding: 1px 4px; margin-left: auto;
   }
 
-  .shell { display: grid; grid-template-columns: 220px 1fr; min-height: 100vh; }
+  .shell { display: grid; grid-template-columns: 220px minmax(0, 1fr); min-height: 100vh; overflow-x: hidden; }
   .side {
     position: sticky; top: 0; height: 100vh; padding: 12px 10px 12px;
-    display: flex; flex-direction: column; gap: 2px;
+    display: flex; flex-direction: column; gap: 2px; min-width: 0;
     background: var(--bg-2); border-right: 1px solid var(--line); color: var(--muted);
   }
-  .brand { padding: 6px 8px 12px; display: flex; align-items: center; gap: 8px; }
-  .brand img { height: 18px; display: block; }
-  .ws-switch { display: grid; gap: 2px; padding: 0 2px 10px; border-bottom: 1px solid var(--line); margin-bottom: 8px; }
-  .ws-switch label { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); padding: 0 6px; }
+  .brand { padding: 6px 4px 10px; display: flex; align-items: center; gap: 8px; min-width: 0; }
+  .brand img { width: 18px; height: 18px; display: block; flex: none; }
+  .brand-word { font-size: 15px; font-weight: 600; letter-spacing: -.02em; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+  .ws-switch { display: grid; gap: 6px; padding: 0 2px 10px; border-bottom: 1px solid var(--line); margin-bottom: 8px; min-width: 0; }
+  .ws-switch label { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); padding: 0 2px; }
+  #brandSwitch { width: 100%; min-width: 0; max-width: 100%; text-overflow: ellipsis; }
   .nav { display: grid; gap: 1px; }
   .nav button {
     position: relative; display: flex; align-items: center; gap: 8px; width: 100%;
     text-align: left; padding: 7px 8px; border: 0; background: none; color: var(--ink);
     font-weight: 600; font-size: 14px; cursor: pointer; border-radius: 6px; transition: background .12s, color .12s;
+    white-space: nowrap;
   }
   .nav button:hover { background: var(--surface-2); color: var(--ink); }
   .nav button[aria-current="page"] { color: var(--accent); background: var(--accent-soft); }
@@ -113,10 +116,11 @@
   .side .foot .usage { font-size: 11px; line-height: 1.45; color: var(--muted); font-family: var(--mono); }
   .side .foot a:hover, .side .foot button:hover { color: var(--ink); }
 
-  .workspace { min-width: 0; display: flex; flex-direction: column; min-height: 100vh; background: var(--bg); }
+  .workspace { min-width: 0; display: flex; flex-direction: column; min-height: 100vh; background: var(--bg); overflow-x: hidden; }
   .topbar {
     position: sticky; top: 0; z-index: 8; display: flex; align-items: center; gap: 8px;
     height: 48px; padding: 0 20px; border-bottom: 1px solid var(--line); background: var(--bg);
+    min-width: 0;
   }
   .topbar .brand-switch { display: flex; align-items: center; gap: 8px; min-width: 0; }
   .topbar .brand-switch strong { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 500; }
@@ -124,7 +128,7 @@
   .mode-badge, .badge {
     display: inline-flex; align-items: center; gap: 6px; padding: 2px 7px; border-radius: 999px;
     border: 1px solid var(--line); background: transparent; font-size: 11px; font-weight: 500;
-    letter-spacing: .02em; color: var(--muted); text-transform: none;
+    letter-spacing: .02em; color: var(--muted); text-transform: none; white-space: nowrap; width: auto; flex: none;
   }
   .mode-badge.good, .badge.good { color: var(--good); border-color: color-mix(in srgb, var(--good) 40%, var(--line)); }
   .mode-badge.demo, .mode-badge.bad { color: var(--muted); }
@@ -148,6 +152,7 @@
     cursor: pointer; border-radius: 6px; border: 1px solid var(--line); background: var(--btn);
     padding: 7px 12px; font-weight: 600; font-size: 14px; display: inline-flex; gap: 6px; align-items: center;
     transition: background .12s, border-color .12s, color .12s; color: var(--btn-ink);
+    white-space: nowrap; flex: none; width: auto;
   }
   button.btn:hover:not(:disabled) { background: var(--btn-hover); }
   button.btn:disabled { opacity: .4; cursor: default; }
@@ -174,22 +179,23 @@
   .status { font-size: 12px; color: var(--muted); min-height: 18px; }
   .status.err { color: var(--accent); } .status.ok { color: var(--good); }
 
-  .page-h { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin: 0 0 16px; padding: 0 0 12px; border-bottom: 1px solid var(--line); }
+  .page-h { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin: 0 0 16px; padding: 0 0 12px; border-bottom: 1px solid var(--line); min-width: 0; }
+  .page-h > div { min-width: 0; }
   .page-h h1 { font-size: 26px; font-weight: 600; letter-spacing: -.04em; }
   .page-h p { margin: 4px 0 0; color: var(--muted); font-size: 14px; }
 
-  .hero { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; padding: 0 0 16px; min-height: 0; background: none; isolation: auto; }
+  .hero { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; padding: 0 0 16px; min-height: 0; min-width: 0; background: none; isolation: auto; }
   .hero-art { display: none; }
-  .hello { align-self: end; }
+  .hello { align-self: end; min-width: 0; flex: 1 1 280px; }
   .hello h1 { font-size: 24px; font-weight: 590; line-height: 1.2; margin-top: 4px; letter-spacing: -.04em; }
   .hello h1 span { color: var(--ink); display: inline; background: none; }
   .hello p { margin: 6px 0 0; color: var(--muted); max-width: 560px; font-size: 13px; }
-  .next { padding: 0; align-self: end; max-width: 320px; background: none; border: 0; }
+  .next { padding: 0; align-self: start; flex: 0 1 280px; min-width: 0; max-width: 320px; background: none; border: 0; }
   .next::after, .next::before { display: none; }
   .next h3 { font-size: 13px; margin: 0 0 4px; font-weight: 590; padding: 0; }
   .next p { margin: 0 0 8px; color: var(--muted); font-size: 12px; }
 
-  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; margin: 0 0 16px; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: var(--bg-2); }
+  .stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0; margin: 0 0 16px; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: var(--bg-2); min-width: 0; }
   .stat { padding: 12px 16px; border-right: 1px solid var(--line); position: relative; background: transparent; }
   .stat:last-child { border-right: 0; }
   .stat::before { display: none; }
@@ -202,19 +208,30 @@
   .spark { display: block; width: 100%; height: 72px; margin: 0; color: var(--accent); }
   .spark path { fill: none; stroke: var(--accent); stroke-width: 1.5; }
 
-  .data-grid { display: grid; grid-template-columns: 1.5fr .9fr; gap: 12px; margin-top: 12px; }
+  .data-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(280px, 320px); gap: 12px; margin-top: 12px; min-width: 0; }
+  .data-grid > * { min-width: 0; }
   .panel-h { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; gap: 8px; padding-bottom: 8px; border-bottom: 1px solid var(--line); }
   .panel-h h2 { font-size: 11px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
 
-  .posts-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-  .posts-table th { text-align: left; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 500; padding: 8px 10px; border-bottom: 1px solid var(--line); }
-  .posts-table td { padding: 9px 10px; border-bottom: 1px solid var(--line); color: var(--text-2); vertical-align: middle; }
+  .posts-table { width: 100%; table-layout: fixed; border-collapse: collapse; font-size: 13px; }
+  .posts-table th { text-align: left; font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); font-weight: 500; padding: 8px 8px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+  .posts-table td { padding: 8px; border-bottom: 1px solid var(--line); color: var(--text-2); vertical-align: middle; }
   .posts-table tbody tr { cursor: pointer; }
   .posts-table tr:hover td { background: var(--surface-2); }
   .posts-table .mono { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+  .posts-table .col-title { width: auto; min-width: 160px; }
+  .posts-table .col-channel { width: 76px; white-space: nowrap; }
+  .posts-table .col-status { width: 88px; white-space: nowrap; }
+  .posts-table .col-check { width: 56px; white-space: nowrap; }
+  .posts-table .col-updated { width: 118px; white-space: nowrap; }
+  .posts-table .col-action { width: 118px; white-space: nowrap; }
   .posts-table .title { color: var(--ink); font-weight: 500; }
+  .posts-table .title-clip {
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+    overflow: hidden; line-height: 1.35; max-height: 2.7em;
+  }
 
-  .kanban { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .kanban { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; min-width: 0; }
   .kanban .col { border: 1px solid var(--line); border-radius: 8px; background: var(--bg); min-height: 140px; padding: 8px; }
   .kanban .col h3 { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 500; padding: 4px 4px 8px; display: flex; justify-content: space-between; }
   .kanban .col h3 span { font-family: var(--mono); }
@@ -222,14 +239,15 @@
   .kanban .card b { display: block; font-weight: 500; color: var(--ink); margin-bottom: 4px; }
   .kanban .card .meta { color: var(--muted); font-family: var(--mono); font-size: 11px; }
 
-  .two { display: grid; grid-template-columns: 1.25fr 1fr; gap: 12px; margin-top: 12px; }
+  .two { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 12px; margin-top: 12px; min-width: 0; }
+  .two > * { min-width: 0; }
   .timeline { display: grid; }
   .tl { display: grid; grid-template-columns: 96px 1fr auto; gap: 12px; align-items: center; padding: 10px 0; border: 0; border-bottom: 1px solid var(--line); background: none; cursor: pointer; text-align: left; width: 100%; color: inherit; border-radius: 0; }
   .tl:last-child { border-bottom: 0; }
   .tl:hover { background: var(--surface-2); }
   .tl .d { font-weight: 500; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
   .tl .d small { display: block; color: var(--muted); font-weight: 400; letter-spacing: 0; text-transform: none; font-size: 12px; margin-top: 2px; }
-  .tl .t { font-weight: 500; line-height: 1.35; font-size: 13px; color: var(--ink); }
+  .tl .t { font-weight: 500; line-height: 1.35; font-size: 13px; color: var(--ink); min-width: 0; overflow: hidden; }
   .tl .t.empty { color: var(--muted); font-weight: 400; }
   .steps { display: flex; gap: 4px; }
   .step { width: 6px; height: 6px; border: 1px solid var(--line-2); background: transparent; border-radius: 99px; }
@@ -241,7 +259,7 @@
   .mini .item:last-child { border-bottom: 0; }
   .mini .item b { font-size: 13px; line-height: 1.35; display: block; font-weight: 500; }
   .mini .item .meta { margin: 6px 0 8px; }
-  .pill { display: inline-flex; align-items: center; padding: 1px 7px; border: 1px solid var(--line); border-radius: 999px; font-size: 11px; font-weight: 600; color: var(--muted); }
+  .pill { display: inline-flex; align-items: center; width: auto; max-width: max-content; padding: 1px 7px; border: 1px solid var(--line); border-radius: 999px; font-size: 11px; font-weight: 600; color: var(--muted); white-space: nowrap; flex: none; }
   .pill.good { color: var(--ink); border-color: var(--ink); }
   .pill.warn { color: var(--accent); border-color: var(--accent); }
   .pill.draft { color: var(--muted); }
@@ -250,7 +268,7 @@
   .log time { color: var(--muted); font-family: var(--mono); font-size: 11px; }
   .log .none { display: block; color: var(--muted); padding: 10px 0; border: 0; }
 
-  .studio-split { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 16px; align-items: start; }
+  .studio-split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(280px, 340px); gap: 16px; align-items: start; min-width: 0; }
   .studio-main { min-width: 0; }
   .studio-rail { position: sticky; top: 60px; display: grid; gap: 12px; }
   .check-list { display: grid; gap: 0; }
@@ -274,7 +292,7 @@
 
   .blk { margin-top: 20px; }
   .blk > h2 { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin-bottom: 10px; font-weight: 500; padding-top: 8px; border-top: 1px solid var(--line); }
-  .week { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; border: 0; background: none; }
+  .week { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; border: 0; background: none; min-width: 0; }
   .week .slot { border: 1px solid var(--line); border-radius: 8px; background: var(--bg-2); }
   .slot { padding: 12px; display: grid; gap: 4px; align-content: start; min-height: 96px; position: relative; }
   .slot::before { content: ""; position: absolute; left: 0; top: 0; width: 2px; height: 100%; background: var(--line); border-radius: 8px 0 0 8px; }
@@ -315,7 +333,7 @@
 
   .stepper { display: none; }
   .posts { display: grid; gap: 12px; }
-  .post { display: grid; grid-template-columns: minmax(280px, 1fr) 320px; gap: 16px; padding: 16px; }
+  .post { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 320px); gap: 16px; padding: 16px; min-width: 0; }
   .post .head { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
   .post .head strong { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 500; }
   .post textarea { min-height: 180px; line-height: 1.5; resize: vertical; }
@@ -399,7 +417,7 @@
   .msg .who { font-size: 11px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
   .msg.user .who { justify-self: end; }
   .thinking-msg { display: flex; gap: 8px; align-items: center; color: var(--muted); }
-  .composer { display: grid; grid-template-columns: 1fr auto; gap: 8px; padding: 8px; align-items: end; position: sticky; bottom: 12px; }
+  .composer { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; padding: 8px; align-items: end; position: sticky; bottom: 12px; min-width: 0; }
   .composer textarea { border: 0; background: transparent; resize: none; max-height: 160px; padding: 6px 8px; }
   .composer textarea:focus-visible { outline: none; }
   .composer:focus-within { border-color: var(--ink); }
@@ -412,28 +430,31 @@
   .draft .stage .fields, .draft .hint { max-width: 300px; }
   @media (max-width: 860px) { .draft { grid-template-columns: 1fr; } }
 
-  .guide { display: grid; grid-template-columns: 200px 1fr; gap: 24px; align-items: start; }
-  .toc { position: sticky; top: 60px; display: grid; gap: 4px; }
-  .toc a { color: var(--muted); text-decoration: none; font-weight: 500; font-size: 13px; padding: 4px 0; border-bottom: 1px solid var(--line); }
-  .toc a:hover { color: var(--ink); }
-  .doc { max-width: 720px; }
-  .doc h2 { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; font-weight: 500; margin: 28px 0 10px; padding-top: 12px; border-top: 1px solid var(--line); color: var(--muted); }
-  .doc h2:first-child { margin-top: 0; }
+  .guide { max-width: 720px; }
+  .doc h2 { font-size: 16px; letter-spacing: -.02em; font-weight: 600; margin: 0 0 8px; color: var(--ink); text-transform: none; border: 0; padding: 0; }
   .doc p, .doc li { color: var(--text-2); }
+  .doc > p { margin: 0 0 8px; }
   .doc li { margin-bottom: 6px; }
   .doc b { color: var(--ink); }
   .doc code { background: var(--surface-2); padding: 1px 5px; font-size: 12px; color: var(--ink); border-radius: 4px; font-family: var(--mono); }
-  .steps-list { counter-reset: s; list-style: none; padding: 0; }
-  .steps-list li { counter-increment: s; position: relative; padding-left: 36px; margin-bottom: 12px; }
-  .steps-list li::before { content: counter(s); position: absolute; left: 0; top: 0; width: 22px; height: 22px; background: var(--surface-2); color: var(--ink); font-weight: 500; display: grid; place-items: center; font-size: 11px; border-radius: 6px; border: 1px solid var(--line); font-family: var(--mono); }
-  .examples { display: grid; gap: 6px; margin: 10px 0; }
-  blockquote { margin: 0; padding: 10px 12px; background: var(--bg-2); border: 1px solid var(--line); border-left: 2px solid var(--line-2); color: var(--ink); font-style: normal; }
-  .tbl { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 13px; }
+  .doc a { color: var(--ink); }
+  .steps-list { counter-reset: s; list-style: none; padding: 0; margin: 0; }
+  .steps-list > li { counter-increment: s; position: relative; padding: 16px 0 16px 44px; margin: 0; border-bottom: 1px solid var(--line); }
+  .steps-list > li:first-child { padding-top: 0; }
+  .steps-list > li:last-child { border-bottom: 0; padding-bottom: 0; }
+  .steps-list > li::before { content: counter(s); position: absolute; left: 0; top: 16px; width: 24px; height: 24px; background: var(--accent); color: #fff; font-weight: 600; display: grid; place-items: center; font-size: 12px; border-radius: 6px; font-family: var(--mono); }
+  .steps-list > li:first-child::before { top: 0; }
+  .tbl { width: 100%; border-collapse: collapse; margin: 8px 0 0; font-size: 13px; }
   .tbl th { text-align: left; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); padding: 6px 8px; border-bottom: 1px solid var(--line); font-weight: 500; }
   .tbl td { padding: 8px; border-bottom: 1px solid var(--line); vertical-align: top; color: var(--text-2); }
   .form-grid { display: grid; gap: 4px; max-width: 640px; }
   .more-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 8px; }
-  @media (max-width: 860px) { .guide { grid-template-columns: 1fr; } .toc { position: static; } }
+  .help-link {
+    width: 28px; height: 28px; padding: 0; display: inline-grid; place-items: center;
+    border: 1px solid var(--line); border-radius: 6px; background: var(--btn); color: var(--ink);
+    font-weight: 600; font-size: 14px; line-height: 1; cursor: pointer;
+  }
+  .help-link:hover { background: var(--accent-soft); color: var(--accent); border-color: var(--accent); }
 
   .cmdk { position: fixed; inset: 0; z-index: 100; background: rgba(10,10,10,.35); display: grid; place-items: start center; padding-top: 12vh; }
   .cmdk[hidden] { display: none !important; }
@@ -444,8 +465,11 @@
   .cmdk button:hover, .cmdk button[aria-selected="true"] { background: var(--surface-2); }
   .cmdk .hint { color: var(--muted); font-size: 12px; margin-left: auto; font-family: var(--mono); }
 
-  @media (max-width: 1100px) {
+  main { min-width: 0; }
+  @media (max-width: 1200px) {
     .hero, .two, .data-grid, .studio-split { grid-template-columns: 1fr; }
+    .page-h { flex-direction: column; align-items: stretch; }
+    .next { max-width: none; flex: none; }
     .stats { grid-template-columns: repeat(2, 1fr); }
     .stat:nth-child(2) { border-right: 0; }
     .kanban { grid-template-columns: 1fr 1fr; }
@@ -468,7 +492,7 @@
   <aside class="side">
     <div class="ws-switch">
       <label>Workspace</label>
-      <div class="brand"><img id="brandLogo" src="/assets/brand/logo.svg" alt="Galleypost"></div>
+      <div class="brand"><img id="brandLogo" src="/assets/brand/logo-icon.svg" alt=""><strong class="brand-word" id="brandWord">Galleypost</strong></div>
       <select id="brandSwitch" aria-label="Active brand profile"></select>
     </div>
     <nav class="nav" aria-label="Main">
@@ -498,6 +522,7 @@
     </div>
     <div class="spacer"></div>
     <button type="button" class="btn sm" id="cmdkHint">Search <kbd style="margin-left:6px">⌘K</kbd></button>
+    <button type="button" class="help-link" id="helpLink" data-go="guide" aria-label="Open Guide" title="Guide">?</button>
     <span id="liveBadge" class="mode-badge demo"><i class="dot"></i> Demo mode</span>
   </header>
   <div id="dropVeil" aria-hidden="true" hidden><div class="box"><strong id="dropTitle"></strong><span id="dropSub"></span></div></div>
@@ -525,7 +550,7 @@
         <div class="glass pad">
           <div class="panel-h"><h2>Recent posts</h2><button type="button" class="btn sm" data-go="library">Library</button></div>
           <table class="posts-table">
-            <thead><tr><th>Title</th><th>Channel</th><th>Status</th><th>Fact-check</th><th>Updated</th><th></th></tr></thead>
+            <thead><tr><th class="col-title">Title</th><th class="col-channel">Channel</th><th class="col-status">Status</th><th class="col-check">Check</th><th class="col-updated">Updated</th><th class="col-action"></th></tr></thead>
             <tbody id="recentPosts"></tbody>
           </table>
         </div>
@@ -616,7 +641,7 @@
           <div class="who"><div class="avatar">LT</div><div><b>London Tech Community</b><span>LinkedIn · preview</span></div></div>
           <div class="body empty" id="previewBody">Pick an idea and write a post. The preview will look like a LinkedIn card.</div>
           <div class="tags" id="previewTags"></div>
-          <div class="row" style="margin-top:10px"><button type="button" class="btn sm ig" id="previewIg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r=".8" fill="currentColor" stroke="none"/></svg>Post to Instagram</button></div>
+          <div class="row" style="margin-top:10px"><button type="button" class="btn sm ig" id="previewIg" aria-label="Post to Instagram" title="Post to Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r=".8" fill="currentColor" stroke="none"/></svg>Instagram</button></div>
         </div>
         <div class="li-card" id="xPreview" style="padding-top:12px">
           <div class="who"><div class="avatar">LT</div><div><b>@londontech</b><span>X · preview</span></div></div>
@@ -650,7 +675,7 @@
       <div class="glass pad" style="margin-bottom:18px">
         <div class="panel-h"><h2>This week’s posts</h2><button type="button" class="btn sm" data-go="studio">Open studio</button></div>
         <table class="posts-table">
-          <thead><tr><th>Title</th><th>Channel</th><th>Status</th><th>Fact-check</th><th>Updated</th><th></th></tr></thead>
+          <thead><tr><th class="col-title">Title</th><th class="col-channel">Channel</th><th class="col-status">Status</th><th class="col-check">Check</th><th class="col-updated">Updated</th><th class="col-action"></th></tr></thead>
           <tbody id="libraryPosts"></tbody>
         </table>
       </div>
@@ -704,144 +729,43 @@
 
     <!-- ============ GUIDE ============ -->
     <section id="view-guide" class="view" aria-labelledby="guide-h" hidden>
-      <div class="page-h"><div><div class="eyebrow">Guide</div><h1 id="guide-h" style="margin-top:6px">How to use the Content Studio</h1><p>Everything you need to go from idea to a LinkedIn post, in five minutes.</p></div></div>
+      <div class="page-h"><div><div class="eyebrow">Guide</div><h1 id="guide-h" style="margin-top:6px">How Galleypost works</h1><p>Six short notes. Open this from the sidebar, Cmd+K, or the ? in the header.</p></div></div>
       <div class="guide">
-        <nav class="toc glass pad" aria-label="On this page">
-          <div class="eyebrow" style="margin-bottom:10px">On this page</div>
-          <a href="#g-start">Quick start</a><a href="#g-source">Your own article, document or screenshot</a><a href="#g-drop">Dragging files in</a><a href="#g-photos">Photos and editing</a><a href="#g-analytics">Analytics</a><a href="#g-assistant">The Assistant</a><a href="#g-studio">The weekly Studio</a><a href="#g-trust">How accuracy works</a><a href="#g-linkedin">Posting to LinkedIn</a><a href="#g-instagram">Posting to Instagram</a><a href="#g-setup">Setup and settings</a><a href="#g-help">Troubleshooting</a>
-        </nav>
         <div class="doc">
-          <h2 id="g-start">Quick start</h2>
           <ol class="steps-list">
-            <li><b>Dashboard.</b> Shows where you are this week and suggests the next step.</li>
-            <li><b>Studio → Find latest topics.</b> Runs one research search of trade press and official sources, about 15 seconds. Each click covers the next area (events and meetups, tech news, then community and learning) and adds new ideas to the list. <b>Search all areas</b> runs all three at once at three times the cost. A search already made today is reused for free.</li>
-            <li><b>Pick three ideas.</b> Use Auto-fill week, or press Mon / Wed / Fri on any idea. ★ marks the day the research suggests.</li>
-            <li><b>Write my week.</b> Writes three posts and checks each one against its sources.</li>
-            <li><b>Create image, then Post to LinkedIn or Post to Instagram.</b> Review the text and the image. LinkedIn opens its composer. Instagram publishes only after you press Post in the confirm dialog.</li>
+            <li id="g-what">
+              <h2>What Galleypost does</h2>
+              <p>Galleypost is a content desk: it turns a brand profile and sourced facts into a LinkedIn or Instagram draft you can review. It does not invent numbers, and it does not publish anything on its own. Named after the galley proof: the newsroom proof that gets checked before anything goes to print.</p>
+            </li>
+            <li id="g-start">
+              <h2>Quick start</h2>
+              <p>1. <b>Brand.</b> Paste a website URL and extract a profile, or load the London Tech Community demo.<br>
+              2. <b>Studio.</b> Find topics or add your own facts, then write a post.<br>
+              3. <b>Review.</b> Read the fact-check notes, checklist and preview. Edit anything that is not sourced.<br>
+              4. <b>LinkedIn.</b> Press <b>Post to LinkedIn</b>. That copies the draft and opens LinkedIn’s composer — it does not auto-publish. You paste the image (Cmd+V) and press Post in LinkedIn yourself.</p>
+            </li>
+            <li id="g-instagram">
+              <h2>Posting to Instagram</h2>
+              <p><b>Dry-run</b> (no token): the dialog shows the Graph requests and does not call Instagram. <b>Live</b> needs <code>INSTAGRAM_ACCESS_TOKEN</code>, <code>INSTAGRAM_USER_ID</code>, and <code>PUBLIC_BASE_URL</code> (https origin Instagram can download a JPEG from). Captions are capped at 2,200 characters and 30 hashtags; the preview shortens over-limit text and warns. Nothing is sent until you press <b>Post</b> in the confirm dialog.</p>
+            </li>
+            <li id="g-setup">
+              <h2>Settings</h2>
+              <p>Local: copy <code>.env.example</code> to <code>.env</code> and set <code>OPENAI_API_KEY</code>, then restart. Hosted on Vercel: set <code>OPENAI_API_KEY</code> and <code>APP_PASSWORD</code> in project env vars (the browser asks for that password). Appearance: light is the default; switch to dark under Settings. The choice stays in this browser.</p>
+            </li>
+            <li id="g-help">
+              <h2>Troubleshooting</h2>
+              <table class="tbl">
+                <tr><th>Problem</th><th>What happens / what to do</th></tr>
+                <tr><td>No OpenAI key</td><td>Demo mode: Studio and Classic still open. Live research, writing and images stay locked until <code>OPENAI_API_KEY</code> is set and the server is restarted.</td></tr>
+                <tr><td>Instagram dry-run</td><td>Token or user id missing. The confirm dialog still opens; Copy caption works; nothing is published.</td></tr>
+                <tr><td>Port in use</td><td>Another process has 8080. Stop it, or run with another <code>PORT</code>. The Mac launcher will not kill the other app.</td></tr>
+              </table>
+            </li>
+            <li id="g-credits">
+              <h2>Credits</h2>
+              <p>Built by <b>Zeshaan</b> (<a href="https://github.com/zedshy">@zedshy</a>) and <b>Dani</b> (<a href="https://github.com/MDG-2001">@MDG-2001</a>) with Grok Bot and Cursor, for the Grok Bot Community Engineering London Hackathon.</p>
+            </li>
           </ol>
-
-          <h2 id="g-source">Build a post from your own article or screenshot</h2>
-          <p>Found something relevant? In <b>Studio</b>, press <b>From a link or screenshot</b>.</p>
-          <ol class="steps-list">
-            <li>Paste the article's link, or add a screenshot (choose a file, or paste one with Cmd+V).</li>
-            <li>Optionally say what angle you want, for example "what it means for first-time attendees".</li>
-            <li>Choose <b>Monday</b>, <b>Wednesday</b> or <b>Friday</b>, or "Just add to my ideas".</li>
-            <li>Press <b>Read it and build the post</b>. The studio reads the page, pulls out the facts, and writes and fact-checks that day's post.</li>
-          </ol>
-          <ul>
-            <li>Only facts that are really in the page or screenshot are used. For links, any figure that is not on the page is thrown away.</li>
-            <li>Some publishers block automatic reading or hide text behind a paywall. If a link fails, take a screenshot instead.</li>
-            <li>Posts from a screenshot are marked <span class="badge warn">From your screenshot</span>: check the figures against the original before posting.</li>
-          </ul>
-
-          <h2 id="g-drop">Dragging files in</h2>
-          <p>Drag files from your computer onto any page and drop them. Several at once is fine. A message says where each one went.</p>
-          <ul>
-            <li><b>Photos</b> are saved to the Library. Drop one onto a post's image area instead and it becomes that post's picture.</li>
-            <li><b>Documents</b> (PDF, Word, text) are attached to the Assistant chat, up to two. Dropped anywhere else, the first one becomes a post idea.</li>
-            <li>On the Analytics page, one screenshot of a post's analytics fills in the numbers.</li>
-            <li>Other file types are skipped. The Choose files buttons still work.</li>
-          </ul>
-
-          <h2 id="g-photos">Using your own photos</h2>
-          <ul>
-            <li>Open <b>Library</b> and add your real photographs (JPEG, PNG, WebP or iPhone HEIC). The AI names, describes and tags each photo for you, and flags any that show people so you can check consent. Anything you type yourself is kept, and <b>Describe with AI</b> redoes a photo. Tick <b>Cleared for public use</b> only when you have confirmed permission for the photo and everyone in it.</li>
-            <li>On any post, press <b>Use a library photo</b>. The headline and logo are drawn on top of the real photo, with no AI involved. Use <b>Position</b> and <b>Zoom</b> to frame it.</li>
-            <li>To change the photo, type an edit such as "make the sky clearer" and press <b>Edit photo</b>. The AI is told to keep the equipment, people and layout exactly as photographed, and the post is marked <i>edited with AI</i> so you check it. <b>Revert to original</b> undoes it.</li>
-            <li>To build a new scene around a photo, press <b>Upload your own photo</b> (or choose one from the Library), describe the setting, for example "in a London co-working space at dusk, laptops open", and press <b>Generate around photo</b>. The subject stays as photographed and the AI creates the surroundings in the post format. Check the subject against the original before publishing.</li>
-            <li>Photos stay in your browser only; they are not uploaded to a server.</li>
-          </ul>
-
-          <h2 id="g-analytics">Analytics: views and clicks per post</h2>
-          <p>LinkedIn does not let tools read a page's analytics without special approved access, so the <b>Analytics</b> tab works from numbers you bring in:</p>
-          <ol class="steps-list">
-            <li>Mark a post as posted in Studio (it appears in Analytics automatically), or press <b>Track a post</b>.</li>
-            <li>Open that post's analytics in LinkedIn, take a screenshot, and upload it. The AI copies only the numbers that are visible; check them, then Save. You can also type the numbers in.</li>
-            <li>Each post gets views, clicks, click-through, reactions, comments, reposts and an engagement rate, compared with your other posts.</li>
-            <li>Tick <b>Add a tracked link</b> on a post, or copy its tracked link from Analytics. When people click it, your Google Analytics shows website visits from that exact post (look for the campaign <code>content-studio</code>).</li>
-          </ol>
-          <p>The charts and "What the numbers say" fill in once you have two or more posts. Judge trends after 8 to 12 posts.</p>
-
-          <h2 id="g-assistant">The Assistant: just say what you want</h2>
-          <p>Use the Assistant when the post is not news: a greeting, a thank-you, a seasonal post, an announcement, or a post made from your own notes. Write it the way you would tell a colleague. You can also press <strong>Attach document</strong> to add a PDF or Word file (a guide, procedure or brochure) and ask for a post from it. Internal records such as delivery orders, quotes, forms and back-office procedures are refused on purpose, because they hold customer details.</p>
-          <div class="examples">
-            <blockquote>We're looking to create an image post for Halloween to wish our people a happy Halloween.</blockquote>
-            <blockquote>Thank our customers for a busy year. Keep it warm but short.</blockquote>
-            <blockquote>We've opened a new meetup in Shoreditch on 3 November. Announce it. (Give it the facts.)</blockquote>
-            <blockquote>Turn these notes into a post: [paste your notes]</blockquote>
-          </div>
-          <ul>
-            <li><b>It writes and briefs the image together.</b> You get the post text, a headline for the picture, and a checklist of what the image must and must not show.</li>
-            <li><b>Change it by talking.</b> Say "shorter", "mention our Irish office", "make the picture more autumn". It keeps what you did not ask to change.</li>
-            <li><b>It may ask one question.</b> For announcements it needs real details such as place and date. It will not invent them.</li>
-            <li><b>It will not make up news or figures.</b> For market news use Studio → Find latest topics, or paste the facts into the chat.</li>
-            <li><b>Create image</b> costs a few cents and takes under two minutes. If something is wrong, describe it under the image and press Fix and remake.</li>
-          </ul>
-
-          <h2 id="g-studio">The weekly Studio</h2>
-          <ul>
-            <li><b>Ideas</b> come with sources. Open "source facts" to see exactly what each post will be allowed to say.</li>
-            <li><b>Add your own</b> lets you enter facts you hold, one per line, with where they come from. Only those facts are used. You can also <b>upload a PDF or Word document</b>: the AI reads it, picks the best facts for a post, and fills them in for you to check and edit before choosing a day.</li>
-            <li><b>Edit the text directly</b> in the box; the word count shows the target of 120 to 200 words.</li>
-            <li><b>Change the theme or tone</b> under each post: pick Longer, Shorter, What it means for members, More practical, Warmer, More formal or Ask the community, or describe the change. It is fact-checked again, and <b>Undo last revision</b> goes back.</li>
-            <li><b>Write it again</b> rewrites one day. <b>Mark as posted</b> updates the dashboard.</li>
-            <li><b>Image brief used</b> shows the checklist the image was made from. Tick <b>Research images online</b> in the sidebar to have it checked against how the real thing looks (it costs extra).</li>
-            <li>Each new image is shot from a different angle and in different light, and avoids repeating the week's other images.</li>
-            <li>Posts and ideas are kept in your browser, so they are still there after a refresh. Images are not kept: download them.</li>
-          </ul>
-
-          <h2 id="g-trust">How accuracy works</h2>
-          <p>Nothing is written from memory. A post may only say what its source facts say. After writing, a second check reads the post line by line against those facts and flags anything extra.</p>
-          <table class="tbl">
-            <tr><th>You see</th><th>It means</th></tr>
-            <tr><td><span class="badge good">Trade press</span></td><td>From a recognised trade or official source.</td></tr>
-            <tr><td><span class="badge good">Source confirmed</span></td><td>The link opened and the figures were found on the page.</td></tr>
-            <tr><td><span class="badge warn">Check the source</span></td><td>The link was blocked or the figures were not found. Open it and read it before using the idea.</td></tr>
-            <tr><td><span class="badge bad">Handle with care</span></td><td>Sensitive news (conflict, accidents). Written neutrally and never tied to your products.</td></tr>
-            <tr><td><span class="badge">Evergreen</span></td><td>A guide or standard that stays relevant, so it may be older.</td></tr>
-            <tr><td>Green "fact-checked" note</td><td>Every sentence is supported by the sources.</td></tr>
-            <tr><td>Amber "Please verify"</td><td>A sentence goes beyond the sources. Edit it or have someone confirm it.</td></tr>
-          </table>
-          <p><b>Images are AI-generated illustrations.</b> They are realistic but not real photographs of your operations. Have someone check equipment details before publishing, and prefer real your photos for real events.</p>
-
-          <h2 id="g-linkedin">Posting to LinkedIn</h2>
-          <ol class="steps-list">
-            <li>Press <b>Post to LinkedIn</b> on a post. The image is copied and downloaded, and LinkedIn's composer opens with your text filled in.</li>
-            <li>Click in the LinkedIn post box and press <b>Cmd+V</b> (Ctrl+V on Windows) to attach the image. If nothing attaches, use the photo icon and choose the downloaded file.</li>
-            <li>Read it over and press <b>Post</b> yourself. The Studio never publishes anything on its own.</li>
-            <li>Post as the your company page using a page-admin role. Never share personal LinkedIn passwords with any tool.</li>
-          </ol>
-
-          <h2 id="g-instagram">Posting to Instagram</h2>
-          <p>Single-image posts go out through Instagram's official API. Nothing is sent until you press <b>Post</b> in the confirm dialog.</p>
-          <ol class="steps-list">
-            <li>On a post, press <b>Post to Instagram</b> (next to Post to LinkedIn).</li>
-            <li>Read the caption. Instagram allows 2,200 characters and 30 hashtags; the preview shortens anything over those limits and says so.</li>
-            <li>The image has to be a JPEG on a public https address. A generated or library image needs <code>PUBLIC_BASE_URL</code> in <code>.env</code> (a tunnel such as ngrok works for a local demo). Or paste a public JPEG URL in the dialog.</li>
-            <li>Press <b>Post</b>. If <code>INSTAGRAM_ACCESS_TOKEN</code> and <code>INSTAGRAM_USER_ID</code> are not set, this is a labelled dry-run: you see the exact request, and nothing is sent. <b>Copy caption</b> still works.</li>
-          </ol>
-
-          <h2 id="g-setup">Setup and settings</h2>
-          <p>For whoever installs it. Full details are in <code>README.md</code>.</p>
-          <ul>
-            <li>Copy <code>.env.example</code> to <code>.env</code> and put your OpenAI key in <code>.env</code>, never in <code>.env.example</code>. Restart the server after changes.</li>
-            <li>Instagram uses <code>INSTAGRAM_ACCESS_TOKEN</code> and <code>INSTAGRAM_USER_ID</code>. Generated images also need <code>PUBLIC_BASE_URL</code>. Leave the token blank for a dry-run. Details are in the README.</li>
-            <li><code>OPENAI_RESEARCH_MODEL</code> (default <code>gpt-4.1-mini</code>) controls research and reading. <code>OPENAI_WRITER_MODEL</code> (default <code>gpt-4.1</code>) writes each post's first draft. <code>OPENAI_MODEL</code> (default <code>gpt-4.1-mini</code>) runs the fact-checks and the Assistant. <code>OPENAI_IMAGE_MODEL</code> and <code>OPENAI_IMAGE_QUALITY</code> (default <code>low</code>) control images.</li>
-            <li>In the sidebar, <b>Image quality</b> switches between Draft (cheapest) and Final, and the line below it counts this session's calls, tokens, searches and images. OpenAI's own usage page has the true spend.</li>
-            <li>The older version of the app is still available under "Classic view" in the sidebar.</li>
-          </ul>
-
-          <h2 id="g-help">Troubleshooting</h2>
-          <table class="tbl">
-            <tr><th>Problem</th><th>What to do</th></tr>
-            <tr><td>"No OpenAI key" in the sidebar</td><td>Add <code>OPENAI_API_KEY</code> to <code>.env</code> and restart.</td></tr>
-            <tr><td>Page says it can't be reached</td><td>The server has stopped. Start it again with <code>npm start</code> and use the address it prints.</td></tr>
-            <tr><td>Very few topics found</td><td>Press Find latest topics again, or use Add your own with facts you hold.</td></tr>
-            <tr><td>Image paste does nothing in LinkedIn</td><td>Use the photo icon in LinkedIn and pick the downloaded file.</td></tr>
-            <tr><td>Instagram says the image is not public</td><td>Set <code>PUBLIC_BASE_URL</code> to an https tunnel, or paste a public JPEG URL. A dry-run still shows the request.</td></tr>
-            <tr><td>"Search did not run" style errors</td><td>The account or model may not allow web search. Check <code>OPENAI_RESEARCH_MODEL</code>.</td></tr>
-          </table>
-          <p class="hint" style="max-width:none">Cost: a search is a few cents, a week of posts a few cents more, and a draft image about a cent or two (Final quality costs more). Nothing runs until you press a button.</p>
         </div>
       </div>
     </section>
@@ -925,11 +849,11 @@
   var state = { topics: [], researchedAt: '', week: { mon: null, wed: null, fri: null }, posts: {}, filter: 'all', customs: 0, log: [], chat: [], analytics: [] };
   var runtime = { options: null, images: {}, busy: {}, dayStatus: {}, finding: false, chatImages: {}, chatBusy: false, chatDocs: [], stepAt: {} };
   var DEMO_POSTS = [
-    { title: 'London Tech Week adds two community stages', channel: 'LinkedIn', status: 'Ready', cls: 'good', score: '94', updated: '21 Oct 18:12', col: 'ready', body: 'London Tech Week is adding two community stages this year, aimed at first-time attendees and local meetups rather than the main expo floor.\n\nOrganisers say the stages will run workshops from Shoreditch.js, Women Who Code London and Rust London — not keynotes. If you run a meetup, the call for sessions closes Friday.' },
-    { title: 'ONS: UK tech hiring down 2.1% in Q3', channel: 'X', status: 'Fact-check', cls: 'warn', score: '81', updated: '21 Oct 14:04', col: 'check', body: 'ONS figures out this morning: UK tech hiring fell 2.1% in Q3. London still accounts for just over a third of roles, with product and platform jobs the softest.' },
-    { title: 'Shoreditch.js first-timers brief', channel: 'LinkedIn', status: 'Draft', cls: 'draft', score: '—', updated: '20 Oct 09:41', col: 'draft', body: 'Coming to Shoreditch.js for the first time? Doors 18:30, talks 19:00, laptops on shared tables. We publish a one-page brief the morning of every meetup so nobody has to guess the format.' },
-    { title: 'Women Who Code London autumn talks', channel: 'LinkedIn', status: 'Scheduled', cls: 'good', score: '96', updated: '19 Oct 16:20', col: 'sched', body: 'Women Who Code London’s autumn series starts next Wednesday at CodeNode. Three talks, 20 minutes each, then 40 minutes of questions. Tickets are free; 40 seats left.' },
-    { title: 'Rust London: memory talks without the jargon', channel: 'X', status: 'Ready', cls: '', score: '90', updated: '19 Oct 11:08', col: 'ready', body: 'Rust London next Thursday is aimed at people who write TypeScript for a living. Bring a laptop. No ownership slides in the first 15 minutes, promised.' }
+    { title: 'London Tech Week adds two community stages', channel: 'LinkedIn', status: 'Ready', cls: 'good', score: '94', updated: '21 Oct, 18:12', col: 'ready', body: 'London Tech Week is adding two community stages this year, aimed at first-time attendees and local meetups rather than the main expo floor.\n\nOrganisers say the stages will run workshops from Shoreditch.js, Women Who Code London and Rust London — not keynotes. If you run a meetup, the call for sessions closes Friday.' },
+    { title: 'ONS: UK tech hiring down 2.1% in Q3', channel: 'X', status: 'Fact-check', cls: 'warn', score: '81', updated: '21 Oct, 14:04', col: 'check', body: 'ONS figures out this morning: UK tech hiring fell 2.1% in Q3. London still accounts for just over a third of roles, with product and platform jobs the softest.' },
+    { title: 'Shoreditch.js first-timers brief', channel: 'LinkedIn', status: 'Draft', cls: 'draft', score: '—', updated: '20 Oct, 09:41', col: 'draft', body: 'Coming to Shoreditch.js for the first time? Doors 18:30, talks 19:00, laptops on shared tables. We publish a one-page brief the morning of every meetup so nobody has to guess the format.' },
+    { title: 'Women Who Code London autumn talks', channel: 'LinkedIn', status: 'Scheduled', cls: 'good', score: '96', updated: '19 Oct, 16:20', col: 'sched', body: 'Women Who Code London’s autumn series starts next Wednesday at CodeNode. Three talks, 20 minutes each, then 40 minutes of questions. Tickets are free; 40 seats left.' },
+    { title: 'Rust London: memory talks without the jargon', channel: 'X', status: 'Ready', cls: '', score: '90', updated: '19 Oct, 11:08', col: 'ready', body: 'Rust London next Thursday is aimed at people who write TypeScript for a living. Bring a laptop. No ownership slides in the first 15 minutes, promised.' }
   ];
   var DEMO_SPARK = [1, 2, 2, 3, 2, 4, 5, 4, 6, 7, 6, 8];
   function sampleMode() { return DAYS.every(function (d) { return !state.posts[d.id]; }); }
@@ -963,14 +887,19 @@
     return s;
   }
   function igButton(onclick) {
-    var b = h('button', { type: 'button', class: 'btn sm ig' });
+    var b = h('button', { type: 'button', class: 'btn sm ig', 'aria-label': 'Post to Instagram', title: 'Post to Instagram' });
     b.appendChild(igGlyph());
-    b.appendChild(document.createTextNode('Post to Instagram'));
+    b.appendChild(document.createTextNode('Instagram'));
     b.addEventListener('click', onclick);
     return b;
   }
   function setStatus(el, text, kind) { if (!el) return; el.textContent = text; el.className = 'status' + (kind ? ' ' + kind : ''); }
   function clock(ts) { return new Date(ts).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); }
+  function stampAt(ts) {
+    var d = new Date(ts);
+    if (isNaN(d.getTime())) return String(ts || '');
+    return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) + ', ' + d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  }
   function nice(date) { if (!date) return ''; var d = new Date(date + 'T12:00:00'); return isNaN(d) ? date : d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }); }
   function log(text) { state.log.unshift({ t: Date.now(), text: text }); state.log = state.log.slice(0, 40); save(); renderLog(); }
 
@@ -982,9 +911,11 @@
   var brand = { name: 'Galleypost', website: '', tagline: '', logo: { light: '/assets/brand/logo.svg', dark: '/assets/brand/logo-reversed.svg' } };
   function applyBrandLogo() {
     var logoEl = $('brandLogo'); if (!logoEl) return;
-    var dark = document.documentElement.getAttribute('data-theme') === 'dark';
-    var src = dark ? (brand.logo && brand.logo.dark) : (brand.logo && brand.logo.light);
-    if (src) logoEl.src = src;
+    var src = (brand.logo && (brand.logo.icon || brand.logo.light)) || '/assets/brand/logo-icon.svg';
+    logoEl.src = src;
+    logoEl.alt = '';
+    var word = $('brandWord');
+    if (word) word.textContent = 'Galleypost';
   }
   async function loadBrand() {
     try {
@@ -996,8 +927,7 @@
           runtime.brandUrl = (brand.website || '').replace(/^https?:\/\//, '').replace(/\/$/, '');
           // Update UI with brand info
           applyBrandLogo();
-          if (brand.name) { var logoEl = $('brandLogo'); if (logoEl) logoEl.alt = brand.name; }
-          document.title = brand.name + ' - Content Studio';
+          document.title = (brand.name ? brand.name + ' · ' : '') + 'Galleypost';
           DAYS.forEach(function (d) { paint(d.id); });
           fillBrandForm();
           fillBrandSwitch();
@@ -1276,16 +1206,16 @@
     return { label: 'Empty', cls: '' };
   }
   function tableRow(title, channel, status, cls, score, updated, ig) {
-    var action = h('td');
+    var action = h('td', { class: 'col-action' });
     if (ig) {
       action.appendChild(igButton(function (e) { e.stopPropagation(); ig(); }));
     }
     return h('tr', { onclick: function () { show('studio'); } },
-      h('td', { class: 'title', text: title }),
-      h('td', { text: channel }),
-      h('td', null, h('span', { class: 'pill ' + (cls || ''), text: status })),
-      h('td', { class: 'mono', text: score }),
-      h('td', { class: 'mono', text: updated }),
+      h('td', { class: 'title col-title' }, h('span', { class: 'title-clip', text: title, title: title })),
+      h('td', { class: 'col-channel', text: channel }),
+      h('td', { class: 'col-status' }, h('span', { class: 'pill ' + (cls || ''), text: status })),
+      h('td', { class: 'col-check mono', text: score }),
+      h('td', { class: 'col-updated mono', text: updated }),
       action);
   }
   function renderRecent(box) {
@@ -1294,7 +1224,7 @@
     var rows = DAYS.map(function (d) {
       var p = state.posts[d.id]; if (!p) return null;
       var chip = postChip(d);
-      return tableRow(p.headline || (state.week[d.id] && state.week[d.id].title) || d.label, 'LinkedIn', chip.label, chip.cls, String(lintScore(p)), clock(p.updated || Date.now()), function () {
+      return tableRow(p.headline || (state.week[d.id] && state.week[d.id].title) || d.label, 'LinkedIn', chip.label, chip.cls, String(lintScore(p)), stampAt(p.updated || Date.now()), function () {
         openInstagram(document.getElementById('cv-' + d.id), fullText(d.id), document.getElementById('st-' + d.id));
       });
     }).filter(Boolean);

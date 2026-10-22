@@ -49,6 +49,16 @@ test('serves the studio page and its options', async () => {
   assert.ok(options.scenes.some(s => s.id === 'workspace'));
 });
 
+test('studio page includes the Guide nav', async () => {
+  const page = await fetch(`${base}/app.html`);
+  assert.equal(page.status, 200);
+  const html = await page.text();
+  assert.match(html, /data-view="guide"/);
+  assert.match(html, /<span>Guide<\/span>/);
+  assert.match(html, /id="helpLink"/);
+  assert.match(html, /id="view-guide"/);
+});
+
 test('article is grounded in supplied facts and returns what to check', async () => {
   const res = await post('/api/studio/article', { subject: 'industry-news', facts });
   assert.equal(res.status, 200);
