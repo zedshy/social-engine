@@ -24,11 +24,11 @@ const valid = { mode: 'draft', source: 'London Tech Week runs more than 300 even
 test('serves the existing frontend but not local secrets', async () => {
   const home = await fetch(base);
   assert.equal(home.status, 200);
-  assert.match(await home.text(), /Social Engine/);
+  assert.match(await home.text(), /Galleypost/);
   for (const studioPath of ['/app', '/app.html', '/studio']) {
     const studio = await fetch(`${base}${studioPath}`);
     assert.equal(studio.status, 200, studioPath);
-    assert.match(await studio.text(), /Social Engine/);
+    assert.match(await studio.text(), /Galleypost/);
   }
   const page = await fetch(`${base}/classic`);
   assert.equal(page.status, 200);

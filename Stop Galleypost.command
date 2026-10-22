@@ -22,7 +22,7 @@ esac
 
 if ! kill -0 "$server_pid" 2>/dev/null; then
   rm -f "$pid_file"
-  finish "The Social Engine server was already stopped."
+  finish "The Galleypost server was already stopped."
   exit 0
 fi
 
@@ -42,8 +42,8 @@ if kill -TERM "$server_pid" 2>/dev/null; then
     exit 1
   fi
   rm -f "$pid_file"
-  finish "Social Engine stopped. You can close the browser tab."
+  finish "Galleypost stopped. You can close the browser tab."
 else
-  finish "Could not stop the Social Engine server. Try again or close its Terminal process."
+  finish "Could not stop the Galleypost server. Try again or close its Terminal process."
   exit 1
 fi

@@ -6,8 +6,8 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { spawnSync } from 'node:child_process';
 
-const start = readFileSync(new URL('./Start Social Engine.command', import.meta.url), 'utf8');
-const stop = readFileSync(new URL('./Stop Social Engine.command', import.meta.url), 'utf8');
+const start = readFileSync(new URL('./Start Galleypost.command', import.meta.url), 'utf8');
+const stop = readFileSync(new URL('./Stop Galleypost.command', import.meta.url), 'utf8');
 function fixture(t, scripts = {}) {
   const dir = mkdtempSync(join(tmpdir(), 'social-engine-test-'));
   t.after(() => rmSync(dir, { recursive: true, force: true }));
@@ -45,7 +45,7 @@ test('dependency download failure has a useful explanation', t => {
   const r = f.run('Start.command', 'y\n');
   assert.match(r.stdout, /Installing dependencies/); assert.match(r.stderr, /Check your internet connection/);
 });
-test('already-running Social Engine server is reopened without starting another process', t => {
+test('already-running Galleypost server is reopened without starting another process', t => {
   const f = fixture(t, { curl: 'echo \'{"app":"social-engine"}\'', node: 'echo must-not-start; exit 1' });
   const r = f.run(); assert.equal(r.status, 0);
   assert.match(r.stdout, /already running/); assert.match(r.stdout, /browser-opened/);

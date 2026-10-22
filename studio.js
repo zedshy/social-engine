@@ -75,7 +75,7 @@ async function readJson(req) {
 }
 
 export function articleInstructions(subject, profile = null) {
-  const brandName = profile?.name || 'Social Engine';
+  const brandName = profile?.name || 'Galleypost';
   const audience = profile?.voice?.audienceDescription || 'a professional audience';
   const tone = profile?.voice?.tone || 'Plain, understated professional language, as if written by an experienced industry person.';
   
@@ -106,7 +106,7 @@ const articleSchema = {
 };
 
 export function planInstructions(profile = null) {
-  const brandName = profile?.name || 'Social Engine';
+  const brandName = profile?.name || 'Galleypost';
   
   return [
     `You write the shot brief for one photograph that ${brandName} will use on LinkedIn. A person will review your brief before any image is made.`,

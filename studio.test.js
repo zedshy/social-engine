@@ -42,7 +42,7 @@ const facts = 'community meetups run on shared tables in a co-working space. A p
 test('serves the studio page and its options', async () => {
   const page = await fetch(`${base}/studio`);
   assert.equal(page.status, 200);
-  assert.match(await page.text(), /Social Engine/);
+  assert.match(await page.text(), /Galleypost/);
   const options = await (await fetch(`${base}/api/studio/options`)).json();
   assert.equal(options.liveAvailable, true);
   assert.ok(options.subjects.some(s => s.id === 'general'));

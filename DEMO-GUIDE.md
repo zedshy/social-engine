@@ -1,10 +1,10 @@
-# Social Engine — Classic view demo
+# Galleypost — Classic view demo
 
 > For the Content Studio (Studio, Assistant, Library, Analytics), use `STUDIO-DEMO-GUIDE.md`. This guide is the **Classic view** in the sidebar and works without an OpenAI key.
 
 ## Before you present
 
-- `npm install` then `npm start`, or double-click `Start Social Engine.command` on a Mac.
+- `npm install` then `npm start`, or double-click `Start Galleypost.command` on a Mac.
 - Open `http://127.0.0.1:8080/` in the same browser each time; drafts live in that browser.
 - Open **Classic view**. For a clean run, click **Reset Demo** and confirm. That deletes this browser’s saved posts.
 - Rehearse once. The controlled demo needs no API key. Live AI needs `OPENAI_API_KEY`, internet, and OpenAI credit.
@@ -28,4 +28,4 @@
 
 ## Finish
 
-Stop the server with `Stop Social Engine.command` or Ctrl-C in the terminal, then close the tab.
+Stop the server with `Stop Galleypost.command` or Ctrl-C in the terminal, then close the tab.

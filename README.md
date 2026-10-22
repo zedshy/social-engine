@@ -1,10 +1,12 @@
-# Social Engine
+# Galleypost
 
 **Paste a website URL, get a brand profile, then research, write, fact-check and lint a week of sourced social posts — without inventing facts.**
 
+Named after the galley proof: the newsroom proof that gets checked before anything goes to print.
+
 ## What it does
 
-Social Engine is a white-label AI content desk for small brands and communities. It turns a public website and a handful of source facts into a reviewable post library:
+Galleypost is a white-label AI content desk for small brands and communities. It turns a public website and a handful of source facts into a reviewable post library:
 
 1. **Brand setup from a URL** — extract name, tagline and voice into a brand profile, or load the included London Tech Community demo.
 2. **Research** — live web search and RSS, with trusted-source rules and link checks.
@@ -18,7 +20,7 @@ The default demo profile is a **London developer / hackathon community**, not a 
 
 Generic chat tools write confident marketing copy from memory. Small brands and volunteer communities cannot afford invented statistics, fake events or a voice that sounds like every other LinkedIn bot.
 
-Social Engine is built the other way around:
+Galleypost is built the other way around:
 
 - **Sources first.** Research has to return real URLs and dated facts. Posts may only restate those facts.
 - **A second checker.** A separate pass flags anything the draft added.

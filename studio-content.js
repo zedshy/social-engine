@@ -1,5 +1,5 @@
 
-// Topic research and post writing for the Social Engine.
+// Topic research and post writing for Galleypost.
 // Configurable via brand profiles. Every function takes an OpenAI client and returns { status, body } so it can be tested with a mock.
 
 import { DEFAULT_PROFILE, getProfileFactsText, getCategories, getDays, getBannedWording } from './brand-profile.js';
@@ -70,7 +70,7 @@ function getTrustedSources(profile) {
 
 export function topicsInstructions(today, focus = '', profile = null) {
   const p = getProfile(profile);
-  const brandName = p.name || 'Social Engine';
+  const brandName = p.name || 'Galleypost';
   const profileFacts = getProfileFacts(p);
   const focuses = getFocuses(p);
   const trusted = getTrustedSources(p);
@@ -311,7 +311,7 @@ export async function findTopicsMulti(openai, options, signal) {
 
 export function postInstructions(day, sensitive, profile = null) {
   const p = getProfile(profile);
-  const brandName = p.name || 'Social Engine';
+  const brandName = p.name || 'Galleypost';
   const dayConfig = getDayConfig(p);
   const dayInfo = dayConfig[day] || dayConfig.mon;
   const voice = p.voice || {};
@@ -344,7 +344,7 @@ const postSchema = {
 
 export function verifyInstructions({ greetings = false, profile = null } = {}) {
   const p = getProfile(profile);
-  const brandName = p.name || 'Social Engine';
+  const brandName = p.name || 'Galleypost';
   const profileFacts = getProfileFacts(p);
 
   return [
@@ -427,7 +427,7 @@ const CONFIDENTIAL = 'Confidentiality: Documents may be internal. Never put cust
 
 export function chatInstructions(today, profile = null) {
   const p = getProfile(profile);
-  const brandName = p.name || 'Social Engine';
+  const brandName = p.name || 'Galleypost';
   const profileFacts = getProfileFacts(p);
   const voice = p.voice || {};
 
@@ -484,7 +484,7 @@ const shortList = (list, maxItems, maxLen) => (Array.isArray(list) ? list : []).
 
 export async function chatTurn(openai, { model, today, messages, draft, attachments = [], profile = null }, signal) {
   const profileFacts = getProfileFacts(profile);
-  const brandName = profile?.name || 'Social Engine';
+  const brandName = profile?.name || 'Galleypost';
   
   const input = JSON.stringify({ conversation: messages, currentDraft: draft || undefined, attachments: attachments.length ? attachments : undefined });
   const first = (await ask(openai, model, chatInstructions(today, profile), JSON.parse(input), 'assistant_turn', chatSchema, signal, 1800)).data;

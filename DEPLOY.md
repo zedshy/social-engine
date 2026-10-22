@@ -1,4 +1,4 @@
-# Deploying Social Engine
+# Deploying Galleypost
 
 The app is a Node server. `api/index.js` and `vercel.json` let Vercel run it as a function. Render or any Node host can run `npm start`.
 

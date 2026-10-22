@@ -3,7 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Social Engine</title>
+<title>Galleypost</title>
+<meta name="application-name" content="Galleypost">
+<meta name="description" content="Named after the galley proof: the newsroom proof that gets checked before anything goes to print.">
 <link rel="icon" href="/assets/brand/logo-icon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -466,7 +468,7 @@
   <aside class="side">
     <div class="ws-switch">
       <label>Workspace</label>
-      <div class="brand"><img id="brandLogo" src="/assets/brand/logo.svg" alt="Social Engine"></div>
+      <div class="brand"><img id="brandLogo" src="/assets/brand/logo.svg" alt="Galleypost"></div>
       <select id="brandSwitch" aria-label="Active brand profile"></select>
     </div>
     <nav class="nav" aria-label="Main">
@@ -977,7 +979,7 @@
   function savePrefs() { try { localStorage.setItem('social-engine-prefs', JSON.stringify(prefs)); } catch (e) {} }
   
   // Brand profile loaded from the server
-  var brand = { name: 'Social Engine', website: '', tagline: '', logo: { light: '/assets/brand/logo.svg', dark: '/assets/brand/logo-reversed.svg' } };
+  var brand = { name: 'Galleypost', website: '', tagline: '', logo: { light: '/assets/brand/logo.svg', dark: '/assets/brand/logo-reversed.svg' } };
   function applyBrandLogo() {
     var logoEl = $('brandLogo'); if (!logoEl) return;
     var dark = document.documentElement.getAttribute('data-theme') === 'dark';

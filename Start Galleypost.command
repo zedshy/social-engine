@@ -8,7 +8,7 @@ pid_file=".demo-server.pid"
 lock_dir=".demo-launch.lock"
 
 fail() {
-  printf '\nCould not start the Social Engine.\n%s\n\n' "$1" >&2
+  printf '\nCould not start Galleypost.\n%s\n\n' "$1" >&2
   if [ -t 0 ]; then read -r -p "Press Return to close this window…" _; fi
   exit 1
 }
@@ -36,7 +36,7 @@ trap 'exit 1' INT TERM
 printf '%s\n' "$$" > "$lock_dir/pid" || fail "This folder is not writable. Move it to your Documents folder and try again."
 
 if is_our_server; then
-  printf 'The Social Engine is already running. Opening it now.\n'
+  printf 'Galleypost is already running. Opening it now.\n'
   open "$url" || fail "The server is running. Open $url in your browser."
   exit 0
 fi
@@ -75,7 +75,7 @@ fi
 
 for ((attempt = 0; attempt < 40; attempt++)); do
   if is_our_server; then
-    printf 'Social Engine is ready at %s\n' "$url"
+    printf 'Galleypost is ready at %s\n' "$url"
     open "$url" || fail "The server started. Open $url in your browser."
     exit 0
   fi

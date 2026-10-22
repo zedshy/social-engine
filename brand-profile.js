@@ -1,5 +1,5 @@
 
-// Brand profile system for the white-label Social Engine.
+// Brand profile system for white-label Galleypost.
 // Each profile defines a brand's identity, voice, research topics, and content rules.
 
 import { readFile, writeFile, mkdir } from 'node:fs/promises';

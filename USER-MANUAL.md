@@ -1,4 +1,4 @@
-# Social Engine: user manual
+# Galleypost: user manual
 
 For the people who will use it. No technical knowledge needed. The same guide is inside the app under **Guide**.
 

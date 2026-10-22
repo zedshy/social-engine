@@ -1,4 +1,4 @@
-# Social Engine — Studio demonstration guide
+# Galleypost — Studio demonstration guide
 
 This is the run-sheet for the Studio (Dashboard, Studio, Assistant, Library, Analytics). The older Weekly Posts view is `DEMO-GUIDE.md` / **Classic view**.
 

@@ -1,4 +1,4 @@
-# Handoff notes — Social Engine
+# Handoff notes — Galleypost
 
 Read this before changing behaviour. Most of it exists to stop someone losing a day to a problem that has a one-line explanation.
 
@@ -21,7 +21,7 @@ The default profile is a London developer/hackathon community (`profiles/default
 ## 4. Things that will look wrong but aren’t
 
 - Chart colours are chosen for colourblind separation, not by eye.
-- Theme tokens are declared for light, dark and `prefers-color-scheme`. A colour defined in only one of them produces unreadable UI.
+- Theme tokens are declared for light (the default) and dark. A colour defined in only one of them produces unreadable UI.
 - Analytics sample data is fake and labelled as sample data.
 
 ## 5. Do not do before a demo

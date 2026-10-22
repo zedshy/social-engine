@@ -1,5 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Social Engine">
-  <rect width="32" height="32" rx="8" fill="#4F46E5"/>
-  <circle cx="12" cy="16" r="5" fill="#FFFFFF"/>
-  <circle cx="20" cy="16" r="5" fill="#C7D2FE"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Galleypost">
+  <rect width="32" height="32" rx="8" fill="#ff5a1f"/>
+  <rect x="8" y="11" width="16" height="3" rx="1.5" fill="#ffffff"/>
+  <rect x="8" y="18" width="11" height="3" rx="1.5" fill="#ffffff"/>
 </svg>
