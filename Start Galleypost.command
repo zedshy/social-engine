@@ -14,7 +14,7 @@ fail() {
 }
 
 is_our_server() {
-  curl --silent --fail --max-time 2 "${url}api/health" 2>/dev/null | grep -q '"app":"social-engine"'
+  curl --silent --fail --max-time 2 "${url}api/health" 2>/dev/null | grep -q '"app":"galleypost"'
 }
 
 # A simultaneous second double-click must not install or start another copy.

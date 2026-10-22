@@ -4,7 +4,7 @@ import { timingSafeEqual } from 'node:crypto';
 import { createReadStream } from 'node:fs';
 import { readFile, writeFile, mkdir, access, stat } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
-import { dirname, extname, join } from 'node:path';
+import { dirname, extname, join, resolve, sep } from 'node:path';
 import OpenAI from 'openai';
 import { createNewsDiscovery } from './news-discovery.js';
 import { studioHandler } from './studio.js';
@@ -59,8 +59,18 @@ function staticAsset(path) {
   if (!GUIDE_ASSET.test(path)) return null;
   return [path.slice(1), GUIDE_TYPES[extname(path).toLowerCase()] || 'application/octet-stream'];
 }
+function isInside(dir, filePath) {
+  const resolved = resolve(filePath);
+  const prefix = dir.endsWith(sep) ? dir : dir + sep;
+  return resolved === dir || resolved.startsWith(prefix);
+}
 function sendAsset(req, res, rel, type) {
-  const filePath = join(root, rel);
+  const filePath = resolve(root, rel);
+  if (!isInside(root, filePath)) {
+    const error = new Error('Not found.');
+    error.code = 'ENOENT';
+    return Promise.reject(error);
+  }
   return stat(filePath).then(info => {
     const size = info.size;
     const isVideo = type.startsWith('video/');
@@ -240,7 +250,7 @@ export function createHandler({ client, model = process.env.OPENAI_MODEL || 'gpt
     
     // Health check
     if (req.method === 'GET' && path === '/api/health') {
-      return json(res, 200, { app: 'social-engine', status: 'ok', assetVersion: 1, profileName: profile?.name || 'Galleypost' });
+      return json(res, 200, { app: 'galleypost', status: 'ok', assetVersion: 1, profileName: profile?.name || 'Galleypost' });
     }
 
     if (path === '/api/instagram/status' || path === '/api/instagram/preview' || path === '/api/instagram/publish') {
@@ -266,6 +276,7 @@ export function createHandler({ client, model = process.env.OPENAI_MODEL || 'gpt
         return json(res, 200, { profile, hasCustomProfile: profileLoaded && profile?.id !== 'default' });
       }
       if (req.method === 'POST') {
+        if (req.headers['content-type']?.split(';')[0] !== 'application/json') return json(res, 415, { error: 'Send JSON content.' });
         try {
           const body = await readJson(req);
           const validation = validateProfile(body);
@@ -279,7 +290,7 @@ export function createHandler({ client, model = process.env.OPENAI_MODEL || 'gpt
           studio = studioHandler({ client, apiKey, model, ...studioOptions, profile });
           return json(res, 200, { success: true, profile });
         } catch (e) {
-          return json(res, 500, { error: 'Could not save profile: ' + e.message });
+          return json(res, e.status || 500, { error: e.status ? e.message : 'Could not save profile: ' + e.message });
         }
       }
       return json(res, 405, { error: 'Method not allowed.' });
@@ -287,6 +298,7 @@ export function createHandler({ client, model = process.env.OPENAI_MODEL || 'gpt
     
     // Extract brand info from URL
     if (path === '/api/profile/extract' && req.method === 'POST') {
+      if (req.headers['content-type']?.split(';')[0] !== 'application/json') return json(res, 415, { error: 'Send JSON content.' });
       try {
         const body = await readJson(req);
         const url = body?.url;
@@ -296,7 +308,7 @@ export function createHandler({ client, model = process.env.OPENAI_MODEL || 'gpt
         const result = await extractBrandFromWebsite(url);
         return json(res, result.success ? 200 : 502, result);
       } catch (e) {
-        return json(res, 500, { error: 'Extraction failed: ' + e.message });
+        return json(res, e.status || 500, { error: e.status ? e.message : 'Extraction failed: ' + e.message });
       }
     }
     
@@ -311,10 +323,18 @@ export function createHandler({ client, model = process.env.OPENAI_MODEL || 'gpt
     
     // Load a specific example profile
     if (path === '/api/profiles/load' && req.method === 'POST') {
+      if (req.headers['content-type']?.split(';')[0] !== 'application/json') return json(res, 415, { error: 'Send JSON content.' });
       try {
         const body = await readJson(req);
         const profileId = body?.id;
-        const profileFile = join(root, 'profiles', `${profileId}.json`);
+        if (typeof profileId !== 'string' || !/^[a-z0-9][a-z0-9_-]{0,64}$/i.test(profileId)) {
+          return json(res, 400, { error: 'Choose a valid profile.' });
+        }
+        const profilesDir = resolve(root, 'profiles');
+        const profileFile = resolve(profilesDir, `${profileId}.json`);
+        if (!isInside(profilesDir, profileFile)) return json(res, 400, { error: 'Choose a valid profile.' });
+        try { await access(profileFile); }
+        catch { return json(res, 404, { error: 'That profile is not available.' }); }
         const newProfile = await loadBrandProfile(profileFile);
         // Save as the active profile
         await saveBrandProfile(newProfile, profilePath);
@@ -322,7 +342,7 @@ export function createHandler({ client, model = process.env.OPENAI_MODEL || 'gpt
         studio = studioHandler({ client, apiKey, model, ...studioOptions, profile });
         return json(res, 200, { success: true, profile });
       } catch (e) {
-        return json(res, 500, { error: 'Could not load profile: ' + e.message });
+        return json(res, e.status || 500, { error: e.status ? e.message : 'Could not load profile: ' + e.message });
       }
     }
     
@@ -375,7 +395,10 @@ export function createHandler({ client, model = process.env.OPENAI_MODEL || 'gpt
     if (!asset) return json(res, 404, { error: 'Not found.' });
     try {
       await sendAsset(req, res, asset[0], asset[1]);
-    } catch { json(res, 500, { error: 'Could not read the application file.' }); }
+    } catch (error) {
+      if (error && (error.code === 'ENOENT' || error.code === 'ENOTDIR')) return json(res, 404, { error: 'Not found.' });
+      json(res, 500, { error: 'Could not read the application file.' });
+    }
   };
 }
 
