@@ -144,14 +144,23 @@ test('rejects incomplete or overlong model output', async () => {
 
 
 test('serves each Guide screenshot as an image', async () => {
-  assert.ok(GUIDE_ASSET_PATHS.length >= 7);
-  for (const path of GUIDE_ASSET_PATHS) {
+  const images = GUIDE_ASSET_PATHS.filter(path => /\.(png|webp|jpe?g)$/i.test(path));
+  assert.ok(images.length >= 7);
+  for (const path of images) {
     const image = await fetch(`${base}${path}`);
     assert.equal(image.status, 200, path);
-    assert.match(image.headers.get('content-type') || '', /^image\/(png|webp)\b/, path);
+    assert.match(image.headers.get('content-type') || '', /^image\/(png|webp|jpeg)\b/, path);
     const bytes = Buffer.from(await image.arrayBuffer());
     assert.ok(bytes.length > 500, path);
   }
+});
+
+test('serves the Guide walkthrough as video/mp4', async () => {
+  const video = await fetch(`${base}/assets/guide/walkthrough.mp4`);
+  assert.equal(video.status, 200);
+  assert.match(video.headers.get('content-type') || '', /^video\/mp4\b/);
+  const bytes = Buffer.from(await video.arrayBuffer());
+  assert.ok(bytes.length > 1000);
 });
 
 test('example placeholder keys explain optional AI setup without contacting OpenAI', async () => {

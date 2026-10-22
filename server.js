@@ -1,7 +1,8 @@
 
 import { createServer } from 'node:http';
 import { timingSafeEqual } from 'node:crypto';
-import { readFile, writeFile, mkdir, access } from 'node:fs/promises';
+import { createReadStream } from 'node:fs';
+import { readFile, writeFile, mkdir, access, stat } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { dirname, extname, join } from 'node:path';
 import OpenAI from 'openai';
@@ -44,16 +45,58 @@ export const GUIDE_ASSET_PATHS = [
   '/assets/guide/linkedin.webp',
   '/assets/guide/instagram.webp',
   '/assets/guide/library.webp',
-  '/assets/guide/settings.webp'
+  '/assets/guide/settings.webp',
+  '/assets/guide/walkthrough.mp4',
+  '/assets/guide/walkthrough.jpg'
 ];
-const GUIDE_ASSET = /^\/assets\/guide\/[a-z0-9][a-z0-9._-]{0,80}\.(png|webp)$/i;
+const GUIDE_ASSET = /^\/assets\/guide\/[a-z0-9][a-z0-9._-]{0,80}\.(png|webp|jpe?g|mp4)$/i;
+const GUIDE_TYPES = { '.webp': 'image/webp', '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.mp4': 'video/mp4' };
 for (const path of GUIDE_ASSET_PATHS) {
-  assets.set(path, [path.slice(1), path.endsWith('.webp') ? 'image/webp' : 'image/png']);
+  assets.set(path, [path.slice(1), GUIDE_TYPES[extname(path).toLowerCase()] || 'application/octet-stream']);
 }
 function staticAsset(path) {
   if (assets.has(path)) return assets.get(path);
   if (!GUIDE_ASSET.test(path)) return null;
-  return [path.slice(1), extname(path).toLowerCase() === '.webp' ? 'image/webp' : 'image/png'];
+  return [path.slice(1), GUIDE_TYPES[extname(path).toLowerCase()] || 'application/octet-stream'];
+}
+function sendAsset(req, res, rel, type) {
+  const filePath = join(root, rel);
+  return stat(filePath).then(info => {
+    const size = info.size;
+    const isVideo = type.startsWith('video/');
+    const cache = (type.startsWith('image/') || isVideo) ? 'public, max-age=86400' : 'no-store';
+    if (req.method === 'HEAD') {
+      res.writeHead(200, { 'Content-Type': type, 'Content-Length': size, 'Accept-Ranges': isVideo ? 'bytes' : 'none', 'Cache-Control': cache });
+      return res.end();
+    }
+    const range = isVideo ? req.headers.range : null;
+    if (range) {
+      const m = /^bytes=(\d*)-(\d*)$/.exec(range);
+      if (!m) { res.writeHead(416); return res.end(); }
+      const start = m[1] ? Number(m[1]) : 0;
+      const end = m[2] ? Number(m[2]) : size - 1;
+      if (!Number.isInteger(start) || !Number.isInteger(end) || start >= size || end >= size || start > end) {
+        res.writeHead(416, { 'Content-Range': `bytes */${size}` });
+        return res.end();
+      }
+      res.writeHead(206, {
+        'Content-Type': type,
+        'Content-Range': `bytes ${start}-${end}/${size}`,
+        'Accept-Ranges': 'bytes',
+        'Content-Length': end - start + 1,
+        'Cache-Control': cache
+      });
+      createReadStream(filePath, { start, end }).pipe(res);
+      return;
+    }
+    res.writeHead(200, {
+      'Content-Type': type,
+      'Content-Length': size,
+      'Accept-Ranges': isVideo ? 'bytes' : 'none',
+      'Cache-Control': cache
+    });
+    createReadStream(filePath).pipe(res);
+  });
 }
 
 function json(res, status, body) {
@@ -331,9 +374,7 @@ export function createHandler({ client, model = process.env.OPENAI_MODEL || 'gpt
     const asset = staticAsset(path);
     if (!asset) return json(res, 404, { error: 'Not found.' });
     try {
-      const file = await readFile(join(root, asset[0]));
-      res.writeHead(200, { 'Content-Type': asset[1], 'Cache-Control': 'no-store' });
-      res.end(req.method === 'HEAD' ? undefined : file);
+      await sendAsset(req, res, asset[0], asset[1]);
     } catch { json(res, 500, { error: 'Could not read the application file.' }); }
   };
 }
