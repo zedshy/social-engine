@@ -42,7 +42,7 @@ test('serves the existing frontend but not local secrets', async () => {
   }
   const health = await fetch(`${base}/api/health`);
   const healthBody = await health.json();
-  assert.equal(healthBody.app, 'social-engine');
+  assert.equal(healthBody.app, 'galleypost');
   assert.equal(healthBody.status, 'ok');
   assert.equal(healthBody.assetVersion, 1);
   assert.equal(healthBody.profileName, 'London Tech Community');

@@ -62,7 +62,7 @@ test('live publish creates a container, waits until it is ready, then publishes'
       return jsonResponse({ error: { message: 'unexpected' } }, 500);
     }
   });
-  const result = await publisher.publish({ caption: 'Posted from Social Engine.', imageUrl: 'https://cdn.example.com/meetup.jpg' });
+  const result = await publisher.publish({ caption: 'Posted from Galleypost.', imageUrl: 'https://cdn.example.com/meetup.jpg' });
   assert.equal(result.status, 200);
   assert.equal(result.body.published, true);
   assert.equal(result.body.dryRun, false);
@@ -70,7 +70,7 @@ test('live publish creates a container, waits until it is ready, then publishes'
   assert.equal(result.body.containerId, '101');
   assert.deepEqual(calls.map(call => call.init.method), ['POST', 'GET', 'GET', 'POST']);
   assert.equal(calls[0].url, 'https://graph.instagram.com/v22.0/17841400000000000/media');
-  assert.deepEqual(JSON.parse(calls[0].init.body), { image_url: 'https://cdn.example.com/meetup.jpg', caption: 'Posted from Social Engine.' });
+  assert.deepEqual(JSON.parse(calls[0].init.body), { image_url: 'https://cdn.example.com/meetup.jpg', caption: 'Posted from Galleypost.' });
   assert.equal(calls[1].url, 'https://graph.instagram.com/v22.0/101?fields=status_code');
   assert.deepEqual(JSON.parse(calls[3].init.body), { creation_id: '101' });
   for (const call of calls) {

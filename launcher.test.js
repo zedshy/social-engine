@@ -46,7 +46,7 @@ test('dependency download failure has a useful explanation', t => {
   assert.match(r.stdout, /Installing dependencies/); assert.match(r.stderr, /Check your internet connection/);
 });
 test('already-running Galleypost server is reopened without starting another process', t => {
-  const f = fixture(t, { curl: 'echo \'{"app":"social-engine"}\'', node: 'echo must-not-start; exit 1' });
+  const f = fixture(t, { curl: 'echo \'{"app":"galleypost"}\'', node: 'echo must-not-start; exit 1' });
   const r = f.run(); assert.equal(r.status, 0);
   assert.match(r.stdout, /already running/); assert.match(r.stdout, /browser-opened/);
   assert.doesNotMatch(r.stdout, /must-not-start/);

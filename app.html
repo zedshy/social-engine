@@ -398,7 +398,7 @@
   .lib input[type=text] { padding: 6px 8px; font-size: 13px; }
   .lib label.chk { display: flex; gap: 8px; align-items: center; font-size: 12px; font-weight: 500; color: var(--text-2); }
   .phototools { margin-top: 10px; max-width: 320px; }
-  .draft .phototools { max-width: 300px; }
+  .draft-card .phototools { max-width: 300px; }
   .srcnote { font-size: 12px; padding: 6px 8px; margin-top: 8px; background: var(--surface-2); border-left: 2px solid var(--line-2); color: var(--text-2); }
   .srcnote.photo { border-left-color: var(--good); } .srcnote.warn { border-left-color: var(--accent); color: var(--accent); background: var(--bad-bg); } .srcnote.notice { border-left-color: var(--warn); color: var(--warn); background: var(--warn-bg); }
   .picker { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; padding: 8px; border: 1px solid var(--line); background: var(--bg-2); border-radius: 8px; }
@@ -427,10 +427,10 @@
   [hidden] { display: none !important; }
   .intro { padding: 14px 16px; }
   .intro p { margin: 6px 0 0; color: var(--muted); }
-  .draft { padding: 16px; display: grid; grid-template-columns: minmax(260px, 1fr) 300px; gap: 16px; }
-  .draft canvas { max-width: 300px; }
-  .draft .stage .fields, .draft .hint { max-width: 300px; }
-  @media (max-width: 860px) { .draft { grid-template-columns: 1fr; } }
+  .draft-card { padding: 16px; display: grid; grid-template-columns: minmax(260px, 1fr) 300px; gap: 16px; }
+  .draft-card canvas { max-width: 300px; }
+  .draft-card .stage .fields, .draft-card .hint { max-width: 300px; }
+  @media (max-width: 860px) { .draft-card { grid-template-columns: 1fr; } }
 
   .guide { max-width: 720px; }
   .doc h2 { font-size: 16px; letter-spacing: -.02em; font-weight: 600; margin: 0 0 8px; color: var(--ink); text-transform: none; border: 0; padding: 0; }
@@ -513,6 +513,10 @@
     .topbar { height: auto; padding: 8px 12px; flex-wrap: wrap; }
     .stats { grid-template-columns: 1fr 1fr; }
     main { padding: 16px; }
+    .posts-table .col-channel, .posts-table .col-check, .posts-table .col-updated { display: none; }
+    .posts-table .col-action { width: 42%; }
+    .row-actions { flex-wrap: wrap; }
+    .libgrid { grid-template-columns: minmax(0, 1fr); }
   }
 </style>
 </head>
@@ -1868,9 +1872,9 @@
         h('button', { type: 'button', class: 'btn sm', text: p.posted ? 'Mark as not posted' : 'Mark as posted', onclick: function () { p.posted = !p.posted; if (p.posted) { log(d.label + ' marked as posted'); ensureTracked(d.id); } save(); renderPosts(); renderDash(); } })));
     var cv = h('canvas', { id: 'cv-' + d.id, width: 1080, height: 1350, role: 'img', 'aria-label': d.label + ' LinkedIn image preview' });
     var headline = h('input', { type: 'text', maxlength: 60, 'aria-label': 'Headline on the image', oninput: function () { p.headline = headline.value; save(); paint(d.id); } }); headline.value = p.headline || '';
-    var tagline = h('input', { type: 'text', maxlength: 50, 'aria-label': 'Line under the headline', oninput: function () { p.tagline = tagline.value; save(); paint(d.id); } }); tagline.value = p.tagline == null ? 'Safe. Reliable. Efficient.' : p.tagline;
+    var tagline = h('input', { type: 'text', maxlength: 50, 'aria-label': 'Line under the headline', oninput: function () { p.tagline = tagline.value; save(); paint(d.id); } }); tagline.value = p.tagline == null ? (brand && brand.tagline) || 'Connecting London\'s tech builders' : p.tagline;
     if (p.tagline == null) p.tagline = tagline.value;
-    var correction = h('textarea', { placeholder: 'Something wrong? e.g. only the right-hand door should be open', 'aria-label': 'What to fix in the image' });
+    var correction = h('textarea', { placeholder: 'Something wrong? e.g. the stage should show workshop tables', 'aria-label': 'What to fix in the image' });
     var brief = img && img.brief ? h('details', { style: 'margin-top:8px;max-width:380px' }, h('summary', { text: 'Image brief used' }), h('ul', null, h('li', { text: 'Must show:' }), (function () { var u = h('ul'); img.brief.mustShow.forEach(function (x) { u.appendChild(h('li', { text: x })); }); return u; })(), h('li', { text: 'Must not show:' }), (function () { var u = h('ul'); img.brief.mustNotShow.forEach(function (x) { u.appendChild(h('li', { text: x })); }); return u; })())) : null;
     var right = h('div', { class: 'stage' }, cv,
       h('div', { class: 'fields' }, h('label', { text: 'Headline on the image' }), headline, h('label', { text: 'Line under it' }), tagline),
@@ -2105,7 +2109,7 @@
   function photoNote(slot) {
     if (!slot || !slot.source) return { text: 'AI-generated illustration. Have your brand check it before it is published.', cls: '' };
     if (slot.source === 'around') return { text: 'Real photo “' + slot.name + '” with an AI-generated scene built around it. Check that the subject still matches the original, and that you have permission to publish it.', cls: 'notice' };
-    if (slot.source === 'edited') return { text: 'Real photo “' + slot.name + '”, edited with AI. Check that the equipment and details still match the original.', cls: 'notice' };
+    if (slot.source === 'edited') return { text: 'Real photo “' + slot.name + '”, edited with AI. Check that the subject and details still match the original.', cls: 'notice' };
     return slot.cleared ? { text: 'Real photo “' + slot.name + '” · marked cleared for public use.', cls: 'photo' } : { text: 'Real photo “' + slot.name + '” · permission to publish is NOT confirmed. Check before posting.', cls: 'warn' };
   }
   function photoTools(o) {
@@ -2174,7 +2178,7 @@
       try {
         var out = await post('/api/studio/image', { mode: 'edit', scene: 'custom', extra: text, quality: prefs.quality, reference: sl.dataUrl, aspect: sl.img ? (sl.img.width > sl.img.height * 1.1 ? 'landscape' : sl.img.height > sl.img.width * 1.1 ? 'portrait' : 'square') : 'portrait', story: o.story ? o.story() : undefined });
         sl.img = await loadImage(out.image); sl.dataUrl = out.image; sl.source = 'edited'; instr.value = '';
-        o.repaint(); refresh(); o.status('Edited at ' + clock(Date.now()) + '. Check the equipment and details against the original.', 'ok'); log('Edited a library photo: ' + text.slice(0, 60));
+        o.repaint(); refresh(); o.status('Edited at ' + clock(Date.now()) + '. Check the subject and details against the original.', 'ok'); log('Edited a library photo: ' + text.slice(0, 60));
       } catch (e) { o.status(e.message, 'err'); }
       busy = false; editBtn.disabled = false;
     }
@@ -2355,7 +2359,7 @@
       (img && !img.source) ? h('div', { class: 'fields' }, correction, h('button', { id: 'fixc-' + i, type: 'button', class: 'btn sm', style: 'margin-top:8px', text: 'Fix and remake', onclick: function () { var c = correction.value.trim(); if (!c) { chatStamp(i, 'Say what is wrong first.', 'err'); return; } chatImage(i, c); } })) : null,
       brief, h('div', { id: 'stc-' + i, class: 'status', role: 'status', 'aria-live': 'polite', style: 'max-width:340px;margin-top:8px' }),
       h('p', { class: 'hint', text: 'Images the studio makes are AI-generated illustrations: check them before publishing. Instagram: Open in Instagram uses your logged-in session; Publish via API dry-runs unless tokens are set.' }));
-    return h('article', { class: 'glass draft' }, left, right);
+    return h('article', { class: 'glass draft-card' }, left, right);
   }
   function renderChat() {
     var box = $('thread'); if (!box) return; box.textContent = '';
