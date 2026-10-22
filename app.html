@@ -186,6 +186,7 @@
   .posts-table { width: 100%; border-collapse: collapse; font-size: 13px; }
   .posts-table th { text-align: left; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 500; padding: 8px 10px; border-bottom: 1px solid var(--line); }
   .posts-table td { padding: 9px 10px; border-bottom: 1px solid var(--line); color: var(--text-2); vertical-align: middle; }
+  .posts-table tbody tr { cursor: pointer; }
   .posts-table tr:hover td { background: var(--surface-2); }
   .posts-table .mono { font-family: var(--mono); font-size: 12px; color: var(--muted); }
   .posts-table .title { color: var(--ink); font-weight: 500; }
@@ -442,21 +443,26 @@
 
 <div class="shell">
   <aside class="side">
-    <div class="brand"><img id="brandLogo" src="/assets/brand/logo-reversed.svg" alt="Social Engine"></div>
+    <div class="ws-switch">
+      <label>Workspace</label>
+      <div class="brand"><img id="brandLogo" src="/assets/brand/logo-reversed.svg" alt="Social Engine"></div>
+      <select id="brandSwitch" aria-label="Active brand profile"></select>
+    </div>
     <nav class="nav" aria-label="Main">
-      <button type="button" data-view="dash" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="2"/><rect x="14" y="3" width="7" height="5" rx="2"/><rect x="14" y="12" width="7" height="9" rx="2"/><rect x="3" y="16" width="7" height="5" rx="2"/></svg><span>Dashboard</span></button>
-      <button type="button" data-view="brand"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3"/><path d="M5 20a7 7 0 0114 0"/><path d="M19 8l2 2-2 2M5 8L3 10l2 2"/></svg><span>Brand Setup</span></button>
-      <button type="button" data-view="studio"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.8 4.7L18.5 9.5l-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8z"/><path d="M19 15l.8 2.1 2.2.9-2.2.9L19 21l-.8-2.1-2.2-.9 2.2-.9z"/></svg><span>Content Studio</span></button>
-      <button type="button" data-view="library"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16"/><circle cx="9" cy="10" r="2"/><path d="M3 17l5-4 4 3 3-2 6 4"/></svg><span>Post Library</span></button>
-      <button type="button" data-view="settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.8l.1.1a2 2 0 01-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.8-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 01-4 0v-.1a1.7 1.7 0 00-1.1-1.5 1.7 1.7 0 00-1.8.3l-.1.1a2 2 0 01-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.8 1.7 1.7 0 00-1.5-1H3a2 2 0 010-4h.1a1.7 1.7 0 001.5-1 1.7 1.7 0 00-.3-1.8l-.1-.1a2 2 0 012.8-2.8l.1.1a1.7 1.7 0 001.8.3H9a1.7 1.7 0 001-1.5V3a2 2 0 014 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.8-.3l.1-.1a2 2 0 012.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.8V9c.3.6.9 1 1.5 1.1H21a2 2 0 010 4h-.1a1.7 1.7 0 00-1.5 1z"/></svg><span>Settings</span></button>
+      <button type="button" data-view="dash" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg><span>Dashboard</span><kbd>G D</kbd></button>
+      <button type="button" data-view="studio"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"/></svg><span>Studio</span><kbd>G S</kbd></button>
+      <button type="button" data-view="library"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="1.5"/><circle cx="9" cy="10" r="2"/><path d="M3 17l5-4 4 3 3-2 6 4"/></svg><span>Library</span><kbd>G L</kbd></button>
+      <button type="button" data-view="brand"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3"/><path d="M5 20a7 7 0 0114 0"/></svg><span>Brand</span><kbd>G B</kbd></button>
+      <button type="button" data-view="settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg><span>Settings</span><kbd>G T</kbd></button>
       <div class="nav-sub">
-        <button type="button" data-view="assistant"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/><path d="M8 9h8M8 12.5h5"/></svg><span>Assistant</span></button>
-        <button type="button" data-view="analytics"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg><span>Analytics</span></button>
-        <button type="button" data-view="guide"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h10a4 4 0 014 4v12H9a4 4 0 01-4-4z"/><path d="M5 16a4 4 0 014-4h10"/></svg><span>Guide</span></button>
+        <button type="button" data-view="assistant"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/><path d="M8 9h8M8 12.5h5"/></svg><span>Assistant</span><kbd>G A</kbd></button>
+        <button type="button" data-view="analytics"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg><span>Analytics</span><kbd>G N</kbd></button>
+        <button type="button" data-view="guide"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h10a4 4 0 014 4v12H9a4 4 0 01-4-4z"/><path d="M5 16a4 4 0 014-4h10"/></svg><span>Guide</span><kbd>G H</kbd></button>
       </div>
     </nav>
     <div class="grow"></div>
     <div class="foot">
+      <button type="button" id="cmdkOpen">Command palette <kbd>⌘K</kbd></button>
       <a href="/classic">Classic view</a>
     </div>
   </aside>
@@ -464,79 +470,79 @@
   <div class="workspace">
   <header class="topbar">
     <div class="brand-switch">
-      <strong>Brand</strong>
-      <select id="brandSwitch" aria-label="Active brand profile"></select>
+      <strong>London</strong>
+      <span style="color:var(--muted);font-size:13px">Tech community desk</span>
     </div>
     <div class="spacer"></div>
+    <button type="button" class="btn sm" id="cmdkHint">Search <kbd style="margin-left:6px">⌘K</kbd></button>
     <span id="liveBadge" class="mode-badge demo"><i class="dot"></i> Demo mode</span>
-    <button type="button" class="btn primary sm" data-go="studio">Generate post</button>
   </header>
   <div id="dropVeil" aria-hidden="true" hidden><div class="box"><strong id="dropTitle"></strong><span id="dropSub"></span></div></div>
   <div id="dropToast" role="status" aria-live="polite" hidden></div>
   <div id="toastStack" class="toast-stack" aria-live="polite"></div>
+  <div id="cmdk" class="cmdk" hidden>
+    <div class="box" role="dialog" aria-label="Command palette">
+      <input id="cmdkInput" type="text" placeholder="Go to a page or run an action…" autocomplete="off">
+      <div class="list" id="cmdkList"></div>
+    </div>
+  </div>
   <main>
     <!-- ============ DASHBOARD ============ -->
     <section id="view-dash" class="view" aria-labelledby="dash-h">
-      <div class="hero">
-        <div class="hero-art" aria-hidden="true"><i class="slab"></i><i class="wedge"></i></div>
-        <div class="hello">
+      <div class="page-h">
+        <div>
           <div class="eyebrow" id="today"></div>
           <h1 id="dash-h"></h1>
-          <p id="dashIntro">Your AI content desk. It researches what is happening in your industry, writes a week of fact-checked LinkedIn posts, and prepares the images.</p>
-          <div class="row" style="margin-top:18px"><button type="button" class="btn primary" data-go="studio">Generate post</button><button type="button" class="btn" data-go="assistant">Ask the Assistant</button></div>
+          <p id="dashIntro">Research, write and fact-check a week of posts for London’s developer community.</p>
         </div>
-        <div class="next glass" id="next"></div>
+        <div class="next" id="next"></div>
       </div>
       <div class="stats" id="stats"></div>
-      <div class="kpi-row">
+      <div class="data-grid">
         <div class="glass pad">
-          <div class="panel-h"><h2>Activity</h2><span class="badge ai">this week</span></div>
-          <svg class="spark" id="spark" viewBox="0 0 320 42" preserveAspectRatio="none" aria-hidden="true">
-            <defs><linearGradient id="sparkGrad" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#8b5cf6"/><stop offset="100%" stop-color="#22d3ee"/></linearGradient></defs>
-            <path id="sparkPath" d="M0 32 L320 32"/>
+          <div class="panel-h"><h2>Recent posts</h2><button type="button" class="btn sm" data-go="library">Library</button></div>
+          <table class="posts-table">
+            <thead><tr><th>Title</th><th>Channel</th><th>Status</th><th>Fact-check</th><th>Updated</th></tr></thead>
+            <tbody id="recentPosts"></tbody>
+          </table>
+        </div>
+        <div class="glass pad">
+          <div class="panel-h"><h2>Activity</h2><span class="mono" style="font-size:11px;color:var(--muted)">12h</span></div>
+          <svg class="spark" id="spark" viewBox="0 0 320 72" preserveAspectRatio="none" aria-hidden="true">
+            <path id="sparkPath" d="M0 48 L320 48" fill="none" stroke="currentColor" stroke-width="1.25"/>
           </svg>
           <div class="log" id="log"></div>
         </div>
-        <div class="glass pad">
-          <div class="panel-h"><h2>Recent posts</h2><button type="button" class="btn sm" data-go="library">Post library</button></div>
-          <div class="recent" id="recentPosts"></div>
-        </div>
+      </div>
+      <div class="glass pad" style="margin-top:12px">
+        <div class="panel-h"><h2>Pipeline</h2><span class="hint" style="margin:0">Draft · Fact-check · Ready · Scheduled</span></div>
+        <div class="kanban pipe" id="pipe"></div>
       </div>
       <div class="two">
         <div class="glass pad"><div class="panel-h"><h2>This week</h2><button type="button" class="btn sm" data-go="studio">Open studio</button></div><div class="timeline" id="timeline"></div>
-          <div class="legend"><span><i class="dot" style="color:var(--slate)"></i> done</span><span><i class="dot" style="color:var(--signal)"></i> needs a look</span><span>Idea · Written · Fact-checked · Image · Posted</span></div></div>
-        <div class="glass pad"><div class="panel-h"><h2>Fresh from the research</h2><button type="button" class="btn sm" id="dashFind">Refresh</button></div><div class="mini" id="fresh"></div></div>
-      </div>
-      <div class="glass pad" style="margin-top:16px">
-        <div class="panel-h"><h2>How every post stays accurate</h2><span class="badge ai">AI + checks</span></div>
-        <div class="pipe" id="pipe"></div>
-        <p class="hint" style="max-width:none;margin-top:14px">Nothing is written from memory. Each post is built only from sourced facts, then checked line by line against those facts before you see it.</p>
+          <div class="legend"><span>Idea · Written · Fact-checked · Image · Posted</span></div></div>
+        <div class="glass pad"><div class="panel-h"><h2>From research</h2><button type="button" class="btn sm" id="dashFind">Refresh</button></div><div class="mini" id="fresh"></div></div>
       </div>
     </section>
 
     <!-- ============ STUDIO ============ -->
     <section id="view-studio" class="view" aria-labelledby="studio-h" hidden>
-      <div class="page-h"><div><div class="eyebrow">Content Studio</div><h1 id="studio-h" style="margin-top:6px">Plan and write your week</h1><p>Find what matters, choose three ideas, and let the studio write and check the posts.</p></div></div>
-      <div class="stepper" id="studioStepper" aria-label="Pipeline status">
-        <div class="st" data-step="research"><b>1 · Research</b><span id="stepResearch">Waiting</span></div>
-        <div class="st" data-step="write"><b>2 · Write</b><span id="stepWrite">Waiting</span></div>
-        <div class="st" data-step="check"><b>3 · Fact-check</b><span id="stepCheck">Waiting</span></div>
-        <div class="st" data-step="lint"><b>4 · Lint</b><span id="stepLint">Waiting</span></div>
-      </div>
-
-      <div class="blk" style="margin-top:0"><h2>1 · Your week</h2>
+      <div class="page-h"><div><div class="eyebrow">Studio</div><h1 id="studio-h" style="margin-top:6px">Plan and write the week</h1><p>Brief on the left. Live post preview on the right. Pipeline is a checklist, not a ceremony.</p></div></div>
+      <div class="studio-split">
+      <div class="studio-main">
+      <div class="blk" style="margin-top:0"><h2>Brief</h2>
         <div class="week" id="week"></div>
-        <div class="row" style="margin-top:14px">
+        <div class="row" style="margin-top:12px">
           <button id="auto" type="button" class="btn">Auto-fill week</button>
-          <button id="writeWeek" type="button" class="btn primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.8 4.7L18.5 9.5l-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8z"/></svg>Write my week</button>
+          <button id="writeWeek" type="button" class="btn primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"/></svg>Write week</button>
           <button id="clearWeek" type="button" class="btn sm">Clear</button>
           <span id="weekStatus" class="status" role="status" aria-live="polite"></span>
         </div>
       </div>
 
-      <div class="blk"><h2>2 · Ideas worth posting about</h2>
+      <div class="blk"><h2>Ideas</h2>
         <div class="row" style="margin-bottom:14px">
-          <button id="find" type="button" class="btn primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>Find latest topics</button>
+          <button id="find" type="button" class="btn primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>Find latest topics</button>
           <button id="findAll" type="button" class="btn" title="Runs all three research searches at once (3x the cost)">Search all areas</button>
           <button id="addSrc" type="button" class="btn">From a link or screenshot</button>
           <button id="addOwn" type="button" class="btn">Add your own</button>
@@ -571,7 +577,29 @@
         <div id="ideas" class="ideas"></div>
       </div>
 
-      <div class="blk"><h2 id="h-posts">3 · Posts</h2><div id="posts" class="posts"></div></div>
+      <div class="blk"><h2 id="h-posts">Posts</h2><div id="posts" class="posts"></div></div>
+      </div>
+      <aside class="studio-rail">
+        <div class="glass pad">
+          <div class="panel-h"><h2>Pipeline</h2></div>
+          <div class="check-list" id="studioStepper" aria-label="Pipeline status">
+            <div class="st" data-step="research"><i class="mark"></i><b>Research</b><span id="stepResearch">Waiting</span></div>
+            <div class="st" data-step="write"><i class="mark"></i><b>Write</b><span id="stepWrite">Waiting</span></div>
+            <div class="st" data-step="check"><i class="mark"></i><b>Fact-check</b><span id="stepCheck">Waiting</span></div>
+            <div class="st" data-step="lint"><i class="mark"></i><b>Lint</b><span id="stepLint">Waiting</span></div>
+          </div>
+        </div>
+        <div class="li-card" id="studioPreview">
+          <div class="who"><div class="avatar">LT</div><div><b>London Tech Community</b><span>LinkedIn · preview</span></div></div>
+          <div class="body empty" id="previewBody">Pick an idea and write a post. The preview will look like a LinkedIn card.</div>
+          <div class="tags" id="previewTags"></div>
+        </div>
+        <div class="li-card" id="xPreview" style="padding-top:12px">
+          <div class="who"><div class="avatar">LT</div><div><b>@londontech</b><span>X · preview</span></div></div>
+          <div class="body empty" id="previewX">Short channel cut of the same post.</div>
+        </div>
+      </aside>
+      </div>
     </section>
 
     <!-- ============ ASSISTANT ============ -->
@@ -597,7 +625,10 @@
       <div class="page-h"><div><div class="eyebrow">Post library</div><h1 id="library-h" style="margin-top:6px">Drafts and photos</h1><p>This week’s posts live here with their status. Below, add real photos the AI can name and reuse.</p></div></div>
       <div class="glass pad" style="margin-bottom:18px">
         <div class="panel-h"><h2>This week’s posts</h2><button type="button" class="btn sm" data-go="studio">Open studio</button></div>
-        <div class="recent" id="libraryPosts"></div>
+        <table class="posts-table">
+          <thead><tr><th>Title</th><th>Channel</th><th>Status</th><th>Fact-check</th><th>Updated</th></tr></thead>
+          <tbody id="libraryPosts"></tbody>
+        </table>
       </div>
       <div class="glass pad drop" id="drop">
         <div class="row"><input id="libFile" type="file" accept="image/*,.heic,.heif" multiple><span class="hint" style="margin:0;max-width:none">JPEG, PNG, WebP or iPhone HEIC photos. Drag as many as you like anywhere onto this page, or choose files.</span></div>
@@ -833,7 +864,16 @@
   ];
   var KEY = 'social-engine-v2';
   var state = { topics: [], researchedAt: '', week: { mon: null, wed: null, fri: null }, posts: {}, filter: 'all', customs: 0, log: [], chat: [], analytics: [] };
-  var runtime = { options: null, images: {}, busy: {}, dayStatus: {}, finding: false, chatImages: {}, chatBusy: false, chatDocs: [] };
+  var runtime = { options: null, images: {}, busy: {}, dayStatus: {}, finding: false, chatImages: {}, chatBusy: false, chatDocs: [], stepAt: {} };
+  var DEMO_POSTS = [
+    { title: 'London Tech Week adds two community stages', channel: 'LinkedIn', status: 'Ready', cls: 'good', score: '94', updated: '21 Oct 18:12', col: 'ready', body: 'London Tech Week is adding two community stages this year, aimed at first-time attendees and local meetups rather than the main expo floor.\n\nOrganisers say the stages will run workshops from Shoreditch.js, Women Who Code London and Rust London — not keynotes. If you run a meetup, the call for sessions closes Friday.' },
+    { title: 'ONS: UK tech hiring down 2.1% in Q3', channel: 'X', status: 'Fact-check', cls: 'warn', score: '81', updated: '21 Oct 14:04', col: 'check', body: 'ONS figures out this morning: UK tech hiring fell 2.1% in Q3. London still accounts for just over a third of roles, with product and platform jobs the softest.' },
+    { title: 'Shoreditch.js first-timers brief', channel: 'LinkedIn', status: 'Draft', cls: 'draft', score: '—', updated: '20 Oct 09:41', col: 'draft', body: 'Coming to Shoreditch.js for the first time? Doors 18:30, talks 19:00, laptops on shared tables. We publish a one-page brief the morning of every meetup so nobody has to guess the format.' },
+    { title: 'Women Who Code London autumn talks', channel: 'LinkedIn', status: 'Scheduled', cls: 'good', score: '96', updated: '19 Oct 16:20', col: 'sched', body: 'Women Who Code London’s autumn series starts next Wednesday at CodeNode. Three talks, 20 minutes each, then 40 minutes of questions. Tickets are free; 40 seats left.' },
+    { title: 'Rust London: memory talks without the jargon', channel: 'X', status: 'Ready', cls: '', score: '90', updated: '19 Oct 11:08', col: 'ready', body: 'Rust London next Thursday is aimed at people who write TypeScript for a living. Bring a laptop. No ownership slides in the first 15 minutes, promised.' }
+  ];
+  var DEMO_SPARK = [1, 2, 2, 3, 2, 4, 5, 4, 6, 7, 6, 8];
+  function sampleMode() { return DAYS.every(function (d) { return !state.posts[d.id]; }); }
 
   function load() { try { var s = JSON.parse(localStorage.getItem(KEY)); if (s && s.week) state = Object.assign(state, s); } catch (e) {} if (!Array.isArray(state.log)) state.log = []; if (!Array.isArray(state.chat)) state.chat = []; if (!Array.isArray(state.analytics)) state.analytics = []; }
   function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} }
@@ -855,7 +895,7 @@
     eye: '<path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
     send: '<path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4z"/>'
   };
-  function svg(name) { var s = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); s.setAttribute('viewBox', '0 0 24 24'); s.setAttribute('fill', 'none'); s.setAttribute('stroke', 'currentColor'); s.setAttribute('stroke-width', '1.8'); s.setAttribute('stroke-linecap', 'round'); s.setAttribute('stroke-linejoin', 'round'); s.innerHTML = ICON[name]; return s; }
+  function svg(name) { var s = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); s.setAttribute('viewBox', '0 0 24 24'); s.setAttribute('fill', 'none'); s.setAttribute('stroke', 'currentColor'); s.setAttribute('stroke-width', '1.5'); s.setAttribute('stroke-linecap', 'round'); s.setAttribute('stroke-linejoin', 'round'); s.innerHTML = ICON[name]; return s; }
   function setStatus(el, text, kind) { if (!el) return; el.textContent = text; el.className = 'status' + (kind ? ' ' + kind : ''); }
   function clock(ts) { return new Date(ts).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); }
   function nice(date) { if (!date) return ''; var d = new Date(date + 'T12:00:00'); return isNaN(d) ? date : d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }); }
@@ -952,6 +992,49 @@
   }
   document.querySelectorAll('.nav button').forEach(function (b) { b.addEventListener('click', function () { show(b.getAttribute('data-view')); }); });
   document.addEventListener('click', function (e) { var g = e.target.closest && e.target.closest('[data-go]'); if (g) show(g.getAttribute('data-go')); });
+  var CMD = [
+    { keys: 'G D', label: 'Dashboard', run: function () { show('dash'); } },
+    { keys: 'G S', label: 'Studio', run: function () { show('studio'); } },
+    { keys: 'G L', label: 'Library', run: function () { show('library'); } },
+    { keys: 'G B', label: 'Brand', run: function () { show('brand'); } },
+    { keys: 'G T', label: 'Settings', run: function () { show('settings'); } },
+    { keys: 'G A', label: 'Assistant', run: function () { show('assistant'); } },
+    { keys: 'G N', label: 'Analytics', run: function () { show('analytics'); } },
+    { keys: 'G H', label: 'Guide', run: function () { show('guide'); } }
+  ];
+  var pendingG = false;
+  function closeCmdk() { var el = $('cmdk'); if (el) el.hidden = true; }
+  function openCmdk() {
+    var el = $('cmdk'), input = $('cmdkInput'); if (!el) return;
+    el.hidden = false; paintCmdk(''); if (input) { input.value = ''; input.focus(); }
+  }
+  function paintCmdk(q) {
+    var box = $('cmdkList'); if (!box) return; box.textContent = '';
+    var n = (q || '').toLowerCase();
+    CMD.filter(function (c) { return !n || c.label.toLowerCase().indexOf(n) >= 0; }).forEach(function (c, i) {
+      box.appendChild(h('button', { type: 'button', 'aria-selected': i === 0 ? 'true' : 'false', onclick: function () { closeCmdk(); c.run(); } }, c.label, h('span', { class: 'hint', text: c.keys })));
+    });
+    if (!box.childNodes.length) box.appendChild(h('div', { class: 'empty-state', text: 'Nothing matches.' }));
+  }
+  if ($('cmdkOpen')) $('cmdkOpen').addEventListener('click', openCmdk);
+  if ($('cmdkHint')) $('cmdkHint').addEventListener('click', openCmdk);
+  if ($('cmdkInput')) $('cmdkInput').addEventListener('input', function () { paintCmdk(this.value); });
+  if ($('cmdk')) $('cmdk').addEventListener('click', function (e) { if (e.target === $('cmdk')) closeCmdk(); });
+  document.addEventListener('keydown', function (e) {
+    if ((e.metaKey || e.ctrlKey) && (e.key === 'k' || e.key === 'K')) { e.preventDefault(); if ($('cmdk') && !$('cmdk').hidden) closeCmdk(); else openCmdk(); return; }
+    if (e.key === 'Escape') { closeCmdk(); pendingG = false; return; }
+    if ($('cmdk') && !$('cmdk').hidden) {
+      if (e.key === 'Enter') { var sel = $('cmdkList') && $('cmdkList').querySelector('[aria-selected="true"]'); if (sel) { e.preventDefault(); sel.click(); } }
+      return;
+    }
+    var typing = e.target && /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName);
+    if (typing || e.metaKey || e.ctrlKey || e.altKey) return;
+    if (e.key === 'g' || e.key === 'G') { pendingG = true; setTimeout(function () { pendingG = false; }, 800); return; }
+    if (!pendingG) return;
+    pendingG = false;
+    var map = { d: 'dash', s: 'studio', l: 'library', b: 'brand', t: 'settings', a: 'assistant', n: 'analytics', h: 'guide' };
+    if (map[e.key.toLowerCase()]) { e.preventDefault(); show(map[e.key.toLowerCase()]); }
+  });
   $('theme').addEventListener('click', function () {
     var next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
     document.documentElement.setAttribute('data-theme', next); try { localStorage.setItem('social-engine-theme', next); } catch (e) {}
@@ -975,64 +1058,82 @@
     if (unposted.length) return { title: 'Review and publish ' + unposted[0].label, text: 'Check the post, then send it to LinkedIn’s composer. You press Post yourself.', cta: 'Review ' + unposted[0].label, act: function () { show('studio'); $('h-posts').scrollIntoView({ behavior: 'smooth' }); } };
     return { title: 'This week is complete', text: 'All three posts are published. Research fresh topics for next week.', cta: 'Find latest topics', act: function () { show('studio'); findTopics(); } };
   }
+  function lintScore(p) { return Math.max(0, 100 - ((p.lint || []).length) * 12); }
   function renderDash() {
     var hr = new Date().getHours();
-    $('dash-h').textContent = ''; $('dash-h').appendChild(document.createTextNode((hr < 12 ? 'Good morning' : hr < 18 ? 'Good afternoon' : 'Good evening') + '. ')); $('dash-h').appendChild(h('span', { text: 'Ready to plan the week?' }));
+    $('dash-h').textContent = hr < 12 ? 'Morning desk' : hr < 18 ? 'Afternoon desk' : 'Evening desk';
     $('today').textContent = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' });
 
     var n = nextStep(), box = $('next'); box.textContent = '';
-    box.appendChild(h('span', { class: 'badge ai', text: 'Suggested next step' })); box.appendChild(h('h3', { text: n.title })); box.appendChild(h('p', { text: n.text }));
-    box.appendChild(h('button', { type: 'button', class: 'btn primary', text: n.cta, onclick: n.act }));
+    box.appendChild(h('div', { class: 'eyebrow', text: 'Next' }));
+    box.appendChild(h('h3', { text: n.title }));
+    box.appendChild(h('p', { text: n.text }));
+    box.appendChild(h('button', { type: 'button', class: 'btn sm', text: n.cta, onclick: n.act }));
 
+    var sample = sampleMode();
     var written = DAYS.filter(function (d) { return state.posts[d.id]; }).length;
     var clear = DAYS.filter(function (d) { return dayState(d).checked; }).length, flagged = DAYS.filter(function (d) { return dayState(d).flagged; }).length;
-    var scheduled = DAYS.filter(function (d) { return state.posts[d.id] && !state.posts[d.id].posted; }).length;
-    var lintScores = DAYS.map(function (d) {
-      var p = state.posts[d.id]; if (!p) return null;
-      var n = (p.lint || []).length;
-      return Math.max(0, 100 - n * 12);
-    }).filter(function (n) { return n != null; });
+    var scheduled = DAYS.filter(function (d) { return state.posts[d.id] && state.posts[d.id].posted; }).length;
+    var lintScores = DAYS.map(function (d) { return state.posts[d.id] ? lintScore(state.posts[d.id]) : null; }).filter(function (n) { return n != null; });
     var avgLint = lintScores.length ? Math.round(lintScores.reduce(function (a, b) { return a + b; }, 0) / lintScores.length) : '—';
-    var tiles = [
-      ['Posts drafted', written + '<small> / 3</small>', written ? 'This week in the studio' : 'Nothing written yet'],
-      ['Scheduled', String(scheduled), scheduled ? 'Written, not yet posted' : 'Mark a post as posted after you publish'],
-      ['Fact-check pass', written ? Math.round(100 * clear / written) + '<small>%</small>' : '—', written ? clear + ' of ' + written + ' passed with no flags' : 'Runs on every post'],
-      ['Avg lint score', String(avgLint), flagged ? flagged + ' still need a look' : 'Hype, length and source checks']
+    var tiles = sample ? [
+      ['Posts drafted', '12', '+3'],
+      ['Scheduled', '4', '+1'],
+      ['Fact-check pass', '96%', '+2pt'],
+      ['Avg lint score', '91', '+4']
+    ] : [
+      ['Posts drafted', String(written), written ? '+' + written : '0'],
+      ['Scheduled', String(scheduled), scheduled ? '+' + scheduled : '0'],
+      ['Fact-check pass', written ? Math.round(100 * clear / written) + '%' : '—', flagged ? '-' + flagged : '+0'],
+      ['Avg lint score', String(avgLint), flagged ? '-' + flagged : '+0']
     ];
     var s = $('stats'); s.textContent = '';
-    tiles.forEach(function (t) { var el = h('div', { class: 'glass stat' }, h('div', { class: 'eyebrow', text: t[0] }), h('div', { class: 'v' }), h('div', { class: 's', text: t[2] })); el.querySelector('.v').innerHTML = t[1]; s.appendChild(el); });
+    tiles.forEach(function (t, i) {
+      var down = String(t[2]).charAt(0) === '-';
+      var el = h('div', { class: 'stat' }, h('div', { class: 'eyebrow', text: t[0] }), h('div', { class: 'v', text: t[1] }), h('div', { class: 's' }, h('span', { class: 'delta' + (down ? ' down' : ''), text: t[2] }), ' vs last week'));
+      s.appendChild(el);
+    });
     renderSpark();
     renderRecent($('recentPosts'));
     renderStepper();
+    renderKanban();
+    renderPreview();
 
     var tl = $('timeline'); tl.textContent = '';
-    DAYS.forEach(function (d) {
+    var demoWeek = ['London Tech Week adds two community stages', 'Shoreditch.js first-timers brief', 'Women Who Code London autumn talks'];
+    DAYS.forEach(function (d, i) {
       var topic = state.week[d.id], st = dayState(d);
       var steps = h('div', { class: 'steps', 'aria-label': 'Progress' });
-      [['idea', st.idea], ['written', st.written], ['checked', st.checked ? 'on' : st.flagged ? 'warn' : false], ['image', st.image], ['posted', st.posted]].forEach(function (x) { steps.appendChild(h('span', { class: 'step' + (x[1] === 'warn' ? ' warn' : x[1] ? ' on' : ''), title: x[0] })); });
-      tl.appendChild(h('button', { type: 'button', class: 'tl', 'data-go': 'studio' }, h('div', { class: 'd' }, d.label, h('small', { text: d.role })), h('div', { class: 't' + (topic ? '' : ' empty'), text: topic ? topic.title : 'No idea chosen yet' }), steps));
+      [['idea', st.idea || sample], ['written', st.written || sample], ['checked', st.checked ? 'on' : st.flagged ? 'warn' : sample ? 'on' : false], ['image', st.image], ['posted', st.posted || (sample && i === 2)]].forEach(function (x) { steps.appendChild(h('span', { class: 'step' + (x[1] === 'warn' ? ' warn' : x[1] ? ' on' : ''), title: x[0] })); });
+      var title = topic ? topic.title : sample ? demoWeek[i] : 'No idea chosen yet';
+      tl.appendChild(h('button', { type: 'button', class: 'tl', 'data-go': 'studio' }, h('div', { class: 'd' }, d.label, h('small', { text: d.role })), h('div', { class: 't' + (topic || sample ? '' : ' empty'), text: title }), steps));
     });
 
     var f = $('fresh'); f.textContent = '';
     var top = state.topics.slice(0, 4);
-    if (!top.length) f.appendChild(h('div', { class: 'empty-state', style: 'padding:24px 8px', text: 'No research yet. Press Find latest topics in the studio.' }));
+    if (!top.length) {
+      (sample ? DEMO_POSTS.slice(0, 3) : []).forEach(function (t) {
+        f.appendChild(h('div', { class: 'item' }, h('b', { text: t.title }), h('div', { class: 'meta' }, h('span', { class: 'badge', text: t.channel }), h('span', { class: 'mono', text: t.updated }))));
+      });
+      if (!sample) f.appendChild(h('div', { class: 'empty-state', text: 'No research yet. Press Find latest topics in the studio, or drop a PDF onto this page.' }));
+    }
     top.forEach(function (t) {
       var meta = h('div', { class: 'meta' }, h('span', { class: 'badge', text: t.categoryLabel || 'Your own' }));
       if (t.date) meta.appendChild(h('span', { text: nice(t.date) })); if (t.confirmed) meta.appendChild(h('span', { class: 'badge good', text: 'Source confirmed' })); if (t.sensitive) meta.appendChild(h('span', { class: 'badge bad', text: 'Handle with care' }));
       var row = h('div', { class: 'assign' }); DAYS.forEach(function (d) { var on = state.week[d.id] && state.week[d.id].id === t.id; row.appendChild(h('button', { type: 'button', 'aria-pressed': String(Boolean(on)), text: d.short, onclick: function () { assign(d.id, t); } })); });
       f.appendChild(h('div', { class: 'item' }, h('b', { text: t.title }), meta, row));
     });
-
-    var pipe = $('pipe'); pipe.textContent = '';
-    [['search', 'Research', 'live web search'], ['link', 'Source check', 'links opened'], ['pen', 'Write', 'facts only'], ['shield', 'Fact-check', 'line by line'], ['eye', 'Your review', 'you decide'], ['send', 'Post', 'you press Post']].forEach(function (p) {
-      var box2 = h('div', { class: 'p' }); box2.appendChild(svg(p[0])); box2.appendChild(document.createTextNode(p[1])); box2.appendChild(h('em', { text: p[2] })); pipe.appendChild(box2);
-    });
     renderLog();
   }
   function renderLog() {
     var box = $('log'); if (!box) return; box.textContent = '';
-    if (!state.log.length) { box.appendChild(h('div', { class: 'none', text: 'Activity from the studio will appear here.' })); return; }
-    state.log.slice(0, 14).forEach(function (e) { box.appendChild(h('div', null, h('time', { text: clock(e.t) }), h('span', { text: e.text }))); });
+    var rows = state.log.length ? state.log.slice(0, 8) : sampleMode() ? [
+      { t: Date.now() - 50 * 60000, text: 'Fact-checked London Tech Week stages' },
+      { t: Date.now() - 3 * 3600000, text: 'Wrote Wednesday from TechCrunch 21 Oct' },
+      { t: Date.now() - 6 * 3600000, text: 'Researched events and meetups · 8 topics' }
+    ] : [];
+    if (!rows.length) { box.appendChild(h('div', { class: 'none', text: 'Studio actions will list here with timestamps.' })); return; }
+    rows.forEach(function (e) { box.appendChild(h('div', null, h('time', { text: clock(e.t) }), h('span', { text: e.text }))); });
   }
   function renderSpark() {
     var path = $('sparkPath'); if (!path) return;
@@ -1041,21 +1142,67 @@
       var from = Date.now() - (i + 1) * 3600000, to = Date.now() - i * 3600000;
       pts.push(state.log.filter(function (e) { return e.t >= from && e.t < to; }).length);
     }
+    if (sampleMode() && !state.log.length) pts = DEMO_SPARK.slice();
     var max = Math.max(2, Math.max.apply(null, pts));
     var d = pts.map(function (v, i) {
-      var x = (i / 11) * 320, y = 36 - (v / max) * 28;
+      var x = (i / Math.max(1, pts.length - 1)) * 320, y = 64 - (v / max) * 52;
       return (i ? 'L' : 'M') + x.toFixed(1) + ' ' + y.toFixed(1);
     }).join(' ');
     path.setAttribute('d', d);
+    path.setAttribute('fill', 'none');
+    path.setAttribute('stroke', 'currentColor');
+    path.setAttribute('stroke-width', '1.25');
+  }
+  function renderKanban() {
+    var pipe = $('pipe'); if (!pipe) return; pipe.textContent = '';
+    var cols = [
+      { id: 'draft', label: 'Draft' },
+      { id: 'check', label: 'Fact-check' },
+      { id: 'ready', label: 'Ready' },
+      { id: 'sched', label: 'Scheduled' }
+    ];
+    var cards = [];
+    DAYS.forEach(function (d) {
+      var p = state.posts[d.id], st = dayState(d); if (!p && !st.idea) return;
+      var col = st.posted ? 'sched' : st.flagged ? 'check' : st.checked ? 'ready' : 'draft';
+      cards.push({ col: col, title: (p && p.headline) || (state.week[d.id] && state.week[d.id].title) || d.label, meta: d.label + ' · ' + (p ? clock(p.updated || Date.now()) : 'idea') });
+    });
+    if (!cards.length) cards = DEMO_POSTS.map(function (p) { return { col: p.col, title: p.title, meta: p.channel + ' · ' + p.updated }; });
+    cols.forEach(function (c) {
+      var items = cards.filter(function (x) { return x.col === c.id; });
+      var col = h('div', { class: 'col' }, h('h3', null, c.label, h('span', { text: String(items.length) })));
+      items.forEach(function (item) { col.appendChild(h('div', { class: 'card' }, h('b', { text: item.title }), h('div', { class: 'meta', text: item.meta }))); });
+      pipe.appendChild(col);
+    });
+  }
+  function renderPreview() {
+    var body = $('previewBody'), tags = $('previewTags'), x = $('previewX'); if (!body) return;
+    var p = null, topic = null;
+    DAYS.forEach(function (d) { if (!p && state.posts[d.id]) { p = state.posts[d.id]; topic = state.week[d.id]; } });
+    var sample = !p && DEMO_POSTS[0];
+    var text = p ? p.text : sample.body;
+    var hash = p ? (p.hashtags || []).map(function (t) { return '#' + String(t).replace(/^#/, ''); }).join(' ') : '#LondonTechWeek #BuildInPublic';
+    body.className = 'body';
+    body.textContent = text;
+    if (tags) tags.textContent = hash;
+    if (x) { x.className = 'body'; x.textContent = text.split('\n')[0].slice(0, 220); }
   }
   function postChip(d) {
     var p = state.posts[d.id], st = dayState(d);
-    if (p && p.posted) return { label: 'Posted', cls: 'good' };
-    if (st.flagged) return { label: 'Review', cls: 'warn' };
-    if (st.checked) return { label: 'Fact-checked', cls: 'good' };
-    if (st.written) return { label: 'Draft', cls: '' };
-    if (st.idea) return { label: 'Idea', cls: '' };
+    if (p && p.posted) return { label: 'Scheduled', cls: 'good' };
+    if (st.flagged) return { label: 'Fact-check', cls: 'warn' };
+    if (st.checked) return { label: 'Ready', cls: 'good' };
+    if (st.written) return { label: 'Draft', cls: 'draft' };
+    if (st.idea) return { label: 'Draft', cls: 'draft' };
     return { label: 'Empty', cls: '' };
+  }
+  function tableRow(title, channel, status, cls, score, updated) {
+    return h('tr', { onclick: function () { show('studio'); } },
+      h('td', { class: 'title', text: title }),
+      h('td', { text: channel }),
+      h('td', null, h('span', { class: 'pill ' + (cls || ''), text: status })),
+      h('td', { class: 'mono', text: score }),
+      h('td', { class: 'mono', text: updated }));
   }
   function renderRecent(box) {
     if (!box) return;
@@ -1063,12 +1210,17 @@
     var rows = DAYS.map(function (d) {
       var p = state.posts[d.id]; if (!p) return null;
       var chip = postChip(d);
-      return h('div', { class: 'item' }, h('div', null, h('b', { text: p.headline || (state.week[d.id] && state.week[d.id].title) || d.label }), h('div', { class: 's', text: d.label })), h('span', { class: 'badge chip-status ' + chip.cls, text: chip.label }));
+      return tableRow(p.headline || (state.week[d.id] && state.week[d.id].title) || d.label, 'LinkedIn', chip.label, chip.cls, String(lintScore(p)), clock(p.updated || Date.now()));
     }).filter(Boolean);
-    if (!rows.length) { box.appendChild(h('div', { class: 'empty-state', style: 'padding:18px 8px', text: 'No drafts yet. Generate a post from the studio.' })); return; }
+    if (!rows.length) {
+      if (sampleMode()) DEMO_POSTS.forEach(function (p) { box.appendChild(tableRow(p.title, p.channel, p.status, p.cls, p.score, p.updated)); });
+      else box.appendChild(h('tr', null, h('td', { colspan: '5', class: 'empty-state', text: 'No drafts yet. Open Studio and write the week, or drop a PDF onto this page.' })));
+      return;
+    }
     rows.forEach(function (row) { box.appendChild(row); });
   }
   function renderLibraryPosts() { renderRecent($('libraryPosts')); }
+  function stampStep(key, when) { if (!runtime.stepAt[key]) runtime.stepAt[key] = when || clock(Date.now()); }
   function renderStepper() {
     var researched = state.topics.length > 0 || runtime.finding;
     var written = DAYS.filter(function (d) { return state.posts[d.id]; }).length;
@@ -1076,15 +1228,21 @@
     var checked = DAYS.filter(function (d) { return dayState(d).checked; }).length;
     var flagged = DAYS.filter(function (d) { return dayState(d).flagged; }).length;
     var lintOk = DAYS.filter(function (d) { var p = state.posts[d.id]; return p && !(p.lint || []).length; }).length;
-    function set(id, text, cls) {
-      var label = $(id); if (label) label.textContent = text;
+    if (runtime.finding) stampStep('research', 'now');
+    else if (researched) stampStep('research');
+    if (writing) stampStep('write', 'now');
+    else if (written) stampStep('write');
+    if (written) stampStep('check');
+    if (written) stampStep('lint');
+    function set(id, text, cls, key) {
+      var label = $(id); if (label) label.textContent = text + (runtime.stepAt[key] ? ' · ' + runtime.stepAt[key] : '');
       var st = label && label.parentNode; if (!st) return;
       st.className = 'st' + (cls ? ' ' + cls : '');
     }
-    set('stepResearch', runtime.finding ? 'Searching…' : researched ? state.topics.length + ' topics' : 'Waiting', runtime.finding ? 'on' : researched ? 'done' : '');
-    set('stepWrite', writing ? 'Writing…' : written ? written + ' drafted' : 'Waiting', writing ? 'on' : written ? 'done' : '');
-    set('stepCheck', written ? (flagged ? flagged + ' to review' : checked + ' passed') : 'Waiting', written ? (flagged ? 'warn' : 'done') : '');
-    set('stepLint', written ? (lintOk === written ? 'Clean' : (written - lintOk) + ' flags') : 'Waiting', written ? (lintOk === written ? 'done' : 'warn') : '');
+    set('stepResearch', runtime.finding ? 'Searching' : researched ? state.topics.length + ' topics' : 'Waiting', runtime.finding ? 'on' : researched ? 'done' : '', 'research');
+    set('stepWrite', writing ? 'Writing' : written ? written + ' drafted' : 'Waiting', writing ? 'on' : written ? 'done' : '', 'write');
+    set('stepCheck', written ? (flagged ? flagged + ' to review' : checked + ' passed') : 'Waiting', written ? (flagged ? 'warn' : 'done') : '', 'check');
+    set('stepLint', written ? (lintOk === written ? 'Clean' : (written - lintOk) + ' flags') : 'Waiting', written ? (lintOk === written ? 'done' : 'warn') : '', 'lint');
   }
 
   /* ---------- Studio: week ---------- */
@@ -1093,7 +1251,7 @@
     DAYS.forEach(function (d) {
       var topic = state.week[d.id], st = runtime.dayStatus[d.id] || (state.posts[d.id] ? 'done' : '');
       var slot = h('div', { class: 'glass slot', 'data-state': st });
-      slot.appendChild(h('div', { class: 'day' }, h('span', { text: d.label }), h('span', { text: st === 'working' ? 'Writing…' : st === 'done' ? 'Written ✓' : st === 'error' ? 'Needs retry' : '' })));
+      slot.appendChild(h('div', { class: 'day' }, h('span', { text: d.label }), h('span', { text: st === 'working' ? 'Writing' : st === 'done' ? 'Written' : st === 'error' ? 'Needs retry' : '' })));
       slot.appendChild(h('div', { class: 'role', text: d.role }));
       slot.appendChild(topic ? h('div', { class: 'title', text: topic.title }) : h('div', { class: 'empty', text: 'Pick an idea below, or use Auto-fill.' }));
       box.appendChild(slot);
@@ -1139,7 +1297,7 @@
     $('thinking').hidden = !runtime.finding;
     if (runtime.finding && !state.topics.length) { for (var i = 0; i < 6; i++) box.appendChild(h('div', { class: 'skel' })); return; }
     var shown = state.topics.filter(function (t) { return state.filter === 'all' || t.category === state.filter; });
-    if (!shown.length) { box.appendChild(h('div', { class: 'empty-state' }, h('strong', { text: 'No ideas yet.' }), h('br'), 'Press “Find latest topics” and the studio will search trade press and official sources for what matters to your brand’s customers right now.')); return; }
+    if (!shown.length) { box.appendChild(h('div', { class: 'empty-state' }, 'No ideas yet. Press Find latest topics, add a link, or drop a PDF onto this page.')); return; }
     shown.forEach(function (t) { box.appendChild(ideaCard(t)); });
   }
   async function findTopics(all) {
@@ -1436,8 +1594,9 @@
   function renderPosts() {
     var box = $('posts'); box.textContent = ''; var any = false;
     DAYS.forEach(function (d) { if (state.posts[d.id]) { any = true; box.appendChild(postCard(d)); } });
-    if (!any) box.appendChild(h('div', { class: 'glass empty-state', text: 'Your written posts will appear here, with fact-checks and image tools.' }));
+    if (!any) box.appendChild(h('div', { class: 'empty-state', text: 'Written posts appear here with fact-checks and image tools.' }));
     DAYS.forEach(function (d) { paint(d.id); });
+    renderPreview();
   }
   var ANGLES = [
     { label: 'Longer', text: 'Make it longer and more detailed, using every fact.' },
@@ -1475,7 +1634,7 @@
     try {
       var prior = DAYS.filter(function (d) { return d.id !== day && state.posts[d.id]; }).map(function (d) { return state.posts[d.id].text.split('\n')[0]; });
       var out = await post('/api/studio/post', { day: day, topic: topic, prior: prior, steer: topic.note || undefined });
-      state.posts[day] = { text: out.post, headline: out.headline, hashtags: out.hashtags, visual: out.visual, scene: out.scene, toCheck: out.toCheck, verified: out.verified, lint: out.lint, sources: out.sources, tagline: (state.posts[day] || {}).tagline };
+      state.posts[day] = { text: out.post, headline: out.headline, hashtags: out.hashtags, visual: out.visual, scene: out.scene, toCheck: out.toCheck, verified: out.verified, lint: out.lint, sources: out.sources, tagline: (state.posts[day] || {}).tagline, updated: Date.now() };
       delete runtime.images[day]; runtime.dayStatus[day] = 'done'; save();
       log('Wrote ' + dayLabel(day) + (out.verified && !out.toCheck.length ? ' · fact-check clear' : ' · ' + out.toCheck.length + ' line(s) to review'));
     } catch (e) { runtime.dayStatus[day] = 'error'; setStatus($('weekStatus'), dayLabel(day) + ': ' + e.message, 'err'); }
