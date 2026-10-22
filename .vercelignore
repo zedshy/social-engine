@@ -1,0 +1,7 @@
+
+node_modules
+.env
+.claude
+server.log
+*.test.js
+launcher.test.js

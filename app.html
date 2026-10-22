@@ -1,0 +1,1733 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Social Engine</title>
+<script>
+  (function () { try { var t = localStorage.getItem('social-engine-theme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) {} })();
+</script>
+<style>
+  /* Palette: charcoal, slate, sky and a signal accent. */
+  :root {
+    --charcoal: #20262E; --slate: #2F455D; --mist: #7F95AB; --sky: #2F9CC9; --stucco: #F5F6F4; --cream: #E9E1D0; --signal: #D93A22;
+    --bg: #F5F6F4; --surface: #FFFFFF; --surface-2: #ECEFF1; --line: #D3DAE0; --line-2: #B7C2CC;
+    --ink: #1B2430; --text-2: #46586B; --muted: #5B6C7F; --link: #1B7DA8;
+    --btn: #2F455D; --btn-ink: #FFFFFF; --btn-hover: #1B7DA8;
+    --good: #1F6B4B; --good-bg: #DCEDE4; --warn: #6B4E12; --warn-bg: #E9E1D0; --bad: #A82A16; --bad-bg: #F8E1DC;
+    --input: #FFFFFF; --pane: #FFFFFF; --shadow: none;
+  }
+  [data-theme="dark"] {
+    --bg: #161B21; --surface: #1F252D; --surface-2: #272F39; --line: #333E4B; --line-2: #4A5867;
+    --ink: #EEF1F3; --text-2: #B5C0CB; --muted: #8998A8; --link: #4DB6E0;
+    --btn: #4DB6E0; --btn-ink: #0F1A22; --btn-hover: #7CCBEA;
+    --good: #7ED3A8; --good-bg: #1C3329; --warn: #E3C98A; --warn-bg: #3A3320; --bad: #FF9C88; --bad-bg: #3D211C;
+    --input: #161B21; --pane: #1F252D;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; min-height: 100%; }
+  body { background: var(--bg); color: var(--ink); font: 15px/1.55 "Inter", system-ui, -apple-system, "Segoe UI", sans-serif; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+  button, input, select, textarea { font: inherit; color: inherit; }
+  a { color: var(--link); }
+  h1, h2, h3 { letter-spacing: -.02em; margin: 0; }
+  .bg { display: none; }
+
+  .shell { display: grid; grid-template-columns: 252px 1fr; min-height: 100vh; }
+  /* Sidebar: charcoal louvre cladding, with a small signal-red notch like the window in the reference */
+  .side { position: sticky; top: 0; height: 100vh; padding: 26px 0 20px; display: flex; flex-direction: column; background-color: var(--charcoal);
+    background-image: repeating-linear-gradient(0deg, rgba(255,255,255,.045) 0 1px, transparent 1px 7px); color: #E8ECEF; }
+  .brand { padding: 0 26px 26px; }
+  .brand img { height: 32px; display: block; }
+  .nav { display: grid; }
+  .nav button { position: relative; display: flex; align-items: center; gap: 14px; width: 100%; text-align: left; padding: 14px 26px; border: 0; background: none; color: #AEBBC8; font-weight: 600; letter-spacing: .01em; cursor: pointer; }
+  .nav button:hover { color: #fff; background: rgba(255,255,255,.05); }
+  .nav button[aria-current="page"] { color: #fff; background: rgba(255,255,255,.08); }
+  .nav button[aria-current="page"]::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 5px; background: var(--signal); }
+  .nav svg { width: 18px; height: 18px; flex: none; }
+  .side .grow { flex: 1; }
+  .side .foot { display: grid; gap: 10px; padding: 0 26px; font-size: 13px; color: #8FA0B1; }
+  .side .foot a, .side .foot button { color: #C5D0DA; text-decoration: none; background: none; border: 0; padding: 0; text-align: left; cursor: pointer; font-size: 13px; }
+  .side .foot .cost { display: grid; gap: 4px; font-size: 12px; } .side .foot .cost.chk { display: flex; gap: 8px; align-items: center; }
+  .side .foot select { background: #14202C; color: #C5D0DA; border: 1px solid #2B3B4A; border-radius: 6px; padding: 5px 6px; font-size: 12px; }
+  .side .foot .usage { font-size: 11px; line-height: 1.45; color: #8FA0B1; }
+  .side .foot a:hover, .side .foot button:hover { color: #fff; text-decoration: underline; }
+  .side .badge { background: transparent; color: #C5D0DA; border-color: rgba(255,255,255,.22); }
+  .side .badge.good { background: transparent; color: #8EE0B5; border-color: rgba(142,224,181,.45); }
+  .side .badge.bad { background: transparent; color: #FF9C88; border-color: rgba(255,156,136,.45); }
+
+  main { padding: 34px clamp(18px, 3.4vw, 52px) 90px; max-width: 1380px; width: 100%; }
+  .view[hidden] { display: none; }
+  .eyebrow { font-size: 11px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); }
+  .glass { background: var(--pane); border: 1px solid var(--line); border-radius: 0; }
+  .pad { padding: 22px 24px; }
+  .row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+  .grow { flex: 1; }
+
+  button.btn { cursor: pointer; border-radius: 0; border: 1px solid var(--line-2); background: var(--surface); padding: 10px 18px; font-weight: 650; font-size: 14px; display: inline-flex; gap: 8px; align-items: center; }
+  button.btn:hover:not(:disabled) { border-color: var(--ink); }
+  button.btn:disabled { opacity: .45; cursor: default; }
+  button.btn.primary { background: var(--btn); color: var(--btn-ink); border-color: var(--btn); }
+  button.btn.primary:hover:not(:disabled) { background: var(--btn-hover); border-color: var(--btn-hover); }
+  button.btn.li { background: #0a66c2; border-color: #0a66c2; color: #fff; }
+  button.btn.sm { padding: 6px 12px; font-size: 13px; }
+  button.btn svg { width: 16px; height: 16px; }
+  button:focus-visible, input:focus-visible, textarea:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; }
+  .status { font-size: 13px; color: var(--text-2); min-height: 20px; }
+  .status.err { color: var(--bad); } .status.ok { color: var(--good); }
+
+  .badge { display: inline-flex; align-items: center; gap: 6px; font-size: 10.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; padding: 3px 8px; border-radius: 0; background: var(--surface-2); color: var(--text-2); border: 1px solid transparent; }
+  .badge.good { background: var(--good-bg); color: var(--good); }
+  .badge.warn { background: var(--warn-bg); color: var(--warn); }
+  .badge.bad { background: var(--bad-bg); color: var(--bad); }
+  .badge.ai { background: var(--slate); color: #fff; }
+  .dot { width: 7px; height: 7px; background: currentColor; display: inline-block; }
+
+  /* ===== Dashboard hero: planes of sky, stucco, cream and mist, cut at an angle like the architecture reference ===== */
+  .hero { position: relative; display: grid; grid-template-columns: 1.35fr 1fr; gap: 28px; align-items: stretch; padding: 40px; min-height: 330px; overflow: hidden; background: var(--sky); isolation: isolate; }
+  .hero-art { position: absolute; inset: 0; z-index: -1; }
+  .hero-art i { position: absolute; display: block; }
+  .hero-art .slab { left: 0; top: 0; width: 66%; height: 100%; background: #F8F8F6; clip-path: polygon(0 0, 100% 0, 100% 74%, 0 100%); }
+  .hero-art .wedge { left: 0; top: 0; width: 66%; height: 100%; background: var(--cream); clip-path: polygon(0 100%, 100% 74%, 100% 86%, 38% 100%, 0 100%); }
+  .hero-art .plane { left: 0; top: 0; width: 100%; height: 100%; background: var(--mist); clip-path: polygon(0 100%, 38% 100%, 100% 86%, 100% 100%); opacity: .0; }
+  .hero-art .shade { right: 0; top: 0; width: 34%; height: 100%; background: var(--slate); clip-path: polygon(0 0, 100% 0, 100% 100%, 22% 100%); opacity: .0; }
+  [data-theme="dark"] .hero-art .slab { background: #202A35; }
+  [data-theme="dark"] .hero-art .wedge { background: #3A4655; }
+  .hello { align-self: center; color: #1B2430; }
+  [data-theme="dark"] .hello { color: #EEF1F3; }
+  .hello .eyebrow { color: #46586B; }
+  [data-theme="dark"] .hello .eyebrow { color: #9FB0C0; }
+  .hello h1 { font-size: clamp(30px, 3.6vw, 48px); font-weight: 800; line-height: 1.05; margin-top: 12px; }
+  .hello h1 span { color: #1B7DA8; display: block; }
+  [data-theme="dark"] .hello h1 span { color: #4DB6E0; }
+  .hello p { margin: 14px 0 0; color: #46586B; max-width: 480px; font-size: 14.5px; }
+  [data-theme="dark"] .hello p { color: #B5C0CB; }
+  .next { position: relative; background: var(--charcoal); color: #fff; padding: 26px 28px 26px 28px; align-self: center; }
+  .next::after { content: ""; position: absolute; top: 0; right: 28px; width: 22px; height: 58px; background: var(--signal); }
+  .next::before { content: ""; position: absolute; top: 0; right: 28px; width: 22px; height: 16px; background: #0f1319; z-index: 1; }
+  .next .badge.ai { background: transparent; border: 1px solid rgba(255,255,255,.3); color: #C5D0DA; }
+  .next h3 { font-size: 20px; margin: 16px 0 8px; font-weight: 700; padding-right: 40px; line-height: 1.25; }
+  .next p { margin: 0 0 18px; color: #B8C4CF; font-size: 14px; }
+  .next button.btn.primary { background: #fff; color: var(--charcoal); border-color: #fff; }
+  .next button.btn.primary:hover:not(:disabled) { background: var(--sky); border-color: var(--sky); color: #fff; }
+
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; margin-top: 22px; border: 1px solid var(--line); background: var(--pane); }
+  .stat { padding: 20px 24px; border-right: 1px solid var(--line); position: relative; }
+  .stat:last-child { border-right: 0; }
+  .stat::before { content: ""; position: absolute; left: 0; top: 0; width: 28px; height: 4px; background: var(--sky); }
+  .stat:nth-child(2)::before { background: var(--slate); } .stat:nth-child(3)::before { background: var(--mist); } .stat:nth-child(4)::before { background: var(--signal); }
+  .stat .v { font-size: 40px; font-weight: 800; letter-spacing: -.035em; line-height: 1.1; margin-top: 8px; font-variant-numeric: tabular-nums; color: var(--ink); }
+  .stat .v small { font-size: 16px; color: var(--muted); font-weight: 600; letter-spacing: 0; }
+  .stat .s { font-size: 12.5px; color: var(--muted); margin-top: 4px; }
+  .two { display: grid; grid-template-columns: 1.25fr 1fr; gap: 22px; margin-top: 22px; }
+  .panel-h { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; gap: 10px; padding-bottom: 14px; border-bottom: 1px solid var(--line); }
+  .panel-h h2 { font-size: 13px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+  .timeline { display: grid; }
+  .tl { display: grid; grid-template-columns: 112px 1fr auto; gap: 16px; align-items: center; padding: 16px 0; border: 0; border-bottom: 1px solid var(--line); background: none; cursor: pointer; text-align: left; width: 100%; }
+  .tl:last-child { border-bottom: 0; }
+  .tl:hover .t { color: var(--link); }
+  .tl .d { font-weight: 800; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink); }
+  .tl .d small { display: block; color: var(--muted); font-weight: 500; letter-spacing: 0; text-transform: none; font-size: 12.5px; margin-top: 2px; }
+  .tl .t { font-weight: 600; line-height: 1.35; font-size: 14.5px; }
+  .tl .t.empty { color: var(--muted); font-weight: 500; }
+  .steps { display: flex; gap: 5px; }
+  .step { width: 14px; height: 14px; border: 1.5px solid var(--line-2); background: transparent; }
+  .step.on { background: var(--slate); border-color: var(--slate); }
+  [data-theme="dark"] .step.on { background: var(--sky); border-color: var(--sky); }
+  .step.warn { background: var(--signal); border-color: var(--signal); }
+  .legend { display: flex; gap: 16px; font-size: 12px; color: var(--muted); margin-top: 14px; flex-wrap: wrap; align-items: center; }
+  .mini { display: grid; gap: 0; }
+  .mini .item { padding: 14px 0; border-bottom: 1px solid var(--line); }
+  .mini .item:last-child { border-bottom: 0; }
+  .mini .item b { font-size: 14.5px; line-height: 1.35; display: block; }
+  .mini .item .meta { margin: 8px 0 10px; }
+  .pipe { display: grid; grid-template-columns: repeat(6, 1fr); gap: 0; margin-top: 4px; border: 1px solid var(--line); }
+  .pipe .p { text-align: left; padding: 16px 14px 14px; border-right: 1px solid var(--line); font-size: 13px; font-weight: 750; position: relative; }
+  .pipe .p:last-child { border-right: 0; }
+  .pipe .p::after { content: ""; position: absolute; right: -7px; top: 50%; width: 12px; height: 12px; margin-top: -6px; background: var(--pane); border-top: 1px solid var(--line); border-right: 1px solid var(--line); transform: rotate(45deg); z-index: 1; }
+  .pipe .p:last-child::after { display: none; }
+  .pipe .p svg { width: 20px; height: 20px; display: block; margin-bottom: 10px; color: var(--link); }
+  .pipe .p em { display: block; font-style: normal; font-weight: 500; color: var(--muted); font-size: 11.5px; margin-top: 3px; }
+  .log { display: grid; max-height: 300px; overflow: auto; }
+  .log div { display: grid; grid-template-columns: 54px 1fr; gap: 10px; font-size: 13.5px; padding: 9px 0; border-bottom: 1px solid var(--line); }
+  .log time { color: var(--muted); font-variant-numeric: tabular-nums; }
+  .log .none { display: block; color: var(--muted); padding: 14px 0; border: 0; }
+
+  /* ===== Studio ===== */
+  .page-h { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin: 0 0 22px; padding-bottom: 20px; border-bottom: 4px solid var(--slate); }
+  [data-theme="dark"] .page-h { border-color: var(--sky); }
+  .page-h h1 { font-size: clamp(26px, 2.8vw, 36px); font-weight: 800; }
+  .page-h p { margin: 6px 0 0; color: var(--text-2); }
+  .blk { margin-top: 34px; }
+  .blk > h2 { font-size: 12px; text-transform: uppercase; letter-spacing: .16em; color: var(--ink); margin-bottom: 14px; font-weight: 800; padding-top: 12px; border-top: 1px solid var(--line-2); }
+  .week { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; border: 1px solid var(--line); background: var(--pane); }
+  .week .slot { border: 0; border-right: 1px solid var(--line); }
+  .week .slot:last-child { border-right: 0; }
+  .slot { padding: 18px 22px 20px; display: grid; gap: 6px; align-content: start; min-height: 124px; position: relative; }
+  .slot::before { content: ""; position: absolute; left: 0; top: 0; width: 100%; height: 4px; background: var(--line); }
+  .slot[data-state="done"]::before { background: var(--slate); } [data-theme="dark"] .slot[data-state="done"]::before { background: var(--sky); }
+  .slot[data-state="working"]::before { background: var(--sky); } .slot[data-state="error"]::before { background: var(--signal); }
+  .slot .day { display: flex; justify-content: space-between; font-size: 12px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+  .slot .day span:last-child { color: var(--muted); font-weight: 600; letter-spacing: .02em; text-transform: none; }
+  .slot .role { font-size: 12.5px; color: var(--muted); }
+  .slot .title { font-weight: 650; line-height: 1.35; margin-top: 4px; }
+  .slot .empty { color: var(--muted); font-size: 14px; margin-top: 4px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chip { cursor: pointer; border-radius: 0; padding: 6px 12px; font-size: 12.5px; background: transparent; border: 1px solid var(--line-2); font-weight: 650; }
+  .chip:hover { border-color: var(--ink); }
+  .chip[aria-pressed="true"] { background: var(--slate); color: #fff; border-color: var(--slate); }
+  [data-theme="dark"] .chip[aria-pressed="true"] { background: var(--sky); color: #0F1A22; border-color: var(--sky); }
+  .ideas { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 18px; }
+  .card { padding: 20px 22px; display: flex; flex-direction: column; gap: 10px; border-top: 4px solid var(--slate); }
+  [data-theme="dark"] .card { border-top-color: var(--sky); }
+  .card:hover { border-color: var(--line-2); border-top-color: var(--sky); }
+  .card h3 { font-size: 16.5px; line-height: 1.3; font-weight: 700; }
+  .card .why { margin: 0; color: var(--text-2); font-size: 14px; }
+  .meta { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: 12px; color: var(--muted); }
+  details summary { cursor: pointer; font-size: 13px; color: var(--link); font-weight: 650; }
+  details ul { margin: 8px 0 0; padding-left: 18px; font-size: 13px; color: var(--text-2); }
+  details li { margin-bottom: 6px; }
+  .assign { display: flex; gap: 0; margin-top: auto; border: 1px solid var(--line-2); }
+  .assign button { flex: 1; cursor: pointer; padding: 8px 0; font-size: 13px; font-weight: 700; border: 0; border-right: 1px solid var(--line-2); background: transparent; }
+  .assign button:last-child { border-right: 0; }
+  .assign button:hover { background: var(--surface-2); }
+  .assign button[aria-pressed="true"] { background: var(--slate); color: #fff; }
+  [data-theme="dark"] .assign button[aria-pressed="true"] { background: var(--sky); color: #0F1A22; }
+  .own { padding: 20px 22px; margin-bottom: 18px; border-left: 4px solid var(--sky); }
+  .own label, .fields label { display: block; font-size: 11px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--text-2); margin: 12px 0 5px; }
+  input[type=text], textarea { width: 100%; padding: 10px 12px; background: var(--input); border: 1px solid var(--line-2); border-radius: 0; }
+  .empty-state { grid-column: 1 / -1; text-align: center; padding: 40px 16px; color: var(--muted); }
+  .skel { height: 200px; border: 1px solid var(--line); border-top: 4px solid var(--line-2); background-color: var(--pane); background-image: repeating-linear-gradient(0deg, var(--surface-2) 0 1px, transparent 1px 8px); animation: scan 1.6s linear infinite; }
+  @keyframes scan { to { background-position: 0 16px; } }
+  .thinking { display: flex; gap: 12px; align-items: center; padding: 14px 18px; margin-bottom: 18px; background: var(--charcoal); color: #D5DDE5; font-size: 14px; border-left: 5px solid var(--signal); }
+  .spinner { width: 14px; height: 14px; border: 2px solid rgba(255,255,255,.3); border-top-color: #fff; animation: spin .8s linear infinite; flex: none; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce) { .skel, .spinner { animation: none; } }
+
+  .posts { display: grid; gap: 24px; }
+  .post { display: grid; grid-template-columns: minmax(300px, 1fr) 380px; gap: 28px; padding: 26px; border-top: 4px solid var(--slate); }
+  [data-theme="dark"] .post { border-top-color: var(--sky); }
+  .post .head { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+  .post .head strong { font-size: 12px; letter-spacing: .14em; text-transform: uppercase; }
+  .post textarea { min-height: 200px; line-height: 1.6; resize: vertical; }
+  .notes { display: grid; gap: 8px; margin-top: 12px; }
+  .note { padding: 10px 14px; font-size: 13px; border-left: 4px solid currentColor; }
+  .note.warn { background: var(--warn-bg); color: var(--warn); } .note.ok { background: var(--good-bg); color: var(--good); }
+  .note ul { margin: 4px 0 0; padding-left: 18px; }
+  .stage canvas { width: 100%; max-width: 380px; aspect-ratio: 4 / 5; border: 1px solid var(--line-2); background: #0b2c44; display: block; }
+  .stage .fields { max-width: 380px; margin-top: 10px; }
+  .stage textarea { min-height: 56px; }
+  .hint { font-size: 12px; color: var(--muted); margin: 8px 0 0; max-width: 380px; }
+
+
+  .wc { font-size: 12px; margin-top: 6px; color: var(--muted); }
+  .wc.ok { color: var(--good); } .wc.low { color: var(--warn); }
+  .revise { margin-top: 16px; padding: 14px 16px; border: 1px solid var(--line); border-left: 4px solid var(--sky); background: var(--surface-2); }
+  .revise .eyebrow { margin-bottom: 8px; }
+  .revise input[type=text] { flex: 1 1 260px; }
+  .revise .status { margin-top: 8px; }
+  /* ===== Analytics ===== */
+  .anfields { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; margin-top: 4px; }
+  .anlist { display: grid; gap: 16px; margin-top: 22px; }
+  .an { padding: 20px 22px; border-top: 4px solid var(--slate); }
+  [data-theme="dark"] .an { border-top-color: var(--sky); }
+  .an h3 { font-size: 16.5px; }
+  .an .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 0; margin-top: 14px; border: 1px solid var(--line); }
+  .an .tile { padding: 12px 14px; border-right: 1px solid var(--line); }
+  .an .tile:last-child { border-right: 0; }
+  .an .tile b { display: block; font-size: 24px; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+  .an .tile span { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+  .an .tile small { display: block; font-size: 12px; margin-top: 2px; color: var(--muted); }
+  .an .up { color: var(--good); } .an .down { color: var(--bad); }
+  .an .linkrow { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
+  .an .linkrow input { flex: 1 1 320px; font-size: 12.5px; }
+  .brow { display: grid; grid-template-columns: 150px 1fr; gap: 12px; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--line); font-size: 13px; }
+  .brow:last-child { border-bottom: 0; }
+  .brow .nm { font-weight: 600; line-height: 1.25; }
+  .brow .bars { display: grid; gap: 4px; }
+  .bar1 { display: flex; align-items: center; gap: 8px; font-size: 12px; font-variant-numeric: tabular-nums; color: var(--text-2); }
+  .bar1 i { display: block; height: 10px; background: var(--slate); min-width: 2px; } [data-theme="dark"] .bar1 i { background: var(--sky); }
+  .bar1.c i { background: var(--signal); }
+  .insights { display: grid; gap: 10px; }
+  .insights div { padding: 10px 12px; background: var(--surface-2); border-left: 4px solid var(--sky); font-size: 13.5px; color: var(--text-2); }
+  .insights b { color: var(--ink); }
+  @media (max-width: 860px) { .brow { grid-template-columns: 1fr; } }
+
+  /* ===== Library and photo tools ===== */
+  #dropVeil { position: fixed; inset: 0; z-index: 90; background: rgba(15, 26, 38, .72); display: grid; place-items: center; padding: 24px; pointer-events: none; }
+  #dropVeil[hidden], #dropToast[hidden] { display: none; }
+  #dropVeil .box { border: 3px dashed var(--sky); background: var(--surface); color: var(--ink); padding: 40px 48px; max-width: 560px; text-align: center; display: grid; gap: 10px; }
+  #dropVeil strong { font-size: 22px; } #dropVeil span { font-size: 15px; line-height: 1.5; color: var(--muted, inherit); }
+  .phmeta { display: flex; flex-wrap: wrap; gap: 4px; margin: 2px 0 6px; } .phmeta .tag { font-size: 11px; padding: 2px 7px; border: 1px solid var(--line-2); color: var(--text-2); background: var(--surface-2); } .phmeta .tag.warn { border-color: var(--signal); color: var(--signal); }
+  .stage.dropping { outline: 3px dashed var(--sky); outline-offset: 6px; }
+  #dropToast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); z-index: 91; background: var(--surface); color: var(--ink); border: 1px solid var(--line-2); border-left: 4px solid var(--sky); padding: 12px 18px; max-width: min(560px, 92vw); font-size: 14px; box-shadow: 0 8px 30px rgba(0,0,0,.25); }
+  #dropToast.err { border-left-color: #D64545; }
+  .drop { margin-bottom: 18px; border: 2px dashed var(--line-2); }
+  .drop.over { border-color: var(--sky); background: var(--surface-2); }
+  .libgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; margin-bottom: 14px; }
+  .lib { padding: 0; display: grid; border-top: 4px solid var(--slate); }
+  [data-theme="dark"] .lib { border-top-color: var(--sky); }
+  .lib img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; display: block; background: var(--surface-2); }
+  .lib .body { padding: 12px 14px 14px; display: grid; gap: 8px; }
+  .lib input[type=text] { padding: 7px 9px; font-size: 13.5px; }
+  .lib label.chk { display: flex; gap: 8px; align-items: center; font-size: 13px; font-weight: 600; color: var(--text-2); }
+  .phototools { margin-top: 12px; max-width: 380px; }
+  .draft .phototools { max-width: 340px; }
+  .srcnote { font-size: 12.5px; padding: 7px 10px; margin-top: 10px; background: var(--surface-2); border-left: 4px solid var(--line-2); color: var(--text-2); }
+  .srcnote.photo { border-left-color: var(--good); } .srcnote.warn { border-left-color: var(--signal); color: var(--bad); background: var(--bad-bg); } .srcnote.notice { border-left-color: var(--warn); color: var(--warn); background: var(--warn-bg); }
+  .picker { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; padding: 10px; border: 1px solid var(--line); background: var(--pane); }
+  .picker button { padding: 0; border: 2px solid transparent; background: none; cursor: pointer; width: 76px; }
+  .picker button:hover { border-color: var(--sky); }
+  .picker img { display: block; width: 100%; height: 60px; object-fit: cover; }
+  .picker .none { font-size: 13px; color: var(--muted); }
+  .editrow { margin-top: 10px; display: grid; gap: 8px; }
+  .editrow .sl { display: grid; grid-template-columns: 74px 1fr; gap: 8px; align-items: center; font-size: 12px; font-weight: 700; color: var(--text-2); }
+  .editrow input[type=range] { width: 100%; padding: 0; }
+
+  /* ===== Assistant ===== */
+  .chat { max-width: 980px; }
+  .thread { display: grid; gap: 22px; margin-bottom: 18px; }
+  .msg { display: grid; gap: 12px; }
+  .msg .bubble { padding: 14px 18px; max-width: 760px; white-space: pre-wrap; line-height: 1.55; }
+  .msg.user .bubble { justify-self: end; background: var(--slate); color: #fff; }
+  [data-theme="dark"] .msg.user .bubble { background: var(--sky); color: #0F1A22; }
+  .msg.assistant .bubble { background: var(--pane); border: 1px solid var(--line); border-left: 4px solid var(--sky); }
+  .msg .who { font-size: 10.5px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+  .msg.user .who { justify-self: end; }
+  .thinking-msg { display: flex; gap: 10px; align-items: center; color: var(--text-2); }
+  .composer { display: grid; grid-template-columns: 1fr auto; gap: 12px; padding: 12px; align-items: end; position: sticky; bottom: 12px; border: 1px solid var(--line-2); }
+  .composer textarea { border: 0; background: transparent; resize: none; max-height: 180px; padding: 8px 10px; }
+  .composer textarea:focus-visible { outline: none; }
+  .composer:focus-within { border-color: var(--link); }
+  .starters { margin-bottom: 16px; }
+  [hidden] { display: none !important; }
+  .intro { padding: 22px 24px; border-left: 4px solid var(--sky); background: var(--pane); border-top: 1px solid var(--line); border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .intro p { margin: 6px 0 0; color: var(--text-2); }
+  .draft { padding: 22px; border-top: 4px solid var(--slate); display: grid; grid-template-columns: minmax(280px, 1fr) 340px; gap: 24px; }
+  [data-theme="dark"] .draft { border-top-color: var(--sky); }
+  .draft canvas { max-width: 340px; }
+  .draft .stage .fields, .draft .hint { max-width: 340px; }
+  @media (max-width: 860px) { .draft { grid-template-columns: 1fr; } }
+
+  /* ===== Guide ===== */
+  .guide { display: grid; grid-template-columns: 220px 1fr; gap: 32px; align-items: start; }
+  .toc { position: sticky; top: 24px; display: grid; gap: 8px; }
+  .toc a { color: var(--ink); text-decoration: none; font-weight: 600; font-size: 14px; padding: 4px 0; border-bottom: 1px solid var(--line); }
+  .toc a:hover { color: var(--link); }
+  .doc { max-width: 780px; }
+  .doc h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .14em; font-weight: 800; margin: 36px 0 12px; padding-top: 14px; border-top: 4px solid var(--slate); }
+  [data-theme="dark"] .doc h2 { border-top-color: var(--sky); }
+  .doc h2:first-child { margin-top: 0; }
+  .doc p, .doc li { color: var(--text-2); }
+  .doc li { margin-bottom: 8px; }
+  .doc b { color: var(--ink); }
+  .doc code { background: var(--surface-2); padding: 1px 6px; font-size: 13px; color: var(--ink); }
+  .steps-list { counter-reset: s; list-style: none; padding: 0; }
+  .steps-list li { counter-increment: s; position: relative; padding-left: 44px; margin-bottom: 14px; }
+  .steps-list li::before { content: counter(s); position: absolute; left: 0; top: -2px; width: 30px; height: 30px; background: var(--slate); color: #fff; font-weight: 800; display: grid; place-items: center; font-size: 14px; }
+  [data-theme="dark"] .steps-list li::before { background: var(--sky); color: #0F1A22; }
+  .examples { display: grid; gap: 8px; margin: 12px 0; }
+  blockquote { margin: 0; padding: 12px 16px; background: var(--pane); border: 1px solid var(--line); border-left: 4px solid var(--signal); color: var(--ink); font-style: normal; }
+  .tbl { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 14px; }
+  .tbl th { text-align: left; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); padding: 8px 10px; border-bottom: 2px solid var(--line-2); }
+  .tbl td { padding: 10px; border-bottom: 1px solid var(--line); vertical-align: top; color: var(--text-2); }
+  @media (max-width: 860px) { .guide { grid-template-columns: 1fr; } .toc { position: static; } }
+
+  @media (max-width: 1100px) { .hero, .two { grid-template-columns: 1fr; } .hero-art .slab, .hero-art .wedge { width: 100%; } .stats { grid-template-columns: repeat(2, 1fr); } .stat:nth-child(2) { border-right: 0; } .stat:nth-child(-n+2) { border-bottom: 1px solid var(--line); } .pipe { grid-template-columns: repeat(3, 1fr); } .pipe .p:nth-child(3) { border-right: 0; } .pipe .p:nth-child(-n+3) { border-bottom: 1px solid var(--line); } .pipe .p::after { display: none; } }
+  @media (max-width: 860px) {
+    .shell { grid-template-columns: 1fr; }
+    .side { position: sticky; z-index: 5; height: auto; flex-direction: row; align-items: center; padding: 0 14px; }
+    .brand { padding: 10px 10px 10px 0; } .nav { display: flex; } .nav button { padding: 18px 14px; } .nav button span { display: none; } .nav button[aria-current="page"]::before { top: auto; width: auto; height: 4px; right: 0; } .side .foot, .side .grow { display: none; }
+    .week { grid-template-columns: 1fr; } .week .slot { border-right: 0; border-bottom: 1px solid var(--line); } .post { grid-template-columns: 1fr; } .tl { grid-template-columns: 1fr; } .hero { padding: 24px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="shell">
+  <aside class="side">
+    <div class="brand"><img id="brandLogo" src="/assets/brand/logo-reversed.svg" alt="Social Engine"></div>
+    <nav class="nav" aria-label="Main">
+      <button type="button" data-view="dash" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="2"/><rect x="14" y="3" width="7" height="5" rx="2"/><rect x="14" y="12" width="7" height="9" rx="2"/><rect x="3" y="16" width="7" height="5" rx="2"/></svg><span>Dashboard</span></button>
+      <button type="button" data-view="studio"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.8 4.7L18.5 9.5l-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8z"/><path d="M19 15l.8 2.1 2.2.9-2.2.9L19 21l-.8-2.1-2.2-.9 2.2-.9z"/></svg><span>Studio</span></button>
+      <button type="button" data-view="assistant"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/><path d="M8 9h8M8 12.5h5"/></svg><span>Assistant</span></button>
+      <button type="button" data-view="library"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16"/><circle cx="9" cy="10" r="2"/><path d="M3 17l5-4 4 3 3-2 6 4"/></svg><span>Library</span></button>
+      <button type="button" data-view="analytics"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg><span>Analytics</span></button>
+      <button type="button" data-view="guide"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h10a4 4 0 014 4v12H9a4 4 0 01-4-4z"/><path d="M5 16a4 4 0 014-4h10"/></svg><span>Guide</span></button>
+    </nav>
+    <div class="grow"></div>
+    <div class="foot">
+      <span id="liveBadge" class="badge"></span>
+      <label class="cost">Image quality
+        <select id="imgQuality" aria-label="Image quality"><option value="low">Draft (cheapest)</option><option value="medium">Final (about 3x the cost)</option></select></label>
+      <label class="cost chk"><input type="checkbox" id="imgResearch"> Research images online (extra cost)</label>
+      <span id="usageLine" class="usage" title="Counted since the server started. Tokens and image counts, not dollars."></span>
+      <button type="button" id="theme">Switch to light mode</button>
+      <a href="/classic">Classic view</a>
+    </div>
+  </aside>
+
+  <div id="dropVeil" aria-hidden="true" hidden><div class="box"><strong id="dropTitle"></strong><span id="dropSub"></span></div></div>
+  <div id="dropToast" role="status" aria-live="polite" hidden></div>
+  <main>
+    <!-- ============ DASHBOARD ============ -->
+    <section id="view-dash" class="view" aria-labelledby="dash-h">
+      <div class="hero">
+        <div class="hero-art" aria-hidden="true"><i class="slab"></i><i class="wedge"></i></div>
+        <div class="hello">
+          <div class="eyebrow" id="today"></div>
+          <h1 id="dash-h"></h1>
+          <p id="dashIntro">Your AI content desk. It researches what is happening in your industry, writes a week of fact-checked LinkedIn posts, and prepares the images.</p>
+          <div class="row" style="margin-top:18px"><button type="button" class="btn" data-go="assistant">Ask the Assistant</button><button type="button" class="btn" data-go="guide">Read the guide</button></div>
+        </div>
+        <div class="next" id="next"></div>
+      </div>
+      <div class="stats" id="stats"></div>
+      <div class="two">
+        <div class="glass pad"><div class="panel-h"><h2>This week</h2><button type="button" class="btn sm" data-go="studio">Open studio</button></div><div class="timeline" id="timeline"></div>
+          <div class="legend"><span><i class="dot" style="color:var(--slate)"></i> done</span><span><i class="dot" style="color:var(--signal)"></i> needs a look</span><span>Idea · Written · Fact-checked · Image · Posted</span></div></div>
+        <div class="glass pad"><div class="panel-h"><h2>Fresh from the research</h2><button type="button" class="btn sm" id="dashFind">Refresh</button></div><div class="mini" id="fresh"></div></div>
+      </div>
+      <div class="two">
+        <div class="glass pad"><div class="panel-h"><h2>How every post stays accurate</h2><span class="badge ai">AI + checks</span></div><div class="pipe" id="pipe"></div>
+          <p class="hint" style="max-width:none;margin-top:14px">Nothing is written from memory. Each post is built only from sourced facts, then checked line by line against those facts before you see it.</p></div>
+        <div class="glass pad"><div class="panel-h"><h2>Activity</h2></div><div class="log" id="log"></div></div>
+      </div>
+    </section>
+
+    <!-- ============ STUDIO ============ -->
+    <section id="view-studio" class="view" aria-labelledby="studio-h" hidden>
+      <div class="page-h"><div><div class="eyebrow">Studio</div><h1 id="studio-h" style="margin-top:6px">Plan and write your week</h1><p>Find what matters, choose three ideas, and let the studio write and check the posts.</p></div></div>
+
+      <div class="blk" style="margin-top:0"><h2>1 · Your week</h2>
+        <div class="week" id="week"></div>
+        <div class="row" style="margin-top:14px">
+          <button id="auto" type="button" class="btn">Auto-fill week</button>
+          <button id="writeWeek" type="button" class="btn primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.8 4.7L18.5 9.5l-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8z"/></svg>Write my week</button>
+          <button id="clearWeek" type="button" class="btn sm">Clear</button>
+          <span id="weekStatus" class="status" role="status" aria-live="polite"></span>
+        </div>
+      </div>
+
+      <div class="blk"><h2>2 · Ideas worth posting about</h2>
+        <div class="row" style="margin-bottom:14px">
+          <button id="find" type="button" class="btn primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>Find latest topics</button>
+          <button id="findAll" type="button" class="btn" title="Runs all three research searches at once (3x the cost)">Search all areas</button>
+          <button id="addSrc" type="button" class="btn">From a link or screenshot</button>
+          <button id="addOwn" type="button" class="btn">Add your own</button>
+          <div class="chips" id="filters" aria-label="Filter by category"></div>
+          <span class="grow"></span><span id="ideasStatus" class="status" role="status" aria-live="polite"></span>
+        </div>
+        <div id="src" class="glass own" hidden>
+          <div class="eyebrow" style="margin-bottom:6px">Build a post from something you found</div>
+          <label for="srcUrl">Link to the article</label><input id="srcUrl" type="text" maxlength="1000" placeholder="https://…">
+          <label for="srcFile">…or a screenshot of it</label>
+          <div class="row"><input id="srcFile" type="file" accept="image/png,image/jpeg,image/webp" style="max-width:320px"><span class="hint" style="margin:0;max-width:none">You can also paste a screenshot here with Cmd+V (Ctrl+V on Windows).</span></div>
+          <div id="srcPreview" style="margin-top:10px"></div>
+          <label for="srcNote">What angle do you want? (optional)</label><input id="srcNote" type="text" maxlength="300" placeholder="e.g. focus on what it means for first-time hackathon attendees">
+          <label>Use it on</label>
+          <div class="chips" id="srcDays" role="group" aria-label="Which day to write the post for"></div>
+          <div class="row" style="margin-top:14px"><button id="srcGo" type="button" class="btn primary sm">Read it and build the post</button><button id="srcCancel" type="button" class="btn sm">Cancel</button><span id="srcStatus" class="status" role="status" aria-live="polite"></span></div>
+          <p class="hint" style="max-width:none">The studio only uses facts that are actually in the page or screenshot, and the post is fact-checked against them like any other.</p>
+        </div>
+        <div id="own" class="glass own" hidden>
+          <div class="eyebrow" style="margin-bottom:6px">Add your own facts, or upload a document</div>
+          <label for="ownDoc" style="margin-top:0">Upload a PDF or Word document (optional)</label>
+          <div class="row"><input id="ownDoc" type="file" accept=".pdf,.docx,.txt,.md,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain" style="max-width:320px"><span class="hint" style="margin:0;max-width:none">The AI reads it and fills in the facts below for you to check and edit. Scanned PDFs without text can't be read.</span></div>
+          <label for="ownDocNote">What do you want from it? (optional)</label><input id="ownDocNote" type="text" maxlength="300" placeholder="e.g. a practical post about heater pad fitting">
+          <label for="ownTitle">What is it about?</label><input id="ownTitle" type="text" maxlength="160" placeholder="e.g. New rail approval for products">
+          <label for="ownFacts">Facts (one per line). Only these will be used.</label><textarea id="ownFacts" rows="4" placeholder="One fact per line"></textarea>
+          <label for="ownSource">Where do these facts come from?</label><input id="ownSource" type="text" maxlength="120" placeholder="e.g. your team, or TechCrunch, 14 Oct 2026">
+          <label>Use it on</label>
+          <div class="chips" id="ownDays" role="group" aria-label="Which day to write the post for"></div>
+          <div class="row" style="margin-top:12px"><button id="ownSave" type="button" class="btn primary sm">Add idea</button><button id="ownCancel" type="button" class="btn sm">Cancel</button><span id="ownStatus" class="status"></span></div>
+        </div>
+        <div id="thinking" class="thinking" hidden><span class="spinner"></span><span>Running one research search (the next area each click: events and meetups, tech news, then community and learning). Then opening every source link to check it.</span></div>
+        <div id="ideas" class="ideas"></div>
+      </div>
+
+      <div class="blk"><h2 id="h-posts">3 · Posts</h2><div id="posts" class="posts"></div></div>
+    </section>
+
+    <!-- ============ ASSISTANT ============ -->
+    <section id="view-assistant" class="view" aria-labelledby="assistant-h" hidden>
+      <div class="page-h"><div><div class="eyebrow">Assistant</div><h1 id="assistant-h" style="margin-top:6px">Tell the Assistant what you need</h1><p>Describe the post in your own words. It writes the text, briefs the image, and you refine it by chatting.</p></div>
+        <button type="button" class="btn" id="newChat">New conversation</button></div>
+      <div class="chat">
+        <div id="thread" class="thread" aria-live="polite"></div>
+        <div id="starters" class="chips starters" aria-label="Ideas to start with"></div>
+        <div id="chatDocs" class="chips" aria-label="Attached documents" style="margin-bottom:8px"></div>
+        <div class="composer glass">
+          <textarea id="prompt" rows="2" maxlength="1800" placeholder="e.g. We want an image post wishing everyone a happy Halloween…" aria-label="Message to the Assistant"></textarea>
+          <span style="display:flex;gap:8px"><button type="button" class="btn" id="attach">Attach document</button><button type="button" class="btn primary" id="send">Send</button></span>
+          <input id="chatFile" type="file" accept=".pdf,.docx,.txt,.md" multiple hidden>
+        </div>
+        <div class="hint" style="max-width:none">Enter to send · Shift+Enter for a new line · Attach a PDF or Word file and ask for a post from it. The Assistant only states facts from its configured profile and what you tell it, and flags anything for you to check.</div>
+        <div id="chatStatus" class="status" role="status" aria-live="polite"></div>
+      </div>
+    </section>
+
+    <!-- ============ LIBRARY ============ -->
+    <section id="view-library" class="view" aria-labelledby="library-h" hidden>
+      <div class="page-h"><div><div class="eyebrow">Library</div><h1 id="library-h" style="margin-top:6px">Your photo library</h1><p>Add real photos here and the AI names and describes each one. Then use them in any post. You can position them, and edit them with a prompt.</p></div></div>
+      <div class="glass pad drop" id="drop">
+        <div class="row"><input id="libFile" type="file" accept="image/*,.heic,.heif" multiple><span class="hint" style="margin:0;max-width:none">JPEG, PNG, WebP or iPhone HEIC photos. Drag as many as you like anywhere onto this page, or choose files.</span></div>
+        <div id="libStatus" class="status" role="status" aria-live="polite" style="margin-top:8px"></div>
+      </div>
+      <div id="libGrid" class="libgrid"></div>
+      <p class="hint" style="max-width:none">Photos are kept in this browser only (they are not uploaded to a server), so use the same browser and address. Tick <b>Cleared for public use</b> only when you have confirmed permission to publish that photo and everyone in it.</p>
+    </section>
+
+    <!-- ============ ANALYTICS ============ -->
+    <section id="view-analytics" class="view" aria-labelledby="analytics-h" hidden>
+      <div class="page-h"><div><div class="eyebrow">Analytics</div><h1 id="analytics-h" style="margin-top:6px">How your posts perform</h1><p>Track views, clicks and engagement for each post, and see what works best.</p></div>
+        <button type="button" class="btn primary" id="anAdd">Track a post</button></div>
+      <div class="glass pad" id="anHow">
+        <div class="eyebrow" style="margin-bottom:8px">Getting the numbers in</div>
+        <p style="margin:0 0 8px;color:var(--text-2)">LinkedIn does not let tools read a page's views and clicks without special approved access, so there are three ways to bring the numbers in:</p>
+        <ol class="steps-list" style="margin:0">
+          <li><b>Screenshot.</b> Open the post's analytics in LinkedIn, take a screenshot, and let the AI read the numbers off it.</li>
+          <li><b>Type them in</b> from LinkedIn's post analytics.</li>
+          <li><b>Tracked link.</b> Each post has a link with campaign tags. When people click it, your Google Analytics shows website visits from that exact post (Reports, Acquisition, Traffic acquisition, then look for the campaign <code>content-studio</code>).</li>
+        </ol>
+      </div>
+      <div class="stats" id="anSummary"></div>
+      <div class="two">
+        <div class="glass pad"><div class="panel-h"><h2>Views and clicks by post</h2></div><div id="anChart"></div><p class="hint" style="max-width:none;margin-top:10px">Views and clicks each have their own scale, so compare bars within a row, not between them.</p></div>
+        <div class="glass pad"><div class="panel-h"><h2>What the numbers say</h2></div><div id="anInsights" class="insights"></div></div>
+      </div>
+      <div id="anForm" class="glass own" hidden style="margin-top:22px">
+        <div class="eyebrow" style="margin-bottom:6px" id="anFormTitle">Track a post</div>
+        <label for="anPost" style="margin-top:0">Which post?</label><select id="anPost" style="width:100%;padding:10px 12px;border:1px solid var(--line-2);background:var(--input);border-radius:0"></select>
+        <label for="anTitle">Name of the post</label><input id="anTitle" type="text" maxlength="120" placeholder="e.g. London Tech Week announces 300 events">
+        <div class="row" style="gap:16px;align-items:flex-end">
+          <div style="flex:1 1 240px"><label for="anUrl">Paste the LinkedIn post link (the studio reads reactions and comments from it)</label><input id="anUrl" type="text" maxlength="400" placeholder="https://www.linkedin.com/posts/…"></div>
+          <div style="flex:0 0 170px"><label for="anDate">Posted on</label><input id="anDate" type="text" placeholder="YYYY-MM-DD" maxlength="10"></div>
+        </div>
+        <label for="anShot">Fill the numbers from a screenshot of the post's analytics (optional)</label>
+        <div class="row"><input id="anShot" type="file" accept="image/png,image/jpeg,image/webp" style="max-width:320px"><span class="hint" style="margin:0;max-width:none">The AI only copies numbers that are visible. Check them before saving.</span></div>
+        <div class="anfields">
+          <div><label for="anViews">Views (impressions)</label><input id="anViews" type="text" inputmode="numeric" maxlength="9"></div>
+          <div><label for="anClicks">Clicks</label><input id="anClicks" type="text" inputmode="numeric" maxlength="9"></div>
+          <div><label for="anReactions">Reactions</label><input id="anReactions" type="text" inputmode="numeric" maxlength="9"></div>
+          <div><label for="anComments">Comments</label><input id="anComments" type="text" inputmode="numeric" maxlength="9"></div>
+          <div><label for="anReposts">Reposts</label><input id="anReposts" type="text" inputmode="numeric" maxlength="9"></div>
+        </div>
+        <div class="row" style="margin-top:14px"><button id="anSave" type="button" class="btn primary sm">Save</button><button id="anCancel" type="button" class="btn sm">Cancel</button><span id="anStatus" class="status" role="status" aria-live="polite"></span></div>
+      </div>
+      <div id="anList" class="anlist"></div>
+    </section>
+
+    <!-- ============ GUIDE ============ -->
+    <section id="view-guide" class="view" aria-labelledby="guide-h" hidden>
+      <div class="page-h"><div><div class="eyebrow">Guide</div><h1 id="guide-h" style="margin-top:6px">How to use the Content Studio</h1><p>Everything you need to go from idea to a LinkedIn post, in five minutes.</p></div></div>
+      <div class="guide">
+        <nav class="toc glass pad" aria-label="On this page">
+          <div class="eyebrow" style="margin-bottom:10px">On this page</div>
+          <a href="#g-start">Quick start</a><a href="#g-source">Your own article, document or screenshot</a><a href="#g-drop">Dragging files in</a><a href="#g-photos">Photos and editing</a><a href="#g-analytics">Analytics</a><a href="#g-assistant">The Assistant</a><a href="#g-studio">The weekly Studio</a><a href="#g-trust">How accuracy works</a><a href="#g-linkedin">Posting to LinkedIn</a><a href="#g-setup">Setup and settings</a><a href="#g-help">Troubleshooting</a>
+        </nav>
+        <div class="doc">
+          <h2 id="g-start">Quick start</h2>
+          <ol class="steps-list">
+            <li><b>Dashboard.</b> Shows where you are this week and suggests the next step.</li>
+            <li><b>Studio → Find latest topics.</b> Runs one research search of trade press and official sources, about 15 seconds. Each click covers the next area (events and meetups, tech news, then community and learning) and adds new ideas to the list. <b>Search all areas</b> runs all three at once at three times the cost. A search already made today is reused for free.</li>
+            <li><b>Pick three ideas.</b> Use Auto-fill week, or press Mon / Wed / Fri on any idea. ★ marks the day the research suggests.</li>
+            <li><b>Write my week.</b> Writes three posts and checks each one against its sources.</li>
+            <li><b>Create image, then Post to LinkedIn.</b> Review the text, make the image, and send it to LinkedIn's composer. You press Post yourself.</li>
+          </ol>
+
+          <h2 id="g-source">Build a post from your own article or screenshot</h2>
+          <p>Found something relevant? In <b>Studio</b>, press <b>From a link or screenshot</b>.</p>
+          <ol class="steps-list">
+            <li>Paste the article's link, or add a screenshot (choose a file, or paste one with Cmd+V).</li>
+            <li>Optionally say what angle you want, for example "what it means for first-time attendees".</li>
+            <li>Choose <b>Monday</b>, <b>Wednesday</b> or <b>Friday</b>, or "Just add to my ideas".</li>
+            <li>Press <b>Read it and build the post</b>. The studio reads the page, pulls out the facts, and writes and fact-checks that day's post.</li>
+          </ol>
+          <ul>
+            <li>Only facts that are really in the page or screenshot are used. For links, any figure that is not on the page is thrown away.</li>
+            <li>Some publishers block automatic reading or hide text behind a paywall. If a link fails, take a screenshot instead.</li>
+            <li>Posts from a screenshot are marked <span class="badge warn">From your screenshot</span>: check the figures against the original before posting.</li>
+          </ul>
+
+          <h2 id="g-drop">Dragging files in</h2>
+          <p>Drag files from your computer onto any page and drop them. Several at once is fine. A message says where each one went.</p>
+          <ul>
+            <li><b>Photos</b> are saved to the Library. Drop one onto a post's image area instead and it becomes that post's picture.</li>
+            <li><b>Documents</b> (PDF, Word, text) are attached to the Assistant chat, up to two. Dropped anywhere else, the first one becomes a post idea.</li>
+            <li>On the Analytics page, one screenshot of a post's analytics fills in the numbers.</li>
+            <li>Other file types are skipped. The Choose files buttons still work.</li>
+          </ul>
+
+          <h2 id="g-photos">Using your own photos</h2>
+          <ul>
+            <li>Open <b>Library</b> and add your real photographs (JPEG, PNG, WebP or iPhone HEIC). The AI names, describes and tags each photo for you, and flags any that show people so you can check consent. Anything you type yourself is kept, and <b>Describe with AI</b> redoes a photo. Tick <b>Cleared for public use</b> only when you have confirmed permission for the photo and everyone in it.</li>
+            <li>On any post, press <b>Use a library photo</b>. The headline and logo are drawn on top of the real photo, with no AI involved. Use <b>Position</b> and <b>Zoom</b> to frame it.</li>
+            <li>To change the photo, type an edit such as "make the sky clearer" and press <b>Edit photo</b>. The AI is told to keep the equipment, people and layout exactly as photographed, and the post is marked <i>edited with AI</i> so you check it. <b>Revert to original</b> undoes it.</li>
+            <li>To build a new scene around a photo, press <b>Upload your own photo</b> (or choose one from the Library), describe the setting, for example "in a London co-working space at dusk, laptops open", and press <b>Generate around photo</b>. The subject stays as photographed and the AI creates the surroundings in the post format. Check the subject against the original before publishing.</li>
+            <li>Photos stay in your browser only; they are not uploaded to a server.</li>
+          </ul>
+
+          <h2 id="g-analytics">Analytics: views and clicks per post</h2>
+          <p>LinkedIn does not let tools read a page's analytics without special approved access, so the <b>Analytics</b> tab works from numbers you bring in:</p>
+          <ol class="steps-list">
+            <li>Mark a post as posted in Studio (it appears in Analytics automatically), or press <b>Track a post</b>.</li>
+            <li>Open that post's analytics in LinkedIn, take a screenshot, and upload it. The AI copies only the numbers that are visible; check them, then Save. You can also type the numbers in.</li>
+            <li>Each post gets views, clicks, click-through, reactions, comments, reposts and an engagement rate, compared with your other posts.</li>
+            <li>Tick <b>Add a tracked link</b> on a post, or copy its tracked link from Analytics. When people click it, your Google Analytics shows website visits from that exact post (look for the campaign <code>content-studio</code>).</li>
+          </ol>
+          <p>The charts and "What the numbers say" fill in once you have two or more posts. Judge trends after 8 to 12 posts.</p>
+
+          <h2 id="g-assistant">The Assistant: just say what you want</h2>
+          <p>Use the Assistant when the post is not news: a greeting, a thank-you, a seasonal post, an announcement, or a post made from your own notes. Write it the way you would tell a colleague. You can also press <strong>Attach document</strong> to add a PDF or Word file (a guide, procedure or brochure) and ask for a post from it. Internal records such as delivery orders, quotes, forms and back-office procedures are refused on purpose, because they hold customer details.</p>
+          <div class="examples">
+            <blockquote>We're looking to create an image post for Halloween to wish our people a happy Halloween.</blockquote>
+            <blockquote>Thank our customers for a busy year. Keep it warm but short.</blockquote>
+            <blockquote>We've opened a new meetup in Shoreditch on 3 November. Announce it. (Give it the facts.)</blockquote>
+            <blockquote>Turn these notes into a post: [paste your notes]</blockquote>
+          </div>
+          <ul>
+            <li><b>It writes and briefs the image together.</b> You get the post text, a headline for the picture, and a checklist of what the image must and must not show.</li>
+            <li><b>Change it by talking.</b> Say "shorter", "mention our Irish office", "make the picture more autumn". It keeps what you did not ask to change.</li>
+            <li><b>It may ask one question.</b> For announcements it needs real details such as place and date. It will not invent them.</li>
+            <li><b>It will not make up news or figures.</b> For market news use Studio → Find latest topics, or paste the facts into the chat.</li>
+            <li><b>Create image</b> costs a few cents and takes under two minutes. If something is wrong, describe it under the image and press Fix and remake.</li>
+          </ul>
+
+          <h2 id="g-studio">The weekly Studio</h2>
+          <ul>
+            <li><b>Ideas</b> come with sources. Open "source facts" to see exactly what each post will be allowed to say.</li>
+            <li><b>Add your own</b> lets you enter facts you hold, one per line, with where they come from. Only those facts are used. You can also <b>upload a PDF or Word document</b>: the AI reads it, picks the best facts for a post, and fills them in for you to check and edit before choosing a day.</li>
+            <li><b>Edit the text directly</b> in the box; the word count shows the target of 120 to 200 words.</li>
+            <li><b>Change the theme or tone</b> under each post: pick Longer, Shorter, What it means for members, More practical, Warmer, More formal or Ask the community, or describe the change. It is fact-checked again, and <b>Undo last revision</b> goes back.</li>
+            <li><b>Write it again</b> rewrites one day. <b>Mark as posted</b> updates the dashboard.</li>
+            <li><b>Image brief used</b> shows the checklist the image was made from. Tick <b>Research images online</b> in the sidebar to have it checked against how the real thing looks (it costs extra).</li>
+            <li>Each new image is shot from a different angle and in different light, and avoids repeating the week's other images.</li>
+            <li>Posts and ideas are kept in your browser, so they are still there after a refresh. Images are not kept: download them.</li>
+          </ul>
+
+          <h2 id="g-trust">How accuracy works</h2>
+          <p>Nothing is written from memory. A post may only say what its source facts say. After writing, a second check reads the post line by line against those facts and flags anything extra.</p>
+          <table class="tbl">
+            <tr><th>You see</th><th>It means</th></tr>
+            <tr><td><span class="badge good">Trade press</span></td><td>From a recognised trade or official source.</td></tr>
+            <tr><td><span class="badge good">Source confirmed</span></td><td>The link opened and the figures were found on the page.</td></tr>
+            <tr><td><span class="badge warn">Check the source</span></td><td>The link was blocked or the figures were not found. Open it and read it before using the idea.</td></tr>
+            <tr><td><span class="badge bad">Handle with care</span></td><td>Sensitive news (conflict, accidents). Written neutrally and never tied to your products.</td></tr>
+            <tr><td><span class="badge">Evergreen</span></td><td>A guide or standard that stays relevant, so it may be older.</td></tr>
+            <tr><td>Green "fact-checked" note</td><td>Every sentence is supported by the sources.</td></tr>
+            <tr><td>Amber "Please verify"</td><td>A sentence goes beyond the sources. Edit it or have someone confirm it.</td></tr>
+          </table>
+          <p><b>Images are AI-generated illustrations.</b> They are realistic but not real photographs of your operations. Have someone check equipment details before publishing, and prefer real your photos for real events.</p>
+
+          <h2 id="g-linkedin">Posting to LinkedIn</h2>
+          <ol class="steps-list">
+            <li>Press <b>Post to LinkedIn</b> on a post. The image is copied and downloaded, and LinkedIn's composer opens with your text filled in.</li>
+            <li>Click in the LinkedIn post box and press <b>Cmd+V</b> (Ctrl+V on Windows) to attach the image. If nothing attaches, use the photo icon and choose the downloaded file.</li>
+            <li>Read it over and press <b>Post</b> yourself. The Studio never publishes anything on its own.</li>
+            <li>Post as the your company page using a page-admin role. Never share personal LinkedIn passwords with any tool.</li>
+          </ol>
+
+          <h2 id="g-setup">Setup and settings</h2>
+          <p>For whoever installs it. Full details are in <code>README.md</code>.</p>
+          <ul>
+            <li>Copy <code>.env.example</code> to <code>.env</code> and put your OpenAI key in <code>.env</code>, never in <code>.env.example</code>. Restart the server after changes.</li>
+            <li><code>OPENAI_RESEARCH_MODEL</code> (default <code>gpt-4.1-mini</code>) controls research and reading. <code>OPENAI_WRITER_MODEL</code> (default <code>gpt-4.1</code>) writes each post's first draft. <code>OPENAI_MODEL</code> (default <code>gpt-4.1-mini</code>) runs the fact-checks and the Assistant. <code>OPENAI_IMAGE_MODEL</code> and <code>OPENAI_IMAGE_QUALITY</code> (default <code>low</code>) control images.</li>
+            <li>In the sidebar, <b>Image quality</b> switches between Draft (cheapest) and Final, and the line below it counts this session's calls, tokens, searches and images. OpenAI's own usage page has the true spend.</li>
+            <li>The older version of the app is still available under "Classic view" in the sidebar.</li>
+          </ul>
+
+          <h2 id="g-help">Troubleshooting</h2>
+          <table class="tbl">
+            <tr><th>Problem</th><th>What to do</th></tr>
+            <tr><td>"No OpenAI key" in the sidebar</td><td>Add <code>OPENAI_API_KEY</code> to <code>.env</code> and restart.</td></tr>
+            <tr><td>Page says it can't be reached</td><td>The server has stopped. Start it again with <code>npm start</code> and use the address it prints.</td></tr>
+            <tr><td>Very few topics found</td><td>Press Find latest topics again, or use Add your own with facts you hold.</td></tr>
+            <tr><td>Image paste does nothing in LinkedIn</td><td>Use the photo icon in LinkedIn and pick the downloaded file.</td></tr>
+            <tr><td>"Search did not run" style errors</td><td>The account or model may not allow web search. Check <code>OPENAI_RESEARCH_MODEL</code>.</td></tr>
+          </table>
+          <p class="hint" style="max-width:none">Cost: a search is a few cents, a week of posts a few cents more, and a draft image about a cent or two (Final quality costs more). Nothing runs until you press a button.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+(function () {
+  'use strict';
+  var DAYS = [
+    { id: 'mon', label: 'Monday', short: 'Mon', role: 'Industry news' },
+    { id: 'wed', label: 'Wednesday', short: 'Wed', role: 'Practical value' },
+    { id: 'fri', label: 'Friday', short: 'Fri', role: 'Market colour' }
+  ];
+  var KEY = 'social-engine-v2';
+  var state = { topics: [], researchedAt: '', week: { mon: null, wed: null, fri: null }, posts: {}, filter: 'all', customs: 0, log: [], chat: [], analytics: [] };
+  var runtime = { options: null, images: {}, busy: {}, dayStatus: {}, finding: false, chatImages: {}, chatBusy: false, chatDocs: [] };
+
+  function load() { try { var s = JSON.parse(localStorage.getItem(KEY)); if (s && s.week) state = Object.assign(state, s); } catch (e) {} if (!Array.isArray(state.log)) state.log = []; if (!Array.isArray(state.chat)) state.chat = []; if (!Array.isArray(state.analytics)) state.analytics = []; }
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} }
+  var $ = function (id) { return document.getElementById(id); };
+  function h(tag, attrs) {
+    var el = document.createElement(tag);
+    Object.keys(attrs || {}).forEach(function (k) {
+      if (k === 'class') el.className = attrs[k]; else if (k === 'text') el.textContent = attrs[k];
+      else if (k.slice(0, 2) === 'on') el.addEventListener(k.slice(2), attrs[k]); else el.setAttribute(k, attrs[k]);
+    });
+    for (var i = 2; i < arguments.length; i++) { var c = arguments[i]; if (c == null || c === false) continue; el.appendChild(typeof c === 'string' ? document.createTextNode(c) : c); }
+    return el;
+  }
+  var ICON = {
+    search: '<circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/>',
+    link: '<path d="M10 13a5 5 0 007 0l3-3a5 5 0 00-7-7l-1 1"/><path d="M14 11a5 5 0 00-7 0l-3 3a5 5 0 007 7l1-1"/>',
+    pen: '<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"/>',
+    shield: '<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/>',
+    eye: '<path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
+    send: '<path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4z"/>'
+  };
+  function svg(name) { var s = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); s.setAttribute('viewBox', '0 0 24 24'); s.setAttribute('fill', 'none'); s.setAttribute('stroke', 'currentColor'); s.setAttribute('stroke-width', '1.8'); s.setAttribute('stroke-linecap', 'round'); s.setAttribute('stroke-linejoin', 'round'); s.innerHTML = ICON[name]; return s; }
+  function setStatus(el, text, kind) { if (!el) return; el.textContent = text; el.className = 'status' + (kind ? ' ' + kind : ''); }
+  function clock(ts) { return new Date(ts).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); }
+  function nice(date) { if (!date) return ''; var d = new Date(date + 'T12:00:00'); return isNaN(d) ? date : d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }); }
+  function log(text) { state.log.unshift({ t: Date.now(), text: text }); state.log = state.log.slice(0, 40); save(); renderLog(); }
+
+  var prefs = { quality: 'low', research: false, round: 0 };
+  try { var sp = JSON.parse(localStorage.getItem('social-engine-prefs') || '{}'); if (sp.quality === 'medium') prefs.quality = 'medium'; prefs.research = sp.research === true; prefs.round = Number(sp.round) || 0; } catch (e) {}
+  function savePrefs() { try { localStorage.setItem('social-engine-prefs', JSON.stringify(prefs)); } catch (e) {} }
+  
+  // Brand profile loaded from the server
+  var brand = { name: 'Social Engine', website: '', tagline: '' };
+  async function loadBrand() {
+    try {
+      var res = await fetch('/api/profile');
+      if (res.ok) {
+        var data = await res.json();
+        if (data.profile) {
+          brand = data.profile;
+          runtime.brandUrl = (brand.website || '').replace(/^https?:\/\//, '').replace(/\/$/, '');
+          // Update UI with brand info
+          var logoEl = $('brandLogo');
+          if (logoEl && brand.logo && brand.logo.dark) logoEl.src = brand.logo.dark;
+          if (logoEl && brand.name) logoEl.alt = brand.name;
+          document.title = brand.name + ' - Content Studio';
+          DAYS.forEach(function (d) { paint(d.id); });
+        }
+      }
+    } catch (e) { console.warn('Could not load brand profile:', e); }
+  }
+  loadBrand();
+  var usageTimer;
+  function refreshUsage() {
+    clearTimeout(usageTimer);
+    usageTimer = setTimeout(function () {
+      fetch('/api/studio/usage').then(function (r) { return r.json(); }).then(function (u) {
+        var calls = 0, tokens = 0, imgs = 0;
+        Object.keys(u.text || {}).forEach(function (m) { calls += u.text[m].calls; tokens += u.text[m].input + u.text[m].output; });
+        Object.keys(u.images || {}).forEach(function (k) { imgs += u.images[k]; });
+        var line = $('usageLine'); if (line) line.textContent = 'This session: ' + calls + ' text calls (' + Math.round(tokens / 1000) + 'k tokens), ' + (u.searches || 0) + ' web searches, ' + imgs + ' images';
+      }).catch(function () {});
+    }, 400);
+  }
+  async function post(path, body) {
+    var ctl = new AbortController(), timer = setTimeout(function () { ctl.abort(); }, 300000);
+    try {
+      var res = await fetch(path, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body), signal: ctl.signal });
+      var data = await res.json().catch(function () { return {}; });
+      refreshUsage();
+      if (!res.ok) throw new Error(data.error || 'Something went wrong.');
+      return data;
+    } catch (e) { throw e.name === 'AbortError' ? new Error('That took too long. Try again.') : e; }
+    finally { clearTimeout(timer); }
+  }
+
+  /* ---------- Navigation ---------- */
+  var VIEWS = ['dash', 'studio', 'assistant', 'library', 'analytics', 'guide'];
+  function show(view) {
+    VIEWS.forEach(function (v) { $('view-' + v).hidden = v !== view; });
+    document.querySelectorAll('.nav button').forEach(function (b) { if (b.getAttribute('data-view') === view) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current'); });
+    try { history.replaceState(null, '', '#' + (view === 'dash' ? 'dashboard' : view)); } catch (e) {}
+    if (view === 'studio') DAYS.forEach(function (d) { paint(d.id); });
+    if (view === 'library') renderLib();
+    if (view === 'analytics') renderAnalytics();
+    if (view === 'assistant') { renderChat(); setTimeout(function () { $('prompt').focus(); }, 0); }
+    window.scrollTo(0, 0);
+  }
+  document.querySelectorAll('.nav button').forEach(function (b) { b.addEventListener('click', function () { show(b.getAttribute('data-view')); }); });
+  document.addEventListener('click', function (e) { var g = e.target.closest && e.target.closest('[data-go]'); if (g) show(g.getAttribute('data-go')); });
+  $('theme').addEventListener('click', function () {
+    var next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next); try { localStorage.setItem('social-engine-theme', next); } catch (e) {}
+    $('theme').textContent = next === 'dark' ? 'Switch to light mode' : 'Switch to dark mode';
+  });
+
+  /* ---------- Dashboard ---------- */
+  function dayState(d) {
+    var topic = state.week[d.id], p = state.posts[d.id], img = runtime.images[d.id];
+    return { idea: !!topic, written: !!p, checked: !!p && p.verified === true && !(p.toCheck || []).length, flagged: !!p && (!p.verified || (p.toCheck || []).length > 0), image: !!img, posted: !!(p && p.posted) };
+  }
+  function nextStep() {
+    var assigned = DAYS.filter(function (d) { return state.week[d.id]; }).length;
+    var written = DAYS.filter(function (d) { return state.posts[d.id]; }).length;
+    var needImg = DAYS.filter(function (d) { return state.posts[d.id] && !runtime.images[d.id]; }).length;
+    var unposted = DAYS.filter(function (d) { return state.posts[d.id] && !state.posts[d.id].posted; });
+    if (!state.topics.length) return { title: 'Research this week’s topics', text: 'Search trade press and official sources for what matters to your brand’s customers right now.', cta: 'Find latest topics', act: function () { show('studio'); findTopics(); } };
+    if (assigned < 3) return { title: 'Choose your three ideas', text: state.topics.length + ' topics are ready. Let the studio fill Monday, Wednesday and Friday, or pick your own.', cta: 'Auto-fill my week', act: function () { autoFill(); show('studio'); } };
+    if (written < assigned) return { title: 'Write and fact-check the week', text: 'Each post is written from your sources and checked line by line before you see it.', cta: 'Write my week', act: function () { show('studio'); writeWeek(); } };
+    if (needImg) return { title: needImg + ' image' + (needImg > 1 ? 's' : '') + ' to create', text: 'Open the studio to research the scene and generate a branded image for each post.', cta: 'Go to the posts', act: function () { show('studio'); $('h-posts').scrollIntoView({ behavior: 'smooth' }); } };
+    if (unposted.length) return { title: 'Review and publish ' + unposted[0].label, text: 'Check the post, then send it to LinkedIn’s composer. You press Post yourself.', cta: 'Review ' + unposted[0].label, act: function () { show('studio'); $('h-posts').scrollIntoView({ behavior: 'smooth' }); } };
+    return { title: 'This week is complete', text: 'All three posts are published. Research fresh topics for next week.', cta: 'Find latest topics', act: function () { show('studio'); findTopics(); } };
+  }
+  function renderDash() {
+    var hr = new Date().getHours();
+    $('dash-h').textContent = ''; $('dash-h').appendChild(document.createTextNode((hr < 12 ? 'Good morning' : hr < 18 ? 'Good afternoon' : 'Good evening') + '. ')); $('dash-h').appendChild(h('span', { text: 'Ready to plan the week?' }));
+    $('today').textContent = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' });
+
+    var n = nextStep(), box = $('next'); box.textContent = '';
+    box.appendChild(h('span', { class: 'badge ai', text: 'Suggested next step' })); box.appendChild(h('h3', { text: n.title })); box.appendChild(h('p', { text: n.text }));
+    box.appendChild(h('button', { type: 'button', class: 'btn primary', text: n.cta, onclick: n.act }));
+
+    var written = DAYS.filter(function (d) { return state.posts[d.id]; }).length;
+    var clear = DAYS.filter(function (d) { return dayState(d).checked; }).length, flagged = DAYS.filter(function (d) { return dayState(d).flagged; }).length;
+    var imgs = DAYS.filter(function (d) { return runtime.images[d.id]; }).length;
+    var tiles = [
+      ['Topics researched', String(state.topics.length), state.researchedAt ? 'Found at ' + clock(state.researchedAt) : 'Not researched yet'],
+      ['Posts written', written + '<small> / 3</small>', written ? 'For this week' : 'Nothing written yet'],
+      ['Fact-check', written ? (flagged ? flagged + '<small> to review</small>' : 'All clear') : '—', written ? clear + ' passed with no flags' : 'Runs on every post'],
+      ['Images ready', imgs + '<small> / 3</small>', 'Made in this session']
+    ];
+    var s = $('stats'); s.textContent = '';
+    tiles.forEach(function (t) { var el = h('div', { class: 'glass stat' }, h('div', { class: 'eyebrow', text: t[0] }), h('div', { class: 'v' }), h('div', { class: 's', text: t[2] })); el.querySelector('.v').innerHTML = t[1]; s.appendChild(el); });
+
+    var tl = $('timeline'); tl.textContent = '';
+    DAYS.forEach(function (d) {
+      var topic = state.week[d.id], st = dayState(d);
+      var steps = h('div', { class: 'steps', 'aria-label': 'Progress' });
+      [['idea', st.idea], ['written', st.written], ['checked', st.checked ? 'on' : st.flagged ? 'warn' : false], ['image', st.image], ['posted', st.posted]].forEach(function (x) { steps.appendChild(h('span', { class: 'step' + (x[1] === 'warn' ? ' warn' : x[1] ? ' on' : ''), title: x[0] })); });
+      tl.appendChild(h('button', { type: 'button', class: 'tl', 'data-go': 'studio' }, h('div', { class: 'd' }, d.label, h('small', { text: d.role })), h('div', { class: 't' + (topic ? '' : ' empty'), text: topic ? topic.title : 'No idea chosen yet' }), steps));
+    });
+
+    var f = $('fresh'); f.textContent = '';
+    var top = state.topics.slice(0, 4);
+    if (!top.length) f.appendChild(h('div', { class: 'empty-state', style: 'padding:24px 8px', text: 'No research yet. Press Find latest topics in the studio.' }));
+    top.forEach(function (t) {
+      var meta = h('div', { class: 'meta' }, h('span', { class: 'badge', text: t.categoryLabel || 'Your own' }));
+      if (t.date) meta.appendChild(h('span', { text: nice(t.date) })); if (t.confirmed) meta.appendChild(h('span', { class: 'badge good', text: 'Source confirmed' })); if (t.sensitive) meta.appendChild(h('span', { class: 'badge bad', text: 'Handle with care' }));
+      var row = h('div', { class: 'assign' }); DAYS.forEach(function (d) { var on = state.week[d.id] && state.week[d.id].id === t.id; row.appendChild(h('button', { type: 'button', 'aria-pressed': String(Boolean(on)), text: d.short, onclick: function () { assign(d.id, t); } })); });
+      f.appendChild(h('div', { class: 'item' }, h('b', { text: t.title }), meta, row));
+    });
+
+    var pipe = $('pipe'); pipe.textContent = '';
+    [['search', 'Research', 'live web search'], ['link', 'Source check', 'links opened'], ['pen', 'Write', 'facts only'], ['shield', 'Fact-check', 'line by line'], ['eye', 'Your review', 'you decide'], ['send', 'Post', 'you press Post']].forEach(function (p) {
+      var box2 = h('div', { class: 'p' }); box2.appendChild(svg(p[0])); box2.appendChild(document.createTextNode(p[1])); box2.appendChild(h('em', { text: p[2] })); pipe.appendChild(box2);
+    });
+    renderLog();
+  }
+  function renderLog() {
+    var box = $('log'); if (!box) return; box.textContent = '';
+    if (!state.log.length) { box.appendChild(h('div', { class: 'none', text: 'Activity from the studio will appear here.' })); return; }
+    state.log.slice(0, 14).forEach(function (e) { box.appendChild(h('div', null, h('time', { text: clock(e.t) }), h('span', { text: e.text }))); });
+  }
+
+  /* ---------- Studio: week ---------- */
+  function renderWeek() {
+    var box = $('week'); box.textContent = '';
+    DAYS.forEach(function (d) {
+      var topic = state.week[d.id], st = runtime.dayStatus[d.id] || (state.posts[d.id] ? 'done' : '');
+      var slot = h('div', { class: 'glass slot', 'data-state': st });
+      slot.appendChild(h('div', { class: 'day' }, h('span', { text: d.label }), h('span', { text: st === 'working' ? 'Writing…' : st === 'done' ? 'Written ✓' : st === 'error' ? 'Needs retry' : '' })));
+      slot.appendChild(h('div', { class: 'role', text: d.role }));
+      slot.appendChild(topic ? h('div', { class: 'title', text: topic.title }) : h('div', { class: 'empty', text: 'Pick an idea below, or use Auto-fill.' }));
+      box.appendChild(slot);
+    });
+    $('writeWeek').disabled = !DAYS.some(function (d) { return state.week[d.id]; }) || Object.keys(runtime.busy).length > 0;
+  }
+
+  /* ---------- Studio: ideas ---------- */
+  function renderFilters() {
+    var box = $('filters'); box.textContent = '';
+    var cats = [{ id: 'all', label: 'All' }].concat((runtime.options ? runtime.options.categories : []).filter(function (c) { return state.topics.some(function (t) { return t.category === c.id; }); }));
+    if (cats.length < 3) return;
+    cats.forEach(function (c) { box.appendChild(h('button', { class: 'chip', type: 'button', 'aria-pressed': String(state.filter === c.id), text: c.label, onclick: function () { state.filter = c.id; save(); renderFilters(); renderIdeas(); } })); });
+  }
+  function assign(day, topic) {
+    var prev = state.week[day];
+    DAYS.forEach(function (d) { if (state.week[d.id] && state.week[d.id].id === topic.id) { state.week[d.id] = null; delete state.posts[d.id]; delete runtime.images[d.id]; } });
+    state.week[day] = prev && prev.id === topic.id ? null : topic;
+    if (prev && prev.id !== topic.id) { delete state.posts[day]; delete runtime.images[day]; }
+    if (!state.week[day]) { delete state.posts[day]; delete runtime.images[day]; }
+    save(); renderAll();
+  }
+  function ideaCard(t) {
+    var meta = h('div', { class: 'meta' }, h('span', { class: 'badge', text: t.categoryLabel || 'Your own' }));
+    if (t.date) meta.appendChild(h('span', { text: nice(t.date) }));
+    if (t.sensitive) meta.appendChild(h('span', { class: 'badge bad', text: 'Handle with care' }));
+    if (t.trusted) meta.appendChild(h('span', { class: 'badge good', text: 'Trade press' }));
+    if (t.confirmed) meta.appendChild(h('span', { class: 'badge good', text: 'Source confirmed' }));
+    else if (t.facts.some(function (f) { return f.url; })) meta.appendChild(h('span', { class: 'badge warn', text: 'Check the source', title: 'The link could not be opened or the figures were not found on the page. Open it and read it before using this.' }));
+    if (t.evergreen) meta.appendChild(h('span', { class: 'badge', text: 'Evergreen' }));
+    if (t.origin === 'document') meta.appendChild(h('span', { class: 'badge', text: 'From your document' }));
+    if (t.origin === 'screenshot') meta.appendChild(h('span', { class: 'badge warn', text: 'From your screenshot', title: 'Read from your screenshot. Check the figures against the original.' }));
+    var list = h('ul');
+    t.facts.forEach(function (f) { var li = h('li', { text: f.text + ' ' }); li.appendChild(f.url ? h('a', { href: f.url, target: '_blank', rel: 'noopener noreferrer', text: '(' + f.source + (f.date ? ', ' + nice(f.date) : '') + ')' }) : h('span', { text: '(' + f.source + ')' })); list.appendChild(li); });
+    var row = h('div', { class: 'assign', role: 'group', 'aria-label': 'Use this idea on' });
+    DAYS.forEach(function (d) { var on = state.week[d.id] && state.week[d.id].id === t.id; row.appendChild(h('button', { type: 'button', 'aria-pressed': String(Boolean(on)), text: d.short + (t.bestDay === d.id ? ' ★' : ''), title: d.label + (t.bestDay === d.id ? ' (suggested)' : ''), onclick: function () { assign(d.id, t); } })); });
+    return h('article', { class: 'glass card' }, meta, h('h3', { text: t.title }), t.whyItMatters ? h('p', { class: 'why', text: t.whyItMatters }) : null,
+      h('details', null, h('summary', { text: t.facts.length + ' source fact' + (t.facts.length > 1 ? 's' : '') }), list), row);
+  }
+  function renderIdeas() {
+    var box = $('ideas'); box.textContent = '';
+    $('thinking').hidden = !runtime.finding;
+    if (runtime.finding && !state.topics.length) { for (var i = 0; i < 6; i++) box.appendChild(h('div', { class: 'skel' })); return; }
+    var shown = state.topics.filter(function (t) { return state.filter === 'all' || t.category === state.filter; });
+    if (!shown.length) { box.appendChild(h('div', { class: 'empty-state' }, h('strong', { text: 'No ideas yet.' }), h('br'), 'Press “Find latest topics” and the studio will search trade press and official sources for what matters to your brand’s customers right now.')); return; }
+    shown.forEach(function (t) { box.appendChild(ideaCard(t)); });
+  }
+  async function findTopics(all) {
+    if (runtime.finding) return;
+    runtime.finding = true; $('find').disabled = true; $('findAll').disabled = true; $('dashFind').disabled = true; renderIdeas(); setStatus($('ideasStatus'), '');
+    try {
+      var out = await post('/api/studio/topics', { all: all === true, round: prefs.round, exclude: state.topics.filter(function (t) { return !t.own; }).map(function (t) { return t.title; }) });
+      if (all !== true) { prefs.round = (prefs.round + 1) % 3; savePrefs(); }
+      var own = state.topics.filter(function (t) { return t.own; });
+      var kept = all === true ? [] : state.topics.filter(function (t) { return !t.own; });
+      state.topics = own.concat(kept, out.topics.map(function (t, i) { return Object.assign({}, t, { id: 'r' + Date.now().toString(36) + i }); }));
+      DAYS.forEach(function (d) { var w = state.week[d.id]; if (w && !w.own && !state.posts[d.id]) state.week[d.id] = null; });
+      state.researchedAt = Date.now(); state.filter = 'all'; save();
+      log('Found ' + out.topics.length + ' topics (' + out.searchesSucceeded + ' of ' + out.searches + ' searches' + (out.searchesCached ? ', ' + out.searchesCached + ' from today\u2019s saved results' : '') + ')');
+      setStatus($('ideasStatus'), out.topics.length + ' new topics found. Press again for the next research area, or pick some and use Auto-fill week.', 'ok');
+    } catch (e) { setStatus($('ideasStatus'), e.message, 'err'); }
+    runtime.finding = false; $('find').disabled = false; $('findAll').disabled = false; $('dashFind').disabled = false; renderAll();
+  }
+  function autoFill() {
+    var pool = state.topics.filter(function (t) { return !t.sensitive; });
+    if (!pool.length) { setStatus($('weekStatus'), 'Find some topics first.', 'err'); return; }
+    var used = {}; DAYS.forEach(function (d) { if (state.week[d.id]) used[state.week[d.id].id] = true; });
+    DAYS.forEach(function (d) {
+      if (state.week[d.id]) return;
+      var pick = pool.find(function (t) { return !used[t.id] && t.bestDay === d.id; }) || pool.find(function (t) { return !used[t.id]; });
+      if (pick) { state.week[d.id] = pick; used[pick.id] = true; }
+    });
+    log('Filled the week from the researched topics'); save(); renderAll(); setStatus($('weekStatus'), 'Week filled. Swap any idea with the Mon / Wed / Fri buttons.', 'ok');
+  }
+
+
+  /* ---------- Build a post from a link or screenshot ---------- */
+  var srcDay = 'mon';
+  function renderSrcDays() {
+    var box = $('srcDays'); box.textContent = '';
+    DAYS.concat([{ id: 'none', label: 'Just add to my ideas' }]).forEach(function (d) {
+      box.appendChild(h('button', { type: 'button', class: 'chip', 'aria-pressed': String(srcDay === d.id), text: d.label, onclick: function () { srcDay = d.id; renderSrcDays(); } }));
+    });
+  }
+  function downscale(file) {
+    return new Promise(function (resolve, reject) {
+      var reader = new FileReader();
+      reader.onerror = reject;
+      reader.onload = function () {
+        var img = new Image(); img.onerror = reject;
+        img.onload = function () {
+          var max = 1600, scale = Math.min(1, max / Math.max(img.width, img.height)), c = document.createElement('canvas');
+          c.width = Math.round(img.width * scale); c.height = Math.round(img.height * scale);
+          var ctx = c.getContext('2d'); ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, c.width, c.height); ctx.drawImage(img, 0, 0, c.width, c.height);
+          var q = 0.85, url = c.toDataURL('image/jpeg', q);
+          while (url.length > 3400000 && q > 0.4) { q -= 0.15; url = c.toDataURL('image/jpeg', q); }
+          resolve(url);
+        };
+        img.src = reader.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+  async function takeImage(file) {
+    if (!file || !/^image\/(png|jpeg|webp)$/.test(file.type)) { setStatus($('srcStatus'), 'Use a PNG, JPEG or WebP screenshot.', 'err'); return; }
+    try {
+      runtime.srcImage = await downscale(file);
+      var box = $('srcPreview'); box.textContent = '';
+      box.appendChild(h('img', { src: runtime.srcImage, alt: 'Your screenshot', style: 'max-height:150px;max-width:100%;border:1px solid var(--line-2);display:block' }));
+      box.appendChild(h('button', { type: 'button', class: 'btn sm', style: 'margin-top:8px', text: 'Remove screenshot', onclick: function () { runtime.srcImage = null; box.textContent = ''; $('srcFile').value = ''; } }));
+      setStatus($('srcStatus'), 'Screenshot ready.', 'ok');
+    } catch (e) { setStatus($('srcStatus'), 'That image could not be read. Try another one.', 'err'); }
+  }
+  $('addSrc').addEventListener('click', function () { $('src').hidden = !$('src').hidden; renderSrcDays(); if (!$('src').hidden) $('srcUrl').focus(); });
+  $('srcCancel').addEventListener('click', function () { $('src').hidden = true; });
+  $('srcFile').addEventListener('change', function () { takeImage(this.files[0]); });
+  document.addEventListener('paste', function (e) {
+    if ($('src').hidden || $('view-studio').hidden) return;
+    var items = (e.clipboardData && e.clipboardData.files) || [];
+    for (var i = 0; i < items.length; i++) if (/^image\//.test(items[i].type)) { e.preventDefault(); takeImage(items[i]); return; }
+  });
+  $('srcGo').addEventListener('click', async function () {
+    var url = $('srcUrl').value.trim(), note = $('srcNote').value.trim();
+    if (!url && !runtime.srcImage) { setStatus($('srcStatus'), 'Paste a link or add a screenshot first.', 'err'); return; }
+    var btn = this; btn.disabled = true; setStatus($('srcStatus'), (url ? 'Opening the page and reading it…' : 'Reading your screenshot…'));
+    try {
+      var out = await post('/api/studio/extract', url ? { url: url, note: note } : { image: runtime.srcImage, note: note });
+      var topic = Object.assign({}, out.topic, { id: 'x' + Date.now().toString(36), note: note || undefined });
+      state.topics.unshift(topic); state.filter = 'all';
+      log('Read ' + (url ? 'a link' : 'a screenshot') + ': ' + topic.title);
+      if (srcDay !== 'none') {
+        DAYS.forEach(function (d) { if (state.week[d.id] && state.week[d.id].id === topic.id) state.week[d.id] = null; });
+        state.week[srcDay] = topic; delete state.posts[srcDay]; delete runtime.images[srcDay];
+      }
+      save(); renderAll();
+      $('src').hidden = true; $('srcUrl').value = ''; $('srcNote').value = ''; runtime.srcImage = null; $('srcPreview').textContent = ''; $('srcFile').value = ''; setStatus($('srcStatus'), '');
+      if (srcDay !== 'none') {
+        setStatus($('weekStatus'), 'Writing ' + dayLabel(srcDay) + ' from your ' + (url ? 'link' : 'screenshot') + '…');
+        await writeDay(srcDay);
+        setStatus($('weekStatus'), dayLabel(srcDay) + ' is ready below. Use “Change the theme or tone” to adjust it.', 'ok');
+        $('h-posts').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } else setStatus($('ideasStatus'), 'Added to your ideas. Choose a day for it with the Mon / Wed / Fri buttons.', 'ok');
+    } catch (e) { setStatus($('srcStatus'), e.message, 'err'); }
+    btn.disabled = false;
+  });
+  renderSrcDays();
+
+  $('addOwn').addEventListener('click', function () { $('own').hidden = !$('own').hidden; });
+  $('ownCancel').addEventListener('click', function () { $('own').hidden = true; });
+  /* ---------- Add your own: facts typed in, or read from a PDF / Word document ---------- */
+  var ownDay = 'none';
+  function renderOwnDays() {
+    var box = $('ownDays'); box.textContent = '';
+    DAYS.concat([{ id: 'none', label: 'Just add to my ideas' }]).forEach(function (d) {
+      box.appendChild(h('button', { type: 'button', class: 'chip', 'aria-pressed': String(ownDay === d.id), text: d.label, onclick: function () { ownDay = d.id; renderOwnDays(); } }));
+    });
+  }
+  async function readDocument(file) {
+    var name = file.name.toLowerCase();
+    if (file.size > 30 * 1024 * 1024) throw new Error('That file is over 30 MB. Use a smaller one, or paste the relevant part.');
+    if (/\.pdf$/.test(name) || file.type === 'application/pdf') {
+      if (!window.pdfjsLib) {
+        await loadScript('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js');
+        var worker = await (await fetch('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js')).text();
+        window.pdfjsLib.GlobalWorkerOptions.workerSrc = URL.createObjectURL(new Blob([worker], { type: 'text/javascript' }));
+      }
+      var pdf = await window.pdfjsLib.getDocument({ data: new Uint8Array(await file.arrayBuffer()) }).promise, pages = [];
+      for (var i = 1; i <= Math.min(pdf.numPages, 80); i++) {
+        var content = await (await pdf.getPage(i)).getTextContent();
+        pages.push(content.items.map(function (it) { return it.str; }).join(' '));
+        if (pages.join('\n').length > 60000) break;
+      }
+      return pages.join('\n');
+    }
+    if (/\.docx$/.test(name)) {
+      if (!window.mammoth) await loadScript('https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js');
+      return (await window.mammoth.extractRawText({ arrayBuffer: await file.arrayBuffer() })).value;
+    }
+    if (/\.(txt|md)$/.test(name)) return file.text();
+    throw new Error('Use a PDF, a Word (.docx) or a text file. Older .doc files need saving as .docx first.');
+  }
+  $('ownDoc').addEventListener('change', async function () { var f = this.files[0]; this.value = ''; if (f) await readOwnDoc(f); });
+  async function readOwnDoc(file) {
+    var input = { value: '' };
+    $('own').hidden = false; renderOwnDays();
+    try {
+      setStatus($('ownStatus'), 'Reading “' + file.name + '”…');
+      var text = (await readDocument(file)).replace(/[ \t]+/g, ' ').trim();
+      if (text.length < 200) throw new Error('No readable text found. A scanned PDF is just a picture: take a screenshot of the page instead.');
+      setStatus($('ownStatus'), 'Choosing the best facts with AI…');
+      var out = await post('/api/studio/extract', { text: text, title: file.name, note: $('ownDocNote').value.trim() });
+      var t = out.topic;
+      $('ownTitle').value = t.title; $('ownFacts').value = t.facts.map(function (f) { return f.text; }).join('\n'); $('ownSource').value = t.facts[0].source;
+      runtime.ownMeta = { category: t.category, categoryLabel: t.categoryLabel, whyItMatters: t.whyItMatters, sensitive: t.sensitive, bestDay: t.bestDay, date: t.date, origin: 'document' };
+      setStatus($('ownStatus'), 'Read ' + t.facts.length + ' facts from the document' + (text.length >= 60000 ? ' (the first part of it)' : '') + '. Check and edit them below, choose a day, then press Add idea.', 'ok');
+    } catch (e) { setStatus($('ownStatus'), e.message, 'err'); }
+  }
+  $('ownSave').addEventListener('click', async function () {
+    var title = $('ownTitle').value.trim(), source = $('ownSource').value.trim(), meta = runtime.ownMeta || {};
+    var facts = $('ownFacts').value.split('\n').map(function (l) { return l.trim(); }).filter(function (l) { return l.length >= 10; });
+    if (!title || !facts.length || !source) { setStatus($('ownStatus'), 'Add a title, at least one fact (10+ characters) and where it comes from.', 'err'); return; }
+    state.customs += 1;
+    var topic = { id: 'own' + state.customs, own: true, title: title, category: meta.category || 'own', categoryLabel: meta.categoryLabel || 'Your own', whyItMatters: meta.whyItMatters || '', sensitive: !!meta.sensitive, bestDay: meta.bestDay || 'wed', date: meta.date || '', origin: meta.origin, trusted: false, confirmed: meta.origin === 'document', note: $('ownDocNote').value.trim() || undefined,
+      facts: facts.map(function (text) { return { text: text, source: source, url: '', date: meta.date || '', tier: 'check' }; }) };
+    state.topics.unshift(topic); state.filter = 'all';
+    if (ownDay !== 'none') {
+      DAYS.forEach(function (d) { if (state.week[d.id] && state.week[d.id].id === topic.id) state.week[d.id] = null; });
+      state.week[ownDay] = topic; delete state.posts[ownDay]; delete runtime.images[ownDay];
+    }
+    var day = ownDay;
+    $('ownTitle').value = ''; $('ownFacts').value = ''; $('ownSource').value = ''; $('ownDocNote').value = ''; runtime.ownMeta = null; $('own').hidden = true; setStatus($('ownStatus'), '');
+    log('Added your own idea: ' + title); save(); renderAll();
+    if (day !== 'none') {
+      setStatus($('weekStatus'), 'Writing ' + dayLabel(day) + '…');
+      await writeDay(day);
+      setStatus($('weekStatus'), dayLabel(day) + ' is ready below. Use “Change the theme or tone” to adjust it.', 'ok');
+      $('h-posts').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
+  $('addOwn').addEventListener('click', function () { renderOwnDays(); });
+
+  /* ---------- Studio: posts and images ---------- */
+  var logo = new Image(); logo.onload = function () { DAYS.forEach(function (d) { paint(d.id); }); }; logo.src = '/assets/brand/logo-reversed.svg';
+  function wrap(ctx, text, maxWidth) { var words = text.split(/\s+/), lines = [], line = ''; words.forEach(function (w) { var t = line ? line + ' ' + w : w; if (ctx.measureText(t).width > maxWidth && line) { lines.push(line); line = w; } else line = t; }); if (line) lines.push(line); return lines; }
+  function paint(day) { paintTo(document.getElementById('cv-' + day), (runtime.images[day] || {}).img, state.posts[day] || {}, runtime.images[day]); }
+  function paintTo(canvas, image, p, view) {
+    if (!canvas) return;
+    var ctx = canvas.getContext('2d'), W = canvas.width, H = canvas.height, st = { img: image };
+    ctx.clearRect(0, 0, W, H);
+    if (st.img) {
+      var zoom = (view && view.zoom) || 1, fx = view && view.focusX != null ? view.focusX : 0.5;
+      var sc = Math.max(W / st.img.width, H / st.img.height) * zoom, w = st.img.width * sc, hh = st.img.height * sc;
+      ctx.drawImage(st.img, (W - w) * fx, (H - hh) / 2, w, hh);
+    } else {
+      ctx.fillStyle = '#2F455D'; ctx.fillRect(0, 0, W, H);
+      ctx.fillStyle = '#2F9CC9'; ctx.beginPath(); ctx.moveTo(W * 0.25, H); ctx.lineTo(W, H * 0.52); ctx.lineTo(W, H); ctx.closePath(); ctx.fill();
+      ctx.fillStyle = '#E9E1D0'; ctx.beginPath(); ctx.moveTo(0, H); ctx.lineTo(W * 0.25, H); ctx.lineTo(W, H * 0.52); ctx.lineTo(W, H * 0.58); ctx.lineTo(W * 0.12, H); ctx.closePath(); ctx.fill();
+    }
+    var g = ctx.createLinearGradient(0, 0, 0, H * 0.5); g.addColorStop(0, 'rgba(8,30,52,.8)'); g.addColorStop(1, 'rgba(8,30,52,0)'); ctx.fillStyle = g; ctx.fillRect(0, 0, W, H * 0.5);
+    var b = ctx.createLinearGradient(0, H * 0.88, 0, H); b.addColorStop(0, 'rgba(8,30,52,0)'); b.addColorStop(1, 'rgba(8,30,52,.7)'); ctx.fillStyle = b; ctx.fillRect(0, H * 0.88, W, H * 0.12);
+    var m = 72;
+    if (logo.complete && logo.naturalWidth) { var lw = 250; ctx.drawImage(logo, W - m - lw, 64, lw, lw * logo.naturalHeight / logo.naturalWidth); }
+    ctx.fillStyle = '#fff'; ctx.textBaseline = 'top'; ctx.font = '800 84px system-ui, -apple-system, "Segoe UI", sans-serif';
+    var y = 190; wrap(ctx, (p.headline || '').toUpperCase(), W - m * 2 - 100).slice(0, 3).forEach(function (l) { ctx.fillText(l, m, y); y += 90; });
+    ctx.fillStyle = '#3DBE29'; ctx.fillRect(m, y + 8, 120, 8);
+    if (p.tagline) { ctx.fillStyle = '#fff'; ctx.font = '600 38px system-ui, -apple-system, "Segoe UI", sans-serif'; ctx.fillText(p.tagline, m, y + 38); }
+    ctx.fillStyle = '#fff'; ctx.font = '700 34px system-ui, -apple-system, "Segoe UI", sans-serif'; ctx.fillText(runtime.brandUrl || '', m, H - 80);
+  }
+  function fullText(day) { var p = state.posts[day]; if (!p) return ''; var tags = (p.hashtags || []).map(function (t) { return t.charAt(0) === '#' ? t : '#' + t; }).join(' '); return p.text.trim() + (p.addLink ? '\n\nRead more: ' + trackedLink({ title: p.headline, postedAt: todayIso() }) : '') + (tags ? '\n\n' + tags : ''); }
+  function stamp(day, text, kind) { setStatus(document.getElementById('st-' + day), text, kind); }
+  function dayLabel(id) { return DAYS.find(function (d) { return d.id === id; }).label; }
+
+  function otherVisuals(day) {
+    return DAYS.filter(function (d) { return d.id !== day && state.posts[d.id] && runtime.images[d.id] && !runtime.images[d.id].source && state.posts[d.id].visual; })
+      .map(function (d) { return state.posts[d.id].visual.trim().slice(0, 190); }).slice(0, 4);
+  }
+  async function makeImage(day, correction) {
+    var p = state.posts[day], topic = state.week[day]; if (!p || runtime.busy['img' + day]) return;
+    runtime.busy['img' + day] = true; refreshButtons(day);
+    try {
+      stamp(day, prefs.research ? 'Researching how this looks in real life and writing the image brief…' : 'Writing the image brief…');
+      var story = { title: topic ? topic.title : p.headline, facts: topic ? topic.facts.slice(0, 3).map(function (f) { return f.text; }) : [] };
+      var body = { scene: p.scene || 'custom', extra: p.visual || '', story: story, research: prefs.research };
+      if (correction) { body.correction = correction; if (runtime.images[day] && runtime.images[day].plan) body.plan = runtime.images[day].plan; }
+      var plan = await post('/api/studio/plan', body);
+      stamp(day, 'Brief ready (' + (plan.researched ? 'researched online' : 'not researched online') + '). Making the image, up to two minutes…');
+      var out = await post('/api/studio/image', { scene: p.scene || 'custom', extra: p.visual || '', story: story, plan: { mustShow: plan.mustShow, mustNotShow: plan.mustNotShow }, correction: correction || undefined, quality: prefs.quality, avoid: otherVisuals(day) });
+      var img = new Image(); await new Promise(function (resolve, reject) { img.onload = resolve; img.onerror = reject; img.src = out.image; });
+      runtime.images[day] = { img: img, plan: { mustShow: plan.mustShow, mustNotShow: plan.mustNotShow }, brief: plan };
+      log('Created the ' + dayLabel(day) + ' image'); renderPosts(); renderDash(); stamp(day, 'Image made live by OpenAI (' + (out.model || 'image model') + ') at ' + clock(Date.now()) + '.', 'ok');
+    } catch (e) { stamp(day, e.message, 'err'); }
+    delete runtime.busy['img' + day]; refreshButtons(day);
+  }
+  function refreshButtons(day) { var a = document.getElementById('img-' + day); if (a) a.disabled = Boolean(runtime.busy['img' + day]); var f = document.getElementById('fix-' + day); if (f) f.disabled = Boolean(runtime.busy['img' + day]); renderWeek(); }
+  function downloadCanvas(canvas, name) { canvas.toBlob(function (blob) { var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000); }, 'image/png'); }
+  function download(day) { downloadCanvas(document.getElementById('cv-' + day), 'post-' + day + '.png'); }
+  var LINKEDIN_OK = 'LinkedIn is open with your text. Click in the post box and press Cmd+V (Ctrl+V on Windows) to attach the image, or use the photo icon and pick the downloaded file. Then press Post.';
+  var LINKEDIN_BLOCKED = 'Your browser blocked the LinkedIn tab. Allow pop-ups for this page and try again.';
+  function sendToLinkedIn(canvas, text, fileName) {
+    var png = new Promise(function (resolve) { canvas.toBlob(resolve, 'image/png'); });
+    try { if (navigator.clipboard && window.ClipboardItem) navigator.clipboard.write([new ClipboardItem({ 'image/png': png })]).catch(function () {}); } catch (e) {}
+    var win = window.open('https://www.linkedin.com/feed/?shareActive=true&text=' + encodeURIComponent(text), '_blank'); if (win) win.opener = null;
+    png.then(function (blob) { var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = fileName; document.body.appendChild(a); a.click(); a.remove(); setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000); });
+    return Boolean(win);
+  }
+  function toLinkedIn(day) {
+    var text = fullText(day); if (!text) return;
+    var ok = sendToLinkedIn(document.getElementById('cv-' + day), text, 'post-' + day + '.png');
+    stamp(day, ok ? LINKEDIN_OK : LINKEDIN_BLOCKED, ok ? 'ok' : 'err');
+  }
+
+  function postCard(d) {
+    var p = state.posts[d.id], topic = state.week[d.id], img = runtime.images[d.id];
+    var count = h('div', { class: 'wc', 'aria-live': 'polite' });
+    function updateCount() { var n = area.value.trim().split(/\s+/).filter(Boolean).length; count.textContent = n + ' words · aim for 120 to 200 · you can edit this text directly'; count.className = 'wc ' + (n >= 100 && n <= 240 ? 'ok' : 'low'); }
+    var area = h('textarea', { 'aria-label': d.label + ' post text', oninput: function () { p.text = area.value; save(); area.style.height = 'auto'; area.style.height = area.scrollHeight + 4 + 'px'; updateCount(); } }); area.value = p.text;
+    setTimeout(function () { area.style.height = 'auto'; area.style.height = area.scrollHeight + 4 + 'px'; }, 0); updateCount();
+    var notes = h('div', { class: 'notes' });
+    if (p.verified && !(p.toCheck || []).length) notes.appendChild(h('div', { class: 'note ok', text: 'Fact-checked against the sources: every sentence is supported.' }));
+    if ((p.toCheck || []).length) { var ul = h('ul'); p.toCheck.forEach(function (c) { ul.appendChild(h('li', { text: c })); }); notes.appendChild(h('div', { class: 'note warn' }, 'Please verify before publishing:', ul)); }
+    if ((p.lint || []).length) { var ul2 = h('ul'); p.lint.forEach(function (c) { ul2.appendChild(h('li', { text: c })); }); notes.appendChild(h('div', { class: 'note warn' }, 'Style notes:', ul2)); }
+    var src = h('ul'); (p.sources || []).filter(function (s) { return s.url; }).forEach(function (s) { src.appendChild(h('li', null, h('a', { href: s.url, target: '_blank', rel: 'noopener noreferrer', text: s.source }))); });
+    var instr = h('input', { type: 'text', maxlength: 600, placeholder: 'Or describe the change, e.g. “make it about the impact on first-time attendees”', 'aria-label': 'Describe a change to the post' });
+    var angleRow = h('div', { class: 'chips' });
+    ANGLES.forEach(function (a) { angleRow.appendChild(h('button', { type: 'button', class: 'chip', text: a.label, title: a.text, onclick: function () { revise(d.id, a.text); } })); });
+    var revisePanel = h('div', { class: 'revise' }, h('div', { class: 'eyebrow', text: 'Change the theme or tone' }), angleRow,
+      h('div', { class: 'row', style: 'margin-top:10px' }, instr,
+        h('button', { type: 'button', class: 'btn primary sm', id: 'rvb-' + d.id, text: 'Revise post', onclick: function () { if (!instr.value.trim()) { setStatus(document.getElementById('rv-' + d.id), 'Describe the change first, or pick one above.', 'err'); return; } revise(d.id, instr.value.trim()); } }),
+        (p.history && p.history.length) ? h('button', { type: 'button', class: 'btn sm', text: 'Undo last revision', onclick: function () { undoRevision(d.id); } }) : null),
+      h('div', { id: 'rv-' + d.id, class: 'status', role: 'status', 'aria-live': 'polite' }));
+    var left = h('div', null, h('div', { class: 'head' }, h('strong', { text: d.label + ' · ' + d.role }), h('div', { class: 'row' }, p.posted ? h('span', { class: 'badge good', text: 'Posted' }) : null, topic && topic.sensitive ? h('span', { class: 'badge bad', text: 'Handle with care' }) : null)),
+      area, count, notes, revisePanel, src.children.length ? h('details', { style: 'margin-top:10px' }, h('summary', { text: 'Sources' }), src) : null,
+      h('div', { class: 'row', style: 'margin-top:12px' },
+        h('label', { class: 'chk', style: 'display:flex;gap:6px;align-items:center;font-size:13px;font-weight:600;color:var(--text-2)', title: 'Adds a link with campaign tags so your brand\'s Google Analytics can show website visits from this post' }, (function () { var c = h('input', { type: 'checkbox', 'aria-label': 'Add a tracked link to the post text' }); c.checked = !!p.addLink; c.addEventListener('change', function () { p.addLink = c.checked; save(); }); return c; })(), 'Add a tracked link'),
+        h('button', { type: 'button', class: 'btn sm', text: 'Copy post', onclick: function () { navigator.clipboard.writeText(fullText(d.id)).then(function () { stamp(d.id, 'Post copied.', 'ok'); }, function () { stamp(d.id, 'Could not copy. Select the text and copy it manually.', 'err'); }); } }),
+        h('button', { type: 'button', class: 'btn sm', text: 'Write it again', onclick: function () { writeDay(d.id); } }),
+        h('button', { type: 'button', class: 'btn sm', text: p.posted ? 'Mark as not posted' : 'Mark as posted', onclick: function () { p.posted = !p.posted; if (p.posted) { log(d.label + ' marked as posted'); ensureTracked(d.id); } save(); renderPosts(); renderDash(); } })));
+    var cv = h('canvas', { id: 'cv-' + d.id, width: 1080, height: 1350, role: 'img', 'aria-label': d.label + ' LinkedIn image preview' });
+    var headline = h('input', { type: 'text', maxlength: 60, 'aria-label': 'Headline on the image', oninput: function () { p.headline = headline.value; save(); paint(d.id); } }); headline.value = p.headline || '';
+    var tagline = h('input', { type: 'text', maxlength: 50, 'aria-label': 'Line under the headline', oninput: function () { p.tagline = tagline.value; save(); paint(d.id); } }); tagline.value = p.tagline == null ? 'Safe. Reliable. Efficient.' : p.tagline;
+    if (p.tagline == null) p.tagline = tagline.value;
+    var correction = h('textarea', { placeholder: 'Something wrong? e.g. only the right-hand door should be open', 'aria-label': 'What to fix in the image' });
+    var brief = img && img.brief ? h('details', { style: 'margin-top:8px;max-width:380px' }, h('summary', { text: 'Image brief used' }), h('ul', null, h('li', { text: 'Must show:' }), (function () { var u = h('ul'); img.brief.mustShow.forEach(function (x) { u.appendChild(h('li', { text: x })); }); return u; })(), h('li', { text: 'Must not show:' }), (function () { var u = h('ul'); img.brief.mustNotShow.forEach(function (x) { u.appendChild(h('li', { text: x })); }); return u; })())) : null;
+    var right = h('div', { class: 'stage' }, cv,
+      h('div', { class: 'fields' }, h('label', { text: 'Headline on the image' }), headline, h('label', { text: 'Line under it' }), tagline),
+      h('div', { class: 'row', style: 'margin-top:12px' },
+        h('button', { id: 'img-' + d.id, type: 'button', class: 'btn primary sm', text: img ? 'Make a new image' : 'Create image', onclick: function () { makeImage(d.id, ''); } }),
+        h('button', { type: 'button', class: 'btn sm', text: 'Download', onclick: function () { download(d.id); } }),
+        h('button', { type: 'button', class: 'btn sm li', text: 'Post to LinkedIn', onclick: function () { toLinkedIn(d.id); } })),
+      photoTools({ get: function () { return runtime.images[d.id]; }, set: function (v) { runtime.images[d.id] = v; }, repaint: function () { paint(d.id); }, status: function (t, k) { stamp(d.id, t, k); }, after: function () { renderDash(); renderWeek(); },
+        avoid: function () { return otherVisuals(d.id); },
+        story: function () { return { title: topic ? topic.title : p.headline, facts: topic ? topic.facts.slice(0, 3).map(function (f) { return f.text; }) : [] }; } }),
+      (img && !img.source) ? h('div', { class: 'fields' }, correction, h('button', { id: 'fix-' + d.id, type: 'button', class: 'btn sm', style: 'margin-top:8px', text: 'Fix and remake', onclick: function () { var c = correction.value.trim(); if (!c) { stamp(d.id, 'Say what is wrong first.', 'err'); return; } makeImage(d.id, c); } })) : null,
+      brief, h('div', { id: 'st-' + d.id, class: 'status', role: 'status', 'aria-live': 'polite', style: 'max-width:380px;margin-top:8px' }),
+      h('p', { class: 'hint', text: 'Post to LinkedIn opens LinkedIn’s composer with your text; you attach the image and press Post yourself.' }));
+    return h('article', { class: 'glass post' }, left, right);
+  }
+  function renderPosts() {
+    var box = $('posts'); box.textContent = ''; var any = false;
+    DAYS.forEach(function (d) { if (state.posts[d.id]) { any = true; box.appendChild(postCard(d)); } });
+    if (!any) box.appendChild(h('div', { class: 'glass empty-state', text: 'Your written posts will appear here, with fact-checks and image tools.' }));
+    DAYS.forEach(function (d) { paint(d.id); });
+  }
+  var ANGLES = [
+    { label: 'Longer', text: 'Make it longer and more detailed, using every fact.' },
+    { label: 'Shorter', text: 'Make it shorter and punchier, keeping the key figures.' },
+    { label: 'What it means for members', text: 'Change the angle to what this means for community members, only as far as the facts allow.' },
+    { label: 'More practical', text: 'Make it more practical: what operations teams should watch, only as far as the facts allow.' },
+    { label: 'Warmer tone', text: 'Make the tone warmer and more conversational, still professional.' },
+    { label: 'More formal', text: 'Make the tone more formal and measured.' },
+    { label: 'Ask the community', text: 'End with a thoughtful question inviting trade peers to share their experience.' }
+  ];
+  function snapshot(p) { return { text: p.text, headline: p.headline, hashtags: p.hashtags, visual: p.visual, scene: p.scene, toCheck: p.toCheck, verified: p.verified, lint: p.lint, sources: p.sources }; }
+  async function revise(day, instruction) {
+    var p = state.posts[day], topic = state.week[day]; if (!p || !topic || runtime.busy['rv' + day]) return;
+    runtime.busy['rv' + day] = true; var btn = document.getElementById('rvb-' + day); if (btn) btn.disabled = true;
+    setStatus(document.getElementById('rv-' + day), 'Revising and fact-checking…');
+    try {
+      var others = DAYS.filter(function (d) { return d.id !== day && state.posts[d.id]; }).map(function (d) { return state.posts[d.id].text.split('\n')[0]; });
+      var out = await post('/api/studio/post', { day: day, topic: topic, prior: others, current: p.text, instruction: instruction });
+      p.history = (p.history || []).concat([snapshot(p)]).slice(-6);
+      p.text = out.post; p.headline = out.headline || p.headline; p.hashtags = out.hashtags; p.visual = out.visual || p.visual; p.toCheck = out.toCheck; p.verified = out.verified; p.lint = out.lint; p.sources = out.sources;
+      save(); log('Revised ' + dayLabel(day) + ': ' + instruction.slice(0, 60)); renderPosts(); renderDash();
+      setStatus(document.getElementById('rv-' + day), 'Revised at ' + clock(Date.now()) + (out.verified && !out.toCheck.length ? ' and fact-checked.' : '. See the notes above.'), 'ok');
+    } catch (e) { setStatus(document.getElementById('rv-' + day), e.message, 'err'); }
+    delete runtime.busy['rv' + day]; btn = document.getElementById('rvb-' + day); if (btn) btn.disabled = false;
+  }
+  function undoRevision(day) {
+    var p = state.posts[day]; if (!p || !p.history || !p.history.length) return;
+    var prev = p.history.pop(); Object.assign(p, prev); save(); renderPosts();
+    setStatus(document.getElementById('rv-' + day), 'Went back to the previous version.', 'ok');
+  }
+
+  async function writeDay(day) {
+    var topic = state.week[day]; if (!topic) return;
+    runtime.dayStatus[day] = 'working'; runtime.busy[day] = true; renderWeek();
+    try {
+      var prior = DAYS.filter(function (d) { return d.id !== day && state.posts[d.id]; }).map(function (d) { return state.posts[d.id].text.split('\n')[0]; });
+      var out = await post('/api/studio/post', { day: day, topic: topic, prior: prior, steer: topic.note || undefined });
+      state.posts[day] = { text: out.post, headline: out.headline, hashtags: out.hashtags, visual: out.visual, scene: out.scene, toCheck: out.toCheck, verified: out.verified, lint: out.lint, sources: out.sources, tagline: (state.posts[day] || {}).tagline };
+      delete runtime.images[day]; runtime.dayStatus[day] = 'done'; save();
+      log('Wrote ' + dayLabel(day) + (out.verified && !out.toCheck.length ? ' · fact-check clear' : ' · ' + out.toCheck.length + ' line(s) to review'));
+    } catch (e) { runtime.dayStatus[day] = 'error'; setStatus($('weekStatus'), dayLabel(day) + ': ' + e.message, 'err'); }
+    delete runtime.busy[day]; renderWeek(); renderPosts(); renderDash();
+  }
+  async function writeWeek() {
+    var days = DAYS.filter(function (d) { return state.week[d.id]; }); if (!days.length) return;
+    $('writeWeek').disabled = true; $('auto').disabled = true; setStatus($('weekStatus'), 'Writing and fact-checking each post…');
+    for (var i = 0; i < days.length; i++) { await writeDay(days[i].id); }
+    $('auto').disabled = false; renderWeek();
+    if (!days.some(function (d) { return runtime.dayStatus[d.id] === 'error'; })) setStatus($('weekStatus'), 'Done at ' + clock(Date.now()) + '. Review each post below, then create its image.', 'ok');
+    $('h-posts').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+
+  /* ---------- Photo library (kept in this browser with IndexedDB) ---------- */
+  runtime.lib = []; runtime.libError = '';
+  function dbOpen() {
+    return new Promise(function (resolve, reject) {
+      if (!window.indexedDB) { reject(new Error('This browser cannot store a photo library.')); return; }
+      var r = indexedDB.open('your brand-library', 1);
+      r.onupgradeneeded = function () { r.result.createObjectStore('photos', { keyPath: 'id' }); };
+      r.onsuccess = function () { resolve(r.result); }; r.onerror = function () { reject(r.error || new Error('Could not open the photo library.')); };
+    });
+  }
+  function dbDo(mode, fn) { return dbOpen().then(function (db) { return new Promise(function (resolve, reject) { var tx = db.transaction('photos', mode), out = fn(tx.objectStore('photos')); tx.oncomplete = function () { resolve(out && out.result); }; tx.onerror = function () { reject(tx.error); }; tx.onabort = function () { reject(tx.error || new Error('Not enough storage space.')); }; }); }); }
+  function libLoad() { return dbDo('readonly', function (st) { return st.getAll(); }).then(function (all) { runtime.lib = (all || []).sort(function (a, b) { return b.added - a.added; }); runtime.libError = ''; }).catch(function (e) { runtime.libError = e.message; }); }
+  function libPut(rec) { return dbDo('readwrite', function (st) { return st.put(rec); }); }
+  function libDelete(id) { return dbDo('readwrite', function (st) { return st.delete(id); }); }
+
+  function loadScript(src) { return new Promise(function (resolve, reject) { var t = document.createElement('script'); t.src = src; t.onload = resolve; t.onerror = function () { reject(new Error('Could not load the HEIC converter.')); }; document.head.appendChild(t); }); }
+  async function toReadable(file) {
+    if (/heic|heif/i.test(file.type) || /\.(heic|heif)$/i.test(file.name)) {
+      if (!window.heic2any) await loadScript('https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js');
+      var out = await window.heic2any({ blob: file, toType: 'image/jpeg', quality: 0.9 });
+      return Array.isArray(out) ? out[0] : out;
+    }
+    return file;
+  }
+  function scaleImage(blob, max, quality) {
+    return new Promise(function (resolve, reject) {
+      var url = URL.createObjectURL(blob), img = new Image();
+      img.onerror = function () { URL.revokeObjectURL(url); reject(new Error('That image could not be read.')); };
+      img.onload = function () {
+        var k = Math.min(1, max / Math.max(img.width, img.height)), c = document.createElement('canvas');
+        c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
+        var ctx = c.getContext('2d'); ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, c.width, c.height); ctx.drawImage(img, 0, 0, c.width, c.height);
+        URL.revokeObjectURL(url); resolve(c.toDataURL('image/jpeg', quality));
+      };
+      img.src = url;
+    });
+  }
+  function loadImage(src) { return new Promise(function (resolve, reject) { var i = new Image(); i.onload = function () { resolve(i); }; i.onerror = function () { reject(new Error('That photo could not be loaded.')); }; i.src = src; }); }
+
+  async function addPhotos(files) {
+    var list = Array.prototype.slice.call(files || []), added = 0, failed = [], fresh = [];
+    for (var i = 0; i < list.length; i++) {
+      var f = list[i];
+      if (runtime.lib.length >= 60) { setStatus($('libStatus'), 'The library holds up to 60 photos. Delete some first.', 'err'); break; }
+      if (!/^image\//.test(f.type) && !/\.(heic|heif)$/i.test(f.name)) { failed.push(f.name + ' (not an image)'); continue; }
+      setStatus($('libStatus'), 'Adding ' + (i + 1) + ' of ' + list.length + '…');
+      try {
+        var blob = await toReadable(f);
+        var full = await scaleImage(blob, 1600, 0.86), thumb = await scaleImage(blob, 360, 0.8);
+        var rec = { id: 'p' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), name: f.name.replace(/\.[^.]+$/, '').slice(0, 80), notes: '', cleared: false, added: Date.now() + i, thumb: thumb, full: full };
+        await libPut(rec); fresh.push({ id: rec.id, name: rec.name });
+        added++;
+      } catch (e) { failed.push(f.name + (e && e.message ? ' (' + e.message + ')' : '')); }
+    }
+    await libLoad(); renderLib();
+    setStatus($('libStatus'), (added ? added + ' photo' + (added > 1 ? 's' : '') + ' added. ' : '') + (failed.length ? 'Could not add: ' + failed.join(', ') + '. For HEIC problems, export the photo as a JPEG first.' : ''), failed.length && !added ? 'err' : 'ok');
+    if (added) log('Added ' + added + ' photo' + (added > 1 ? 's' : '') + ' to the library');
+    if (fresh.length && runtime.options && runtime.options.liveAvailable) await describeAll(fresh);
+  }
+  async function describeOne(ph, force) {
+    var out = await post('/api/studio/describe', { image: ph.thumb });
+    var cur = runtime.lib.find(function (x) { return x.id === ph.id; }); if (!cur) return false;
+    if (force || !cur.nameEdited) cur.name = out.name;
+    if (force || !cur.notes) cur.notes = out.notes;
+    cur.tags = out.tags; cur.people = out.people; cur.described = true;
+    await libPut(cur); return true;
+  }
+  async function describeAll(fresh) {
+    var done = 0;
+    for (var i = 0; i < fresh.length; i++) {
+      setStatus($('libStatus'), 'Describing photo ' + (i + 1) + ' of ' + fresh.length + ' with AI…');
+      try {
+        var cur = runtime.lib.find(function (x) { return x.id === fresh[i].id; });
+        if (cur && cur.name === fresh[i].name && !cur.notes && await describeOne(cur, false)) done++;
+      } catch (e) {}
+    }
+    renderLib();
+    setStatus($('libStatus'), done ? done + ' photo' + (done > 1 ? 's' : '') + ' named and described by AI. Check the names and notes, and edit anything that is wrong.' : 'Photos added. The AI could not describe them this time, so name them yourself or press Describe with AI.', done ? 'ok' : '');
+  }
+  function renderLib() {
+    var grid = $('libGrid'); if (!grid) return; grid.textContent = '';
+    if (runtime.libError) { grid.appendChild(h('div', { class: 'empty-state', text: runtime.libError })); return; }
+    if (!runtime.lib.length) { grid.appendChild(h('div', { class: 'glass empty-state', text: 'No photos yet. Add your brand’s own photographs above.' })); return; }
+    runtime.lib.forEach(function (ph) {
+      var name = h('input', { type: 'text', maxlength: 80, 'aria-label': 'Photo name', oninput: function () { ph.name = name.value; ph.nameEdited = true; libPut(ph); } }); name.value = ph.name;
+      var notes = h('input', { type: 'text', maxlength: 200, placeholder: 'Where, what, who (optional)', 'aria-label': 'Notes about the photo', oninput: function () { ph.notes = notes.value; libPut(ph); } }); notes.value = ph.notes || '';
+      var meta = null;
+      if ((ph.tags && ph.tags.length) || ph.people) { meta = h('div', { class: 'phmeta' }); (ph.tags || []).forEach(function (t) { meta.appendChild(h('span', { class: 'tag', text: t })); }); if (ph.people) meta.appendChild(h('span', { class: 'tag warn', text: 'people visible: check consent' })); }
+      var descBtn = h('button', { type: 'button', class: 'btn sm', text: ph.described ? 'Describe again' : 'Describe with AI', onclick: async function () {
+        if (!runtime.options || !runtime.options.liveAvailable) { setStatus($('libStatus'), 'Add an OpenAI key to use AI descriptions.', 'err'); return; }
+        descBtn.disabled = true; setStatus($('libStatus'), 'Describing “' + ph.name + '”…');
+        try { await describeOne(ph, true); renderLib(); setStatus($('libStatus'), 'Described. Check the name and notes.', 'ok'); } catch (e) { descBtn.disabled = false; setStatus($('libStatus'), e.message, 'err'); }
+      } });
+      var chk = h('input', { type: 'checkbox', 'aria-label': 'Cleared for public use' }); chk.checked = !!ph.cleared; chk.addEventListener('change', function () { ph.cleared = chk.checked; libPut(ph); });
+      grid.appendChild(h('article', { class: 'glass lib' }, h('img', { src: ph.thumb, alt: ph.name }),
+        h('div', { class: 'body' }, name, notes, meta, h('label', { class: 'chk' }, chk, 'Cleared for public use'), descBtn,
+          h('button', { type: 'button', class: 'btn sm', text: 'Delete', onclick: function () { if (confirm('Delete “' + ph.name + '” from the library?')) libDelete(ph.id).then(libLoad).then(renderLib); } }))));
+    });
+  }
+  $('libFile').addEventListener('change', function () { addPhotos(this.files); this.value = ''; });
+
+  /* ---------- Drag and drop anywhere: photos and documents go where they belong ---------- */
+  var IMG_RE = /^image\//, DOC_RE = /\.(pdf|docx|txt|md)$/i;
+  function isImageFile(f) { return IMG_RE.test(f.type) || /\.(heic|heif)$/i.test(f.name); }
+  var dropVeil = $('dropVeil'), dropToast = $('dropToast');
+  var toastTimer;
+  function toast(text, kind) { dropToast.textContent = text; dropToast.className = kind || ''; dropToast.hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(function () { dropToast.hidden = true; }, 7000); }
+  function currentView() { var v = VIEWS.find(function (x) { return !$('view-' + x).hidden; }); return v || 'dash'; }
+  function dropHint() {
+    var v = currentView();
+    if (v === 'studio') return ['Drop files to add them', 'Photos onto a post’s image use it for that post; photos anywhere else go to the Library. A document becomes a post idea.'];
+    if (v === 'assistant') return ['Drop files to add them', 'Documents (up to 2) are attached to the chat. Photos are saved to the Library.'];
+    if (v === 'analytics') return ['Drop files to add them', 'A screenshot of a post’s analytics fills in the numbers. Other photos go to the Library.'];
+    return ['Drop files to add them', 'Photos are saved to the Library, as many as you like. A document becomes a post idea.'];
+  }
+  function hasFiles(e) { var t = e.dataTransfer && e.dataTransfer.types; return !!t && Array.prototype.indexOf.call(t, 'Files') >= 0; }
+  var dragDepth = 0, hot = null;
+  function setHot(el) { if (hot === el) return; if (hot) hot.classList.remove('dropping'); hot = el; if (hot) hot.classList.add('dropping'); }
+  function stageUnder(e) { var st = e.target.closest && e.target.closest('.stage'); return st && st.querySelector('.phototools') && st.querySelector('.phototools')._takePhoto ? st : null; }
+  window.addEventListener('dragenter', function (e) { if (!hasFiles(e)) return; e.preventDefault(); if (dragDepth++ === 0) { var t = dropHint(); $('dropTitle').textContent = t[0]; $('dropSub').textContent = t[1]; dropVeil.hidden = false; } });
+  window.addEventListener('dragover', function (e) { if (!hasFiles(e)) return; e.preventDefault(); e.dataTransfer.dropEffect = 'copy'; setHot(stageUnder(e)); });
+  window.addEventListener('dragleave', function (e) { if (!hasFiles(e)) return; if (--dragDepth <= 0) { dragDepth = 0; dropVeil.hidden = true; setHot(null); } });
+  window.addEventListener('drop', async function (e) {
+    if (!hasFiles(e)) return;
+    e.preventDefault(); dragDepth = 0; dropVeil.hidden = true; setHot(null);
+    var files = Array.prototype.slice.call(e.dataTransfer.files || []), stage = stageUnder(e), view = currentView();
+    var images = files.filter(isImageFile), docs = files.filter(function (f) { return DOC_RE.test(f.name); });
+    var other = files.filter(function (f) { return images.indexOf(f) < 0 && docs.indexOf(f) < 0; });
+    var notes = [];
+    if (other.length) notes.push(other.length + ' file' + (other.length > 1 ? 's' : '') + ' skipped (use photos, PDF, Word or text files)');
+    // Documents
+    if (docs.length) {
+      if (view === 'assistant') {
+        var attached = 0; for (var i = 0; i < docs.length; i++) { if (await attachChatDoc(docs[i])) attached++; }
+        notes.push(attached + ' document' + (attached === 1 ? '' : 's') + ' attached to the chat' + (attached < docs.length ? ' (two at most)' : ''));
+      } else {
+        show('studio'); await readOwnDoc(docs[0]);
+        notes.push('Reading “' + docs[0].name + '” as a post idea' + (docs.length > 1 ? '; drop the other ' + (docs.length - 1) + ' into the Assistant to use them there' : ''));
+      }
+    }
+    // Images
+    if (images.length) {
+      if (view === 'analytics' && images.length === 1 && IMG_RE.test(images[0].type) && !$('anShot').closest('[hidden]')) {
+        await readMetricsShot(images[0]); notes.push('Reading the analytics screenshot');
+      } else if (view === 'studio' && !$('src').hidden && images.length === 1 && !stage) {
+        await takeImage(images[0]); notes.push('Screenshot ready for the new idea');
+      } else {
+        var rest = images;
+        if (stage) { stage.querySelector('.phototools')._takePhoto(images[0]); rest = images.slice(1); notes.push('Using the photo for this post'); }
+        if (rest.length) { await addPhotos(rest); notes.push(rest.length + ' photo' + (rest.length > 1 ? 's' : '') + ' saved to the Library'); }
+      }
+    }
+    if (notes.length) toast(notes.join('. ') + '.', other.length && !images.length && !docs.length ? 'err' : 'ok');
+  });
+
+  // Photo tools shared by Studio posts and Assistant drafts: pick a real photo, position it, edit it with a prompt.
+  function photoNote(slot) {
+    if (!slot || !slot.source) return { text: 'AI-generated illustration. Have your brand check it before it is published.', cls: '' };
+    if (slot.source === 'around') return { text: 'Real photo “' + slot.name + '” with an AI-generated scene built around it. Check that the subject still matches the original, and that you have permission to publish it.', cls: 'notice' };
+    if (slot.source === 'edited') return { text: 'Real photo “' + slot.name + '”, edited with AI. Check that the equipment and details still match the original.', cls: 'notice' };
+    return slot.cleared ? { text: 'Real photo “' + slot.name + '” · marked cleared for public use.', cls: 'photo' } : { text: 'Real photo “' + slot.name + '” · permission to publish is NOT confirmed. Check before posting.', cls: 'warn' };
+  }
+  function photoTools(o) {
+    var box = h('div', { class: 'phototools' }), note = h('div', { class: 'srcnote' }), picker = h('div', { class: 'picker' }), editRow = h('div', { class: 'editrow' });
+    picker.hidden = true; editRow.hidden = true;
+    var instr = h('input', { type: 'text', maxlength: 400, placeholder: 'Edit the photo: e.g. “make the sky clearer”, “warmer evening light”', 'aria-label': 'Describe an edit to the photo' });
+    var editBtn = h('button', { type: 'button', class: 'btn primary sm', text: 'Edit photo', onclick: function () { doEdit(); } });
+    var revertBtn = h('button', { type: 'button', class: 'btn sm', text: 'Revert to original', onclick: function () { var sl = o.get(); if (!sl || !sl.original) return; sl.img = sl.original; sl.dataUrl = sl.originalData; sl.source = 'library'; o.repaint(); refresh(); o.status('Back to the original photo.', 'ok'); } });
+    var pos = h('input', { type: 'range', min: 0, max: 1, step: 0.02, 'aria-label': 'Move the photo left or right', oninput: function () { var sl = o.get(); if (sl) { sl.focusX = Number(pos.value); o.repaint(); } } });
+    var zoom = h('input', { type: 'range', min: 1, max: 2, step: 0.05, 'aria-label': 'Zoom the photo', oninput: function () { var sl = o.get(); if (sl) { sl.zoom = Number(zoom.value); o.repaint(); } } });
+    editRow.appendChild(h('div', { class: 'row' }, instr, editBtn, revertBtn));
+    var scene = h('input', { type: 'text', maxlength: 400, placeholder: 'Build a scene around it: e.g. “in a London co-working space at dusk, laptops open”', 'aria-label': 'Describe the scene to build around the photo' });
+    var aroundBtn = h('button', { type: 'button', class: 'btn primary sm', text: 'Generate around photo', onclick: function () { doAround(); } });
+    editRow.appendChild(h('div', { class: 'row', style: 'margin-top:8px' }, scene, aroundBtn));
+    editRow.appendChild(h('div', { class: 'sl' }, h('span', { text: 'Position' }), pos));
+    editRow.appendChild(h('div', { class: 'sl' }, h('span', { text: 'Zoom' }), zoom));
+    function refresh() {
+      var sl = o.get(), n = photoNote(sl);
+      note.className = 'srcnote ' + n.cls; note.textContent = n.text;
+      var isPhoto = sl && sl.source; editRow.hidden = !isPhoto;
+      if (isPhoto) { pos.value = sl.focusX == null ? 0.5 : sl.focusX; zoom.value = sl.zoom || 1; revertBtn.hidden = sl.source !== 'edited' && sl.source !== 'around'; }
+    }
+    function buildPicker() {
+      picker.textContent = '';
+      if (!runtime.lib.length) { picker.appendChild(h('span', { class: 'none' }, 'The library is empty. ', h('a', { href: '#library', onclick: function () { show('library'); } }, 'Add your photos'), '.')); return; }
+      runtime.lib.forEach(function (ph) {
+        picker.appendChild(h('button', { type: 'button', title: ph.name, 'aria-label': 'Use ' + ph.name, onclick: function () {
+          loadImage(ph.full).then(function (img) {
+            o.set({ img: img, source: 'library', original: img, originalData: ph.full, dataUrl: ph.full, photoId: ph.id, name: ph.name, cleared: !!ph.cleared, focusX: 0.5, zoom: 1 });
+            picker.hidden = true; o.repaint(); refresh(); o.status('Using “' + ph.name + '”. The headline and logo are added on top.', 'ok'); log('Used the photo “' + ph.name + '”');
+            if (o.after) o.after();
+          }).catch(function (e) { o.status(e.message, 'err'); });
+        } }, h('img', { src: ph.thumb, alt: '' })));
+      });
+    }
+    var pickBtn = h('button', { type: 'button', class: 'btn sm', text: 'Use a library photo', onclick: function () { picker.hidden = !picker.hidden; if (!picker.hidden) buildPicker(); } });
+    var upload = h('input', { type: 'file', accept: 'image/png,image/jpeg,image/webp', hidden: true });
+    upload.addEventListener('change', function () { var file = upload.files && upload.files[0]; upload.value = ''; if (file) takePhoto(file); });
+    async function takePhoto(file) {
+      try {
+        var data = await downscale(file), img = await loadImage(data);
+        o.set({ img: img, source: 'library', original: img, originalData: data, dataUrl: data, name: file.name.replace(/\.[^.]+$/, '').slice(0, 60) || 'Uploaded photo', cleared: false, focusX: 0.5, zoom: 1 });
+        o.repaint(); refresh(); o.status('Using your photo. Describe a scene below to build one around it, or use it as it is.', 'ok'); log('Uploaded a photo for a post');
+        if (o.after) o.after();
+      } catch (e) { o.status('That photo could not be read. Try a JPEG, PNG or WebP.', 'err'); }
+    }
+    box._takePhoto = takePhoto;
+    var uploadBtn = h('button', { type: 'button', class: 'btn sm', text: 'Upload your own photo', onclick: function () { upload.click(); } });
+    var busy = false;
+    async function doAround() {
+      var sl = o.get(), text = scene.value.trim();
+      if (!sl || !sl.dataUrl) return;
+      if (busy) return; busy = true; aroundBtn.disabled = true; editBtn.disabled = true; o.status('Building a scene around your photo, up to two minutes…');
+      try {
+        var out = await post('/api/studio/image', { mode: 'around', scene: 'custom', extra: text, quality: prefs.quality, reference: sl.dataUrl, aspect: 'portrait', story: o.story ? o.story() : undefined, avoid: o.avoid ? o.avoid() : undefined });
+        sl.img = await loadImage(out.image); sl.dataUrl = out.image; sl.source = 'around'; sl.focusX = 0.5; sl.zoom = 1; scene.value = '';
+        o.repaint(); refresh(); o.status('Scene built at ' + clock(Date.now()) + '. Check the subject against your original; “Revert to original” brings it back.', 'ok'); log('Built a scene around an uploaded photo');
+      } catch (e) { o.status(e.message, 'err'); }
+      busy = false; aroundBtn.disabled = false; editBtn.disabled = false;
+    }
+    async function doEdit() {
+      var sl = o.get(), text = instr.value.trim();
+      if (!sl || !sl.dataUrl) return;
+      if (!text) { o.status('Describe the edit first, for example “make the sky clearer”.', 'err'); return; }
+      if (busy) return; busy = true; editBtn.disabled = true; o.status('Editing the photo with AI, up to two minutes…');
+      try {
+        var out = await post('/api/studio/image', { mode: 'edit', scene: 'custom', extra: text, quality: prefs.quality, reference: sl.dataUrl, aspect: sl.img ? (sl.img.width > sl.img.height * 1.1 ? 'landscape' : sl.img.height > sl.img.width * 1.1 ? 'portrait' : 'square') : 'portrait', story: o.story ? o.story() : undefined });
+        sl.img = await loadImage(out.image); sl.dataUrl = out.image; sl.source = 'edited'; instr.value = '';
+        o.repaint(); refresh(); o.status('Edited at ' + clock(Date.now()) + '. Check the equipment and details against the original.', 'ok'); log('Edited a library photo: ' + text.slice(0, 60));
+      } catch (e) { o.status(e.message, 'err'); }
+      busy = false; editBtn.disabled = false;
+    }
+    box.appendChild(pickBtn); box.appendChild(uploadBtn); box.appendChild(upload); box.appendChild(picker); box.appendChild(editRow); box.appendChild(note);
+    refresh();
+    return box;
+  }
+
+
+  /* ---------- Analytics: per-post numbers, tracked links and insights ---------- */
+  function todayIso() { return new Date().toISOString().slice(0, 10); }
+  function trackedLink(e) {
+    var slug = String(e.title || 'post').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 40) || 'post';
+    return 'https://www.your brandproducts.com/?utm_source=linkedin&utm_medium=social&utm_campaign=content-studio&utm_content=' + slug + '-' + String(e.postedAt || todayIso()).replace(/-/g, '');
+  }
+  function ensureTracked(day) {
+    var p = state.posts[day]; if (!p) return;
+    var key = day + ':' + String(p.text || '').slice(0, 40);
+    if (state.analytics.some(function (e) { return e.postKey === key; })) return;
+    state.analytics.unshift({ id: 'a' + Date.now().toString(36), title: p.headline || dayLabel(day) + ' post', day: day, postKey: key, postedAt: todayIso(), url: '', m: {}, updatedAt: Date.now() });
+    save(); log('Added “' + (p.headline || 'a post') + '” to Analytics. Add its numbers there.');
+  }
+  function calc(e) {
+    var m = e.m || {}, v = m.impressions, c = m.clicks;
+    return { views: v, clicks: c, reactions: m.reactions, comments: m.comments, reposts: m.reposts,
+      ctr: v > 0 && c != null ? c / v * 100 : null, eng: v > 0 ? ((m.reactions || 0) + (m.comments || 0) + (m.reposts || 0) + (c || 0)) / v * 100 : null };
+  }
+  function fmt(n) { return n == null ? '—' : Number(n).toLocaleString('en-GB'); }
+  function pct1(n) { return n == null ? '—' : n.toFixed(1) + '%'; }
+  var anEditing = null;
+
+  function renderAnalytics() {
+    var list = state.analytics.slice().sort(function (a, b) { return String(b.postedAt).localeCompare(String(a.postedAt)); });
+    var withViews = list.filter(function (e) { return calc(e).views != null; });
+    var totalViews = withViews.reduce(function (n, e) { return n + calc(e).views; }, 0);
+    var withBoth = list.filter(function (e) { var c = calc(e); return c.views > 0 && c.clicks != null; });
+    var sumV = withBoth.reduce(function (n, e) { return n + calc(e).views; }, 0), sumC = withBoth.reduce(function (n, e) { return n + calc(e).clicks; }, 0);
+    var totalClicks = list.reduce(function (n, e) { return n + (calc(e).clicks || 0); }, 0);
+    var best = withViews.slice().sort(function (a, b) { return calc(b).views - calc(a).views; })[0];
+    var tiles = [['Posts tracked', String(list.length), withViews.length + ' with numbers'], ['Total views', fmt(withViews.length ? totalViews : null), 'Impressions across posts'], ['Total clicks', fmt(list.some(function (e) { return calc(e).clicks != null; }) ? totalClicks : null), 'Clicks on posts and links'], ['Click-through', pct1(sumV > 0 ? sumC / sumV * 100 : null), 'Clicks divided by views']];
+    var sm = $('anSummary'); sm.textContent = '';
+    tiles.forEach(function (t) { sm.appendChild(h('div', { class: 'glass stat' }, h('div', { class: 'eyebrow', text: t[0] }), h('div', { class: 'v', text: t[1] }), h('div', { class: 's', text: t[2] }))); });
+
+    var chart = $('anChart'); chart.textContent = '';
+    if (!withViews.length) chart.appendChild(h('div', { class: 'empty-state', style: 'padding:24px 8px', text: 'Add a post’s numbers to see the chart.' }));
+    else {
+      var maxV = Math.max.apply(null, withViews.map(function (e) { return calc(e).views; })), maxC = Math.max(1, Math.max.apply(null, withViews.map(function (e) { return calc(e).clicks || 0; })));
+      withViews.slice().reverse().slice(-10).forEach(function (e) {
+        var c = calc(e);
+        chart.appendChild(h('div', { class: 'brow' }, h('div', { class: 'nm', text: e.title }),
+          h('div', { class: 'bars' },
+            h('div', { class: 'bar1' }, h('i', { style: 'width:' + Math.max(1, c.views / maxV * 100) + '%' }), h('span', { text: fmt(c.views) + ' views' })),
+            h('div', { class: 'bar1 c' }, h('i', { style: 'width:' + (c.clicks ? Math.max(1, c.clicks / maxC * 100) : 0) + '%' }), h('span', { text: fmt(c.clicks || 0) + ' clicks' })))));
+      });
+    }
+
+    var ins = $('anInsights'); ins.textContent = '';
+    function add(html) { var d = h('div'); d.innerHTML = html; ins.appendChild(d); }
+    var esc = function (t) { return String(t).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
+    if (withViews.length < 2) add('Add the numbers for at least two posts and the studio will show what is working best. Small numbers are normal early on: judge trends after 8 to 12 posts.');
+    else {
+      add('<b>Most views:</b> ' + esc(best.title) + ' (' + fmt(calc(best).views) + ').');
+      var ctrList = withBoth.filter(function (e) { return calc(e).views >= 50; }).sort(function (a, b) { return calc(b).ctr - calc(a).ctr; });
+      if (ctrList.length) add('<b>Best click-through:</b> ' + esc(ctrList[0].title) + ' (' + pct1(calc(ctrList[0]).ctr) + ').');
+      var byDay = {};
+      withViews.forEach(function (e) { if (e.day) (byDay[e.day] = byDay[e.day] || []).push(calc(e).views); });
+      var rows = Object.keys(byDay).map(function (k) { var a = byDay[k]; return { day: k, avg: a.reduce(function (x, y) { return x + y; }, 0) / a.length, n: a.length }; }).sort(function (a, b) { return b.avg - a.avg; });
+      if (rows.length > 1) add('<b>Best day so far:</b> ' + dayLabel(rows[0].day) + ' posts average ' + fmt(Math.round(rows[0].avg)) + ' views (' + rows[0].n + ' post' + (rows[0].n > 1 ? 's' : '') + '), against ' + fmt(Math.round(rows[rows.length - 1].avg)) + ' on ' + dayLabel(rows[rows.length - 1].day) + '.');
+      var latest = withViews[0], others = withViews.slice(1), avg = others.reduce(function (n, e) { return n + calc(e).views; }, 0) / others.length;
+      add('<b>Latest post:</b> ' + fmt(calc(latest).views) + ' views, ' + (avg ? Math.abs(Math.round((calc(latest).views / avg - 1) * 100)) + '% ' + (calc(latest).views >= avg ? 'above' : 'below') + ' the average of your earlier posts' : 'no earlier posts to compare') + '.');
+    }
+
+    var box = $('anList'); box.textContent = '';
+    if (!list.length) box.appendChild(h('div', { class: 'glass empty-state', text: 'No posts tracked yet. Press “Track a post”, or mark a Studio post as posted and it appears here.' }));
+    list.forEach(function (e) {
+      var c = calc(e), others = list.filter(function (o) { return o.id !== e.id && calc(o).views != null; });
+      var avgV = others.length ? others.reduce(function (n, o) { return n + calc(o).views; }, 0) / others.length : null;
+      function tile(label, value, sub, cls) { return h('div', { class: 'tile' }, h('span', { text: label }), h('b', { text: value }), sub ? h('small', { class: cls || '', text: sub }) : null); }
+      var vsAvg = c.views != null && avgV ? Math.round((c.views / avgV - 1) * 100) : null;
+      var url = trackedLink(e), urlBox = h('input', { type: 'text', readonly: 'readonly', 'aria-label': 'Tracked link', value: url });
+      box.appendChild(h('article', { class: 'glass an' },
+        h('div', { class: 'row' }, h('h3', { text: e.title }), e.day ? h('span', { class: 'badge', text: dayLabel(e.day) }) : null, h('span', { class: 'meta', text: 'Posted ' + (e.postedAt || '—') }), h('span', { class: 'grow' }),
+          e.url ? h('a', { href: e.url, target: '_blank', rel: 'noopener noreferrer', text: 'Open on LinkedIn' }) : null),
+        h('div', { class: 'tiles' }, tile('Views', fmt(c.views), vsAvg == null ? '' : (vsAvg >= 0 ? '▲ ' : '▼ ') + Math.abs(vsAvg) + '% vs average', vsAvg == null ? '' : vsAvg >= 0 ? 'up' : 'down'), tile('Clicks', fmt(c.clicks)), tile('Click-through', pct1(c.ctr)), tile('Reactions', fmt(c.reactions)), tile('Comments', fmt(c.comments)), tile('Reposts', fmt(c.reposts)), tile('Engagement', pct1(c.eng))),
+        h('div', { class: 'linkrow' }, urlBox, h('button', { type: 'button', class: 'btn sm', text: 'Copy tracked link', onclick: function () { navigator.clipboard.writeText(url).then(function () { setStatus($('anStatus'), 'Tracked link copied.', 'ok'); }, function () { urlBox.select(); }); } }),
+          h('button', { type: 'button', class: 'btn sm', text: 'Update numbers', onclick: function () { openAnForm(e); } }),
+          h('button', { type: 'button', class: 'btn sm', text: 'Remove', onclick: function () { if (confirm('Remove “' + e.title + '” from Analytics?')) { state.analytics = state.analytics.filter(function (x) { return x.id !== e.id; }); save(); renderAnalytics(); } } }))));
+    });
+  }
+
+  function openAnForm(entry) {
+    anEditing = entry || null; $('anForm').hidden = false; $('anFormTitle').textContent = entry ? 'Update “' + entry.title + '”' : 'Track a post';
+    var sel = $('anPost'); sel.textContent = '';
+    sel.appendChild(h('option', { value: '', text: 'Another post (type its name below)' }));
+    DAYS.forEach(function (d) { if (state.posts[d.id]) sel.appendChild(h('option', { value: d.id, text: d.label + ': ' + (state.posts[d.id].headline || 'post') })); });
+    sel.value = entry && entry.day && state.posts[entry.day] ? entry.day : '';
+    var m = (entry && entry.m) || {};
+    $('anTitle').value = entry ? entry.title : ''; $('anUrl').value = entry ? entry.url || '' : ''; $('anDate').value = entry ? entry.postedAt || '' : todayIso();
+    $('anViews').value = m.impressions != null ? m.impressions : ''; $('anClicks').value = m.clicks != null ? m.clicks : ''; $('anReactions').value = m.reactions != null ? m.reactions : ''; $('anComments').value = m.comments != null ? m.comments : ''; $('anReposts').value = m.reposts != null ? m.reposts : '';
+    setStatus($('anStatus'), ''); $('anForm').scrollIntoView({ block: 'center' });
+  }
+  $('anAdd').addEventListener('click', function () { openAnForm(null); });
+  $('anCancel').addEventListener('click', function () { $('anForm').hidden = true; });
+  $('anPost').addEventListener('change', function () { var d = this.value; if (d && state.posts[d]) $('anTitle').value = state.posts[d].headline || ''; });
+  async function readPostLink() {
+    var url = $('anUrl').value.trim(); if (!/^https:\/\/(www\.)?(linkedin\.com|lnkd\.in)\//i.test(url)) return;
+    setStatus($('anStatus'), 'Reading the post from LinkedIn…');
+    try {
+      var out = await post('/api/studio/metrics', { url: url });
+      if (!$('anTitle').value.trim() && out.title) $('anTitle').value = out.title;
+      if (out.postedAt) $('anDate').value = out.postedAt;
+      if (out.metrics.reactions != null) $('anReactions').value = out.metrics.reactions;
+      if (out.metrics.comments != null) $('anComments').value = out.metrics.comments;
+      setStatus($('anStatus'), 'Read from the link: ' + (out.metrics.reactions != null ? out.metrics.reactions + ' reactions, ' : '') + (out.metrics.comments != null ? out.metrics.comments + ' comments' : '') + '. LinkedIn only shows views and clicks to the page admin, so add those from the analytics screenshot, then press Save.', 'ok');
+    } catch (e) { setStatus($('anStatus'), e.message, 'err'); }
+  }
+  $('anUrl').addEventListener('change', readPostLink); $('anUrl').addEventListener('paste', function () { setTimeout(readPostLink, 50); });
+  $('anShot').addEventListener('change', async function () { var f = this.files[0]; this.value = ''; if (f) await readMetricsShot(f); });
+  async function readMetricsShot(file) {
+    try {
+      setStatus($('anStatus'), 'Reading the numbers from your screenshot…');
+      var out = await post('/api/studio/metrics', { image: await downscale(file) }), m = out.metrics;
+      [['anViews', 'impressions'], ['anClicks', 'clicks'], ['anReactions', 'reactions'], ['anComments', 'comments'], ['anReposts', 'reposts']].forEach(function (pair) { if (m[pair[1]] != null) $(pair[0]).value = m[pair[1]]; });
+      setStatus($('anStatus'), 'Numbers read' + (out.periodNote ? ' (' + out.periodNote + ')' : '') + '. Check them against LinkedIn, then press Save.', 'ok');
+    } catch (e) { setStatus($('anStatus'), e.message, 'err'); }
+  }
+  function numOrNull(id) { var v = $(id).value.replace(/[^0-9]/g, ''); return v === '' ? null : Number(v); }
+  $('anSave').addEventListener('click', function () {
+    var title = $('anTitle').value.trim() || (anEditing ? '' : 'LinkedIn post ' + ($('anDate').value || todayIso())); if (!title) { setStatus($('anStatus'), 'Give the post a name.', 'err'); return; }
+    var date = $('anDate').value.trim(); if (date && !/^\d{4}-\d{2}-\d{2}$/.test(date)) { setStatus($('anStatus'), 'Write the date as YYYY-MM-DD, for example 2026-10-21.', 'err'); return; }
+    var m = { impressions: numOrNull('anViews'), clicks: numOrNull('anClicks'), reactions: numOrNull('anReactions'), comments: numOrNull('anComments'), reposts: numOrNull('anReposts') };
+    Object.keys(m).forEach(function (k) { if (m[k] == null) delete m[k]; });
+    var day = $('anPost').value;
+    if (anEditing) { anEditing.title = title; anEditing.url = $('anUrl').value.trim(); anEditing.postedAt = date || todayIso(); anEditing.m = m; anEditing.updatedAt = Date.now(); if (day) anEditing.day = day; }
+    else state.analytics.unshift({ id: 'a' + Date.now().toString(36), title: title, day: day || '', postKey: day ? day + ':' + String((state.posts[day] || {}).text || '').slice(0, 40) : '', postedAt: date || todayIso(), url: $('anUrl').value.trim(), m: m, updatedAt: Date.now() });
+    save(); log('Saved analytics for “' + title + '”'); $('anForm').hidden = true; anEditing = null; renderAnalytics();
+  });
+
+  /* ---------- Assistant ---------- */
+  var STARTERS = [
+    { label: 'Wish our people a happy Halloween', text: 'We are looking to create an image post for Halloween to wish our people a happy Halloween.', send: true },
+    { label: 'Seasonal greeting for Christmas', text: 'Create an image post wishing everyone a happy Christmas and a good new year.', send: true },
+    { label: 'Thank our customers', text: 'Thank our customers for their business this year. Warm but short, with an image.', send: true },
+    { label: 'Announce something (I will give details)', text: 'I want to announce something. ', send: false },
+    { label: 'Turn my notes into a post', text: 'Turn these notes into a LinkedIn post: ', send: false }
+  ];
+  function chatDraft(i) { return state.chat[i] && state.chat[i].draft; }
+  function lastDraftIndex() { for (var i = state.chat.length - 1; i >= 0; i--) if (state.chat[i].draft) return i; return -1; }
+  function chatFullText(i) { var d = chatDraft(i); if (!d) return ''; var tags = (d.hashtags || []).map(function (t) { return t.charAt(0) === '#' ? t : '#' + t; }).join(' '); return d.post.trim() + (tags ? '\n\n' + tags : ''); }
+  function chatStamp(i, text, kind) { setStatus(document.getElementById('stc-' + i), text, kind); }
+
+  function draftCard(i) {
+    var d = chatDraft(i), img = runtime.chatImages[i];
+    var area = h('textarea', { 'aria-label': 'Post text', oninput: function () { d.post = area.value; save(); area.style.height = 'auto'; area.style.height = area.scrollHeight + 4 + 'px'; } }); area.value = d.post;
+    setTimeout(function () { area.style.height = 'auto'; area.style.height = area.scrollHeight + 4 + 'px'; }, 0);
+    var notes = h('div', { class: 'notes' });
+    if (d.verified && !(d.toCheck || []).length) notes.appendChild(h('div', { class: 'note ok', text: 'Checked: this only uses your brand’s profile, what you told the Assistant and any attached document.' }));
+    if ((d.toCheck || []).length) { var ul = h('ul'); d.toCheck.forEach(function (c) { ul.appendChild(h('li', { text: c })); }); notes.appendChild(h('div', { class: 'note warn' }, 'Please verify before publishing:', ul)); }
+    if ((d.lint || []).length) { var ul2 = h('ul'); d.lint.forEach(function (c) { ul2.appendChild(h('li', { text: c })); }); notes.appendChild(h('div', { class: 'note warn' }, 'Style notes:', ul2)); }
+    var left = h('div', null, h('div', { class: 'head' }, h('strong', { text: 'Draft post' })), area, notes,
+      h('div', { class: 'row', style: 'margin-top:12px' },
+        h('button', { type: 'button', class: 'btn sm', text: 'Copy post', onclick: function () { navigator.clipboard.writeText(chatFullText(i)).then(function () { chatStamp(i, 'Post copied.', 'ok'); }, function () { chatStamp(i, 'Could not copy. Select the text and copy it manually.', 'err'); }); } })),
+      h('p', { class: 'hint', text: 'Want changes? Just tell the Assistant below, for example “shorter” or “more autumn in the picture”.' }));
+    var cv = h('canvas', { id: 'cvc-' + i, width: 1080, height: 1350, role: 'img', 'aria-label': 'LinkedIn image preview' });
+    var headline = h('input', { type: 'text', maxlength: 60, 'aria-label': 'Headline on the image', oninput: function () { d.headline = headline.value; save(); paintTo(cv, (runtime.chatImages[i] || {}).img, d, runtime.chatImages[i]); } }); headline.value = d.headline || '';
+    var tagline = h('input', { type: 'text', maxlength: 50, 'aria-label': 'Line under the headline', oninput: function () { d.tagline = tagline.value; save(); paintTo(cv, (runtime.chatImages[i] || {}).img, d, runtime.chatImages[i]); } }); tagline.value = d.tagline || '';
+    var correction = h('textarea', { placeholder: 'Something wrong with the picture? Say what to fix.', 'aria-label': 'What to fix in the image' });
+    var brief = d.mustShow && d.mustShow.length ? h('details', { style: 'margin-top:8px' }, h('summary', { text: 'Image brief' }), h('ul', null, h('li', { text: 'Must show: ' + d.mustShow.join('; ') }), h('li', { text: 'Must not show: ' + (d.mustNotShow || []).join('; ') }))) : null;
+    var right = h('div', { class: 'stage' }, cv,
+      h('div', { class: 'fields' }, h('label', { text: 'Headline on the image' }), headline, h('label', { text: 'Line under it' }), tagline),
+      h('div', { class: 'row', style: 'margin-top:12px' },
+        h('button', { id: 'imgc-' + i, type: 'button', class: 'btn primary sm', text: img ? 'Make a new image' : 'Create image', onclick: function () { chatImage(i, ''); } }),
+        h('button', { type: 'button', class: 'btn sm', text: 'Download', onclick: function () { downloadCanvas(cv, 'your brand-assistant-post.png'); } }),
+        h('button', { type: 'button', class: 'btn sm li', text: 'Post to LinkedIn', onclick: function () { var ok = sendToLinkedIn(cv, chatFullText(i), 'your brand-assistant-post.png'); chatStamp(i, ok ? LINKEDIN_OK : LINKEDIN_BLOCKED, ok ? 'ok' : 'err'); log('Sent an Assistant draft to LinkedIn’s composer'); } })),
+      photoTools({ get: function () { return runtime.chatImages[i]; }, set: function (v) { runtime.chatImages[i] = v; }, repaint: function () { paintTo(cv, (runtime.chatImages[i] || {}).img, d, runtime.chatImages[i]); }, status: function (t, k) { chatStamp(i, t, k); },
+        story: function () { return { title: d.headline || '', facts: [d.post.slice(0, 220)] }; } }),
+      (img && !img.source) ? h('div', { class: 'fields' }, correction, h('button', { id: 'fixc-' + i, type: 'button', class: 'btn sm', style: 'margin-top:8px', text: 'Fix and remake', onclick: function () { var c = correction.value.trim(); if (!c) { chatStamp(i, 'Say what is wrong first.', 'err'); return; } chatImage(i, c); } })) : null,
+      brief, h('div', { id: 'stc-' + i, class: 'status', role: 'status', 'aria-live': 'polite', style: 'max-width:340px;margin-top:8px' }),
+      h('p', { class: 'hint', text: 'Images the studio makes are AI-generated illustrations: check it them before publishing.' }));
+    return h('article', { class: 'glass draft' }, left, right);
+  }
+  function renderChat() {
+    var box = $('thread'); if (!box) return; box.textContent = '';
+    if (!state.chat.length) {
+      box.appendChild(h('div', { class: 'intro' }, h('strong', { text: 'What would you like to post?' }), h('p', { text: 'Describe it the way you would to a colleague: the occasion, the mood, whether you want a picture. The Assistant will write it and brief the image. Pick a starter below or type your own.' })));
+    }
+    state.chat.forEach(function (m, i) {
+      var wrap = h('div', { class: 'msg ' + m.role }, h('div', { class: 'who', text: m.role === 'user' ? 'You' : 'Assistant' }), h('div', { class: 'bubble', text: m.content }));
+      if (m.draft) wrap.appendChild(draftCard(i));
+      box.appendChild(wrap);
+    });
+    if (runtime.chatBusy) box.appendChild(h('div', { class: 'msg assistant' }, h('div', { class: 'who', text: 'Assistant' }), h('div', { class: 'bubble thinking-msg' }, h('span', { class: 'spinner', style: 'border-color:var(--line-2);border-top-color:var(--link)' }), 'Writing…')));
+    var st = $('starters'); st.textContent = ''; st.hidden = state.chat.length > 0;
+    STARTERS.forEach(function (x) { st.appendChild(h('button', { type: 'button', class: 'chip', text: x.label, onclick: function () { $('prompt').value = x.text; $('prompt').focus(); if (x.send) sendChat(); } })); });
+    state.chat.forEach(function (m, i) { if (m.draft) paintTo(document.getElementById('cvc-' + i), (runtime.chatImages[i] || {}).img, m.draft, runtime.chatImages[i]); });
+    if (!$('view-assistant').hidden && (state.chat.length || runtime.chatBusy)) window.scrollTo(0, document.body.scrollHeight);
+  }
+  async function sendChat() {
+    var text = $('prompt').value.trim(); if (!text && runtime.chatDocs.length && !state.chat.length) text = 'Write a LinkedIn post from the attached document.'; if (!text || runtime.chatBusy) return;
+    state.chat.push({ role: 'user', content: text }); $('prompt').value = ''; runtime.chatBusy = true; $('send').disabled = true; setStatus($('chatStatus'), ''); save(); renderChat();
+    try {
+      var li = lastDraftIndex();
+      var history = state.chat.slice(-14).map(function (m) { return { role: m.role, content: m.content }; });
+      var out = await post('/api/studio/chat', { messages: history, attachments: runtime.chatDocs, draft: li >= 0 ? { post: chatDraft(li).post, headline: chatDraft(li).headline, tagline: chatDraft(li).tagline, hashtags: chatDraft(li).hashtags, visual: chatDraft(li).visual } : undefined });
+      state.chat.push({ role: 'assistant', content: out.reply, draft: out.draft || undefined });
+      if (out.draft) log('Assistant drafted: ' + (out.draft.headline || 'a post'));
+    } catch (e) { setStatus($('chatStatus'), e.message, 'err'); state.chat.pop(); $('prompt').value = text; }
+    runtime.chatBusy = false; $('send').disabled = false; save(); renderChat(); renderDash();
+  }
+  async function chatImage(i, correction) {
+    var d = chatDraft(i); if (!d || runtime.busy['c' + i]) return;
+    runtime.busy['c' + i] = true; var b1 = document.getElementById('imgc-' + i), b2 = document.getElementById('fixc-' + i); if (b1) b1.disabled = true; if (b2) b2.disabled = true;
+    try {
+      var story = { title: d.headline || '', facts: [d.post.slice(0, 220)] };
+      var plan = { mustShow: d.mustShow, mustNotShow: d.mustNotShow };
+      if (!plan.mustShow || !plan.mustShow.length) { plan = null; }
+      if (d.researchImage) {
+        chatStamp(i, prefs.research ? 'Researching how this looks in real life…' : 'Writing the image brief…');
+        var pr = await post('/api/studio/plan', { scene: 'custom', extra: d.visual, story: story, correction: correction || undefined, plan: plan || undefined, research: prefs.research });
+        plan = { mustShow: pr.mustShow, mustNotShow: pr.mustNotShow };
+      }
+      chatStamp(i, 'Making the image, up to two minutes…');
+      var out = await post('/api/studio/image', { scene: 'custom', extra: d.visual || d.headline || 'A calm logistics scene', story: story, plan: plan || undefined, correction: correction || undefined, quality: prefs.quality });
+      var img = new Image(); await new Promise(function (resolve, reject) { img.onload = resolve; img.onerror = reject; img.src = out.image; });
+      runtime.chatImages[i] = { img: img }; log('Created an Assistant image'); renderChat();
+      chatStamp(i, 'Image made live by OpenAI (' + (out.model || 'image model') + ') at ' + clock(Date.now()) + '.', 'ok');
+    } catch (e) { chatStamp(i, e.message, 'err'); }
+    delete runtime.busy['c' + i]; b1 = document.getElementById('imgc-' + i); b2 = document.getElementById('fixc-' + i); if (b1) b1.disabled = false; if (b2) b2.disabled = false;
+  }
+  function renderChatDocs() {
+    var box = $('chatDocs'); box.textContent = '';
+    runtime.chatDocs.forEach(function (d, i) { box.appendChild(h('button', { type: 'button', class: 'chip', title: 'Remove this document', text: '📎 ' + d.name + ' ✕', onclick: function () { runtime.chatDocs.splice(i, 1); renderChatDocs(); } })); });
+  }
+  $('attach').addEventListener('click', function () { $('chatFile').click(); });
+  $('chatFile').addEventListener('change', async function () { var list = Array.prototype.slice.call(this.files || []); this.value = ''; for (var i = 0; i < list.length; i++) await attachChatDoc(list[i]); });
+  async function attachChatDoc(f) {
+    if (runtime.chatDocs.length >= 2) { setStatus($('chatStatus'), 'Two documents at most. Remove one first.', 'err'); return false; }
+    setStatus($('chatStatus'), 'Reading ' + f.name + '…');
+    try {
+      var text = (await readDocument(f)).replace(/\s+\n/g, '\n').trim();
+      if (text.length < 200) throw new Error('Not enough readable text in that file. Scanned PDFs need a typed copy.');
+      runtime.chatDocs.push({ name: f.name.slice(0, 120), text: text.slice(0, 30000) }); renderChatDocs();
+      setStatus($('chatStatus'), 'Attached. Tell the Assistant what you want, or just press Send.', 'ok');
+      return true;
+    } catch (e) { setStatus($('chatStatus'), e.message, 'err'); return false; }
+  }
+  $('send').addEventListener('click', sendChat);
+  $('prompt').addEventListener('keydown', function (e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChat(); } });
+  $('prompt').addEventListener('input', function () { this.style.height = 'auto'; this.style.height = Math.min(this.scrollHeight, 180) + 'px'; });
+  $('newChat').addEventListener('click', function () { state.chat = []; runtime.chatImages = {}; runtime.chatDocs = []; renderChatDocs(); save(); setStatus($('chatStatus'), ''); renderChat(); });
+
+  function renderAll() { renderDash(); renderWeek(); renderFilters(); renderIdeas(); renderPosts(); renderChat(); }
+  $('find').addEventListener('click', function () { findTopics(false); }); $('findAll').addEventListener('click', function () { findTopics(true); }); $('dashFind').addEventListener('click', function () { show('studio'); findTopics(false); });
+  $('imgQuality').value = prefs.quality; $('imgResearch').checked = prefs.research;
+  $('imgQuality').addEventListener('change', function () { prefs.quality = $('imgQuality').value === 'medium' ? 'medium' : 'low'; savePrefs(); });
+  $('imgResearch').addEventListener('change', function () { prefs.research = $('imgResearch').checked; savePrefs(); });
+  refreshUsage();
+  $('auto').addEventListener('click', autoFill); $('writeWeek').addEventListener('click', writeWeek);
+  $('clearWeek').addEventListener('click', function () { state.week = { mon: null, wed: null, fri: null }; state.posts = {}; runtime.images = {}; runtime.dayStatus = {}; save(); renderAll(); setStatus($('weekStatus'), ''); });
+
+  load();
+  libLoad().then(function () { renderLib(); });
+  $('theme').textContent = document.documentElement.getAttribute('data-theme') === 'dark' ? 'Switch to light mode' : 'Switch to dark mode';
+  renderAll(); show(VIEWS.indexOf(location.hash.slice(1)) >= 0 ? location.hash.slice(1) : 'dash');
+  fetch('/api/studio/options').then(function (r) { return r.json(); }).then(function (o) {
+    runtime.options = o; renderFilters();
+    var b = $('liveBadge'); b.textContent = ''; b.appendChild(h('i', { class: 'dot' })); b.appendChild(document.createTextNode(o.liveAvailable ? 'Live OpenAI connected' : 'No OpenAI key')); b.className = 'badge ' + (o.liveAvailable ? 'good live' : 'bad');
+    if (!o.liveAvailable) setStatus($('ideasStatus'), 'Add OPENAI_API_KEY to .env and restart the server.', 'err');
+  }).catch(function () { setStatus($('ideasStatus'), 'Open this page from the server, not as a file.', 'err'); });
+})();
+</script>
+</body>
+</html>

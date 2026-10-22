@@ -1,0 +1,10 @@
+node_modules/
+.env
+.env.*
+!.env.example
+.vercel
+.DS_Store
+.demo-server.pid
+.demo-launch.lock/
+server.log
+brand-profile.json

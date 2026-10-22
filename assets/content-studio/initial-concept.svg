@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" role="img" aria-label="Initial community meetup concept">
+  <rect width="800" height="800" fill="#EEF2FF"/>
+  <rect x="80" y="220" width="640" height="360" rx="24" fill="#C7D2FE"/>
+  <rect x="140" y="280" width="220" height="140" rx="12" fill="#A5B4FC"/>
+  <rect x="400" y="300" width="260" height="16" rx="8" fill="#6366F1"/>
+  <rect x="400" y="340" width="200" height="12" rx="6" fill="#818CF8"/>
+  <rect x="400" y="372" width="160" height="12" rx="6" fill="#818CF8"/>
+  <circle cx="180" cy="620" r="28" fill="#4F46E5"/>
+  <circle cx="250" cy="620" r="28" fill="#6366F1"/>
+  <circle cx="320" cy="620" r="28" fill="#818CF8"/>
+  <text x="400" y="120" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="28" font-weight="700" fill="#312E81">Draft meetup visual</text>
+</svg>

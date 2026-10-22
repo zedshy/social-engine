@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" role="img" aria-label="Improved community meetup concept">
+  <rect width="800" height="800" fill="#F8FAFC"/>
+  <rect x="60" y="180" width="680" height="440" rx="28" fill="#EEF2FF"/>
+  <rect x="100" y="230" width="280" height="200" rx="16" fill="#4F46E5"/>
+  <rect x="130" y="270" width="220" height="14" rx="7" fill="#C7D2FE"/>
+  <rect x="130" y="300" width="180" height="10" rx="5" fill="#A5B4FC"/>
+  <rect x="420" y="250" width="280" height="18" rx="9" fill="#312E81"/>
+  <rect x="420" y="290" width="240" height="12" rx="6" fill="#6366F1"/>
+  <rect x="420" y="322" width="200" height="12" rx="6" fill="#818CF8"/>
+  <circle cx="160" cy="680" r="26" fill="#4F46E5"/>
+  <circle cx="230" cy="680" r="26" fill="#6366F1"/>
+  <circle cx="300" cy="680" r="26" fill="#A5B4FC"/>
+  <text x="400" y="110" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="28" font-weight="700" fill="#1E1B4B">Reviewed meetup visual</text>
+</svg>

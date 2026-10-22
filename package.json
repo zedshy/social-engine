@@ -1,0 +1,20 @@
+
+{
+  "name": "social-engine",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.13.0"
+  },
+  "scripts": {
+    "start": "node --env-file-if-exists=.env server.js",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "openai": "^6.0.0",
+    "saxes": "^6.0.0"
+  },
+  "devDependencies": {
+    "jsdom": "^29.1.1"
+  }
+}

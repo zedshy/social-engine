@@ -1,0 +1,183 @@
+
+{
+  "id": "london-tech-community",
+  "name": "London Tech Community",
+  "tagline": "Connecting London's tech builders",
+  "website": "https://londontechcommunity.example",
+  "logo": {
+    "light": "/assets/brand/logo.svg",
+    "dark": "/assets/brand/logo-reversed.svg",
+    "icon": "/assets/brand/logo-icon.svg"
+  },
+  "colors": {
+    "primary": "#6366F1",
+    "accent": "#EC4899",
+    "signal": "#F59E0B"
+  },
+  "voice": {
+    "description": "Friendly, inclusive and enthusiastic about tech. We celebrate builders, learners and community members.",
+    "tone": "Warm and energetic, like a friend who is genuinely excited to share news with you. Inclusive, never gatekeepy.",
+    "perspective": "company",
+    "audienceDescription": "Software developers, tech founders, designers, and anyone building or learning in London's tech scene"
+  },
+  "profileFacts": [
+    "London Tech Community runs regular meetups, hackathons and networking events across London.",
+    "We welcome everyone: beginners, career changers, students, senior engineers and founders.",
+    "Our events are free or low-cost, focused on learning and connection, not recruitment.",
+    "Partners include co-working spaces, tech companies and educational institutions across London.",
+    "We share opportunities, event recaps and community wins on our LinkedIn page."
+  ],
+  "research": {
+    "categories": {
+      "events": "Events & Meetups",
+      "tech-news": "Tech News",
+      "community": "Community Wins",
+      "learning": "Learning & Resources",
+      "careers": "Careers & Opportunities",
+      "startups": "Startup Scene"
+    },
+    "keywords": [
+      "hackathon", "meetup", "conference", "tech event", "London tech",
+      "startup", "developer", "software engineer", "AI", "machine learning",
+      "web development", "mobile", "cloud", "open source", "community",
+      "networking", "workshop", "bootcamp", "coding", "programming"
+    ],
+    "focuses": [
+      "tech events, meetups, hackathons and conferences happening in London",
+      "news about London tech companies, startups and the local tech ecosystem",
+      "learning resources, workshops and opportunities for tech professionals"
+    ],
+    "trustedSources": [
+      "TechCrunch", "The Verge", "Hacker News", "Tech.eu", "Sifted", "Wired UK",
+      "Evening Standard tech section", "City AM tech", "Meetup.com", "Eventbrite",
+      "London & Partners", "Tech Nation", "Founders Forum"
+    ],
+    "bannedSources": [
+      "Paid press releases disguised as news",
+      "Generic SEO content farms",
+      "Recruitment spam"
+    ]
+  },
+  "feeds": [
+    {
+      "id": "techcrunch",
+      "name": "TechCrunch",
+      "website": "https://techcrunch.com/",
+      "feed": "https://techcrunch.com/feed/"
+    },
+    {
+      "id": "sifted",
+      "name": "Sifted (European startups)",
+      "website": "https://sifted.eu/",
+      "feed": "https://sifted.eu/feed/"
+    }
+  ],
+  "posts": {
+    "days": {
+      "mon": {
+        "label": "Monday",
+        "role": "Week ahead. Highlight upcoming events, meetups or opportunities for the community."
+      },
+      "wed": {
+        "label": "Wednesday",
+        "role": "Tech insights. Share something useful: a learning, a tool, a tip from the community."
+      },
+      "fri": {
+        "label": "Friday",
+        "role": "Community spotlight. Celebrate wins, recap events, or share what members are building."
+      }
+    },
+    "hashtagRules": {
+      "max": 3,
+      "required": [],
+      "suggested": ["LondonTech", "TechCommunity", "Developers"],
+      "banned": []
+    },
+    "lengthTarget": {
+      "min": 100,
+      "max": 180
+    },
+    "bannedWording": [
+      "/game[- ]?chang/i",
+      "/revolution/i",
+      "/disrupt/i",
+      "/\\bAI\\b/",
+      "/automat/i",
+      "/unlock/i",
+      "/seamless/i",
+      "/10x/i",
+      "/ninja/i",
+      "/rockstar/i",
+      "/guru/i"
+    ]
+  },
+  "images": {
+    "defaultScene": "custom",
+    "brandedOverlay": true,
+    "scenes": {
+      "event": {
+        "label": "Tech event or meetup",
+        "brief": "A welcoming tech meetup or hackathon scene in a modern London venue.",
+        "must": [
+          "Diverse group of people collaborating around laptops",
+          "Modern co-working or event space setting",
+          "Warm, inclusive atmosphere",
+          "Casual professional dress"
+        ],
+        "mustNot": [
+          "Corporate boardroom settings",
+          "Faces clearly visible (privacy)",
+          "Any text, logos or signage"
+        ]
+      },
+      "london": {
+        "label": "London tech scene",
+        "brief": "London cityscape or neighbourhood with a tech/startup feel.",
+        "must": [
+          "Recognisable London elements (architecture, landmarks)",
+          "Modern urban setting",
+          "Tech or startup area feel (Shoreditch, King's Cross, etc.)"
+        ],
+        "mustNot": [
+          "Tourist clichés without tech context",
+          "Any text or logos"
+        ]
+      }
+    }
+  },
+  "demo": {
+    "topics": [
+      {
+        "id": "demo-1",
+        "title": "London Tech Week announces 2026 programme",
+        "category": "events",
+        "categoryLabel": "Events & Meetups",
+        "whyItMatters": "The largest tech event in Europe returns with a focus on AI and sustainability, offering opportunities for London's tech community to connect.",
+        "bestDay": "mon",
+        "sensitive": false,
+        "facts": [
+          {
+            "text": "London Tech Week 2026 will run from 9-13 June with over 300 events across the city.",
+            "source": "London & Partners",
+            "url": "https://londontechweek.com/",
+            "date": "2026-10-15"
+          },
+          {
+            "text": "This year's theme is 'Building Responsibly' with tracks on AI ethics, climate tech and inclusive innovation.",
+            "source": "Tech Nation",
+            "url": "https://technation.io/",
+            "date": "2026-10-15"
+          }
+        ]
+      }
+    ],
+    "posts": {
+      "mon": {
+        "post": "London Tech Week just dropped its 2026 programme.\n\nOver 300 events across the city from 9-13 June, with this year's theme focused on 'Building Responsibly' — AI ethics, climate tech and inclusive innovation.\n\nWhether you're a founder, developer or just tech-curious, this is the week to block out in your calendar. Free community events alongside the headline stages.\n\nWhich track are you most interested in?",
+        "headline": "Tech Week 2026",
+        "hashtags": ["LondonTechWeek", "TechCommunity", "LondonTech"],
+        "toCheck": []
+      }
+    }
+  }
+}
