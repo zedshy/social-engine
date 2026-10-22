@@ -398,7 +398,7 @@
   .lib input[type=text] { padding: 6px 8px; font-size: 13px; }
   .lib label.chk { display: flex; gap: 8px; align-items: center; font-size: 12px; font-weight: 500; color: var(--text-2); }
   .phototools { margin-top: 10px; max-width: 320px; }
-  .draft .phototools { max-width: 300px; }
+  .draft-card .phototools { max-width: 300px; }
   .srcnote { font-size: 12px; padding: 6px 8px; margin-top: 8px; background: var(--surface-2); border-left: 2px solid var(--line-2); color: var(--text-2); }
   .srcnote.photo { border-left-color: var(--good); } .srcnote.warn { border-left-color: var(--accent); color: var(--accent); background: var(--bad-bg); } .srcnote.notice { border-left-color: var(--warn); color: var(--warn); background: var(--warn-bg); }
   .picker { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; padding: 8px; border: 1px solid var(--line); background: var(--bg-2); border-radius: 8px; }
@@ -427,10 +427,10 @@
   [hidden] { display: none !important; }
   .intro { padding: 14px 16px; }
   .intro p { margin: 6px 0 0; color: var(--muted); }
-  .draft { padding: 16px; display: grid; grid-template-columns: minmax(260px, 1fr) 300px; gap: 16px; }
-  .draft canvas { max-width: 300px; }
-  .draft .stage .fields, .draft .hint { max-width: 300px; }
-  @media (max-width: 860px) { .draft { grid-template-columns: 1fr; } }
+  .draft-card { padding: 16px; display: grid; grid-template-columns: minmax(260px, 1fr) 300px; gap: 16px; }
+  .draft-card canvas { max-width: 300px; }
+  .draft-card .stage .fields, .draft-card .hint { max-width: 300px; }
+  @media (max-width: 860px) { .draft-card { grid-template-columns: 1fr; } }
 
   .guide { max-width: 720px; }
   .doc h2 { font-size: 16px; letter-spacing: -.02em; font-weight: 600; margin: 0 0 8px; color: var(--ink); text-transform: none; border: 0; padding: 0; }
@@ -2359,7 +2359,7 @@
       (img && !img.source) ? h('div', { class: 'fields' }, correction, h('button', { id: 'fixc-' + i, type: 'button', class: 'btn sm', style: 'margin-top:8px', text: 'Fix and remake', onclick: function () { var c = correction.value.trim(); if (!c) { chatStamp(i, 'Say what is wrong first.', 'err'); return; } chatImage(i, c); } })) : null,
       brief, h('div', { id: 'stc-' + i, class: 'status', role: 'status', 'aria-live': 'polite', style: 'max-width:340px;margin-top:8px' }),
       h('p', { class: 'hint', text: 'Images the studio makes are AI-generated illustrations: check them before publishing. Instagram: Open in Instagram uses your logged-in session; Publish via API dry-runs unless tokens are set.' }));
-    return h('article', { class: 'glass draft' }, left, right);
+    return h('article', { class: 'glass draft-card' }, left, right);
   }
   function renderChat() {
     var box = $('thread'); if (!box) return; box.textContent = '';

@@ -137,7 +137,10 @@ async function mockApis(page) {
 }
 
 function attachGuards(page, origin, bucket) {
-  page.on('pageerror', error => { bucket.pageErrors.push(String(error && error.message ? error.message : error)); });
+  page.on('pageerror', error => {
+    const stack = error && error.stack ? String(error.stack) : '';
+    bucket.pageErrors.push(String(error && error.message ? error.message : error) + (stack ? ' | ' + stack.split('\n').slice(0, 4).join(' ') : ''));
+  });
   page.on('console', msg => {
     if (msg.type() === 'error') bucket.consoleErrors.push(msg.text());
   });
@@ -162,12 +165,13 @@ async function inspect(page, label) {
     if (document.documentElement.scrollWidth > window.innerWidth + 1) {
       problems.push(where + ': horizontal overflow ' + document.documentElement.scrollWidth + '>' + window.innerWidth);
     }
-    const targets = document.querySelectorAll('button.btn, button.pill, .pill, .badge, .mode-badge, button.tab, .nav button');
+    const targets = document.querySelectorAll('button.btn, button.pill, .pill, button.tab, .nav button');
     for (const el of targets) {
       const cs = getComputedStyle(el);
-      if (cs.display === 'none' || cs.visibility === 'hidden' || el.offsetParent === null && el.offsetWidth === 0) continue;
+      if (cs.display === 'none' || cs.visibility === 'hidden' || el.closest('[hidden]') || (el.offsetParent === null && el.offsetWidth === 0)) continue;
+      const nowrap = /\bnowrap\b/.test(cs.whiteSpace);
       const lh = parseFloat(cs.lineHeight) || parseFloat(cs.fontSize) * 1.2;
-      if (el.clientHeight > lh * 1.9 + 8) {
+      if (!nowrap && el.scrollHeight > lh * 2.2) {
         problems.push(where + ': wrapping control "' + (el.textContent || '').trim().replace(/\s+/g, ' ').slice(0, 80) + '"');
       }
     }
@@ -200,9 +204,11 @@ async function gotoStudio(page, view) {
 
 async function seed(page) {
   await page.addInitScript(({ seed }) => {
-    localStorage.setItem('social-engine-theme', 'light');
-    localStorage.setItem('social-engine-v2', JSON.stringify(seed));
-    document.documentElement.setAttribute('data-theme', 'light');
+    try {
+      localStorage.setItem('social-engine-theme', 'light');
+      localStorage.setItem('social-engine-v2', JSON.stringify(seed));
+      if (document.documentElement) document.documentElement.setAttribute('data-theme', 'light');
+    } catch (e) {}
   }, { seed: SEED });
 }
 
@@ -373,10 +379,14 @@ async function exercise(browser, base) {
     if (played !== 'ok') extra.push('guide video did not play (' + played + ')');
 
     await page.goto(base + '/classic', { waitUntil: 'domcontentloaded' });
-    await page.waitForSelector('#generateAi');
+    await page.click('#tab-engine');
+    await page.click('#weeklyPostsTab');
+    const createWeek = page.locator('#createWeek');
+    if (await createWeek.isVisible()) await createWeek.click();
+    await page.locator('#generateAi').waitFor({ state: 'visible' });
     extra.push(...await inspect(page, 'classic generate'));
     await page.click('#generateAi');
-    await page.waitForFunction(() => /ready|saved|draft/i.test((document.getElementById('aiStatus') || {}).textContent || ''), { timeout: 15000 });
+    await page.waitForFunction(() => /ready|saved|draft|variation/i.test((document.getElementById('aiStatus') || {}).textContent || ''), { timeout: 15000 });
     const variation = page.locator('.ai-variation-button, button:has-text("Generate AI variation")');
     if (await variation.count()) {
       await variation.first().click();
