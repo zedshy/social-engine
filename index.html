@@ -2929,7 +2929,7 @@ var PostLibrary = (function () {
     sampleFn = fn || null;
     runBtn.disabled = false;
     statusEl.textContent = sampleFn ? 'Ready to draft from your source.' :
-      'Demo: Draft the week loads prepared thermal-management posts. No AI request; settings do not rewrite the examples.';
+      'Demo: Draft the week loads prepared community posts. No AI request; settings do not rewrite the examples.';
     updateAngleMode();
   }
   if (typeof claude !== 'undefined' && claude && typeof claude.use === 'function') {
@@ -2961,7 +2961,7 @@ var PostLibrary = (function () {
         var demo = { theme: EXAMPLE_POSTS.theme, posts: EXAMPLE_POSTS.posts.slice(0, Math.min(n, EXAMPLE_POSTS.posts.length)) };
         renderPosts(demo, false, brief);
         var remembered = rememberCurrentWeek(demo, false, brief);
-        statusEl.textContent = 'Demo week loaded from prepared thermal-management examples. No AI request; settings do not rewrite the examples.' +
+        statusEl.textContent = 'Demo week loaded from prepared community examples. No AI request; settings do not rewrite the examples.' +
           (remembered ? '' : ' This week is available for this open page only; device storage is unavailable.');
       }, 800);
       return;
