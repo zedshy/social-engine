@@ -36,6 +36,26 @@ const assets = new Map([
   ['/assets/content-studio/improved-concept.svg', ['assets/content-studio/improved-concept.svg', 'image/svg+xml']]
 ]);
 
+/** Guide screenshots. Exact paths stay on the whitelist; a tight regex covers regenerations. */
+export const GUIDE_ASSET_PATHS = [
+  '/assets/guide/dashboard.webp',
+  '/assets/guide/brand.webp',
+  '/assets/guide/studio.webp',
+  '/assets/guide/linkedin.webp',
+  '/assets/guide/instagram.webp',
+  '/assets/guide/library.webp',
+  '/assets/guide/settings.webp'
+];
+const GUIDE_ASSET = /^\/assets\/guide\/[a-z0-9][a-z0-9._-]{0,80}\.(png|webp)$/i;
+for (const path of GUIDE_ASSET_PATHS) {
+  assets.set(path, [path.slice(1), path.endsWith('.webp') ? 'image/webp' : 'image/png']);
+}
+function staticAsset(path) {
+  if (assets.has(path)) return assets.get(path);
+  if (!GUIDE_ASSET.test(path)) return null;
+  return [path.slice(1), extname(path).toLowerCase() === '.webp' ? 'image/webp' : 'image/png'];
+}
+
 function json(res, status, body) {
   res.writeHead(status, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' });
   res.end(JSON.stringify(body));
@@ -308,7 +328,7 @@ export function createHandler({ client, model = process.env.OPENAI_MODEL || 'gpt
       }
     }
     if (req.method !== 'GET' && req.method !== 'HEAD') return json(res, 405, { error: 'Method not allowed.' });
-    const asset = assets.get(path);
+    const asset = staticAsset(path);
     if (!asset) return json(res, 404, { error: 'Not found.' });
     try {
       const file = await readFile(join(root, asset[0]));

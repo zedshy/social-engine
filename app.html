@@ -457,6 +457,29 @@
     font-weight: 600; font-size: 14px; line-height: 1; cursor: pointer;
   }
   .help-link:hover { background: var(--accent-soft); color: var(--accent); border-color: var(--accent); }
+  .guide-shot { margin: 12px 0 2px; }
+  .guide-shot-open {
+    display: block; width: 100%; padding: 0; margin: 0; cursor: zoom-in;
+    border: 1px solid #e4e4e7; border-radius: 8px; overflow: hidden;
+    background: #fff; position: relative; box-shadow: none; filter: none;
+  }
+  .guide-shot-open img { display: block; width: 100%; height: auto; vertical-align: middle; }
+  .guide-shot figcaption { margin: 6px 0 0; font-size: 12px; line-height: 1.4; color: var(--muted); }
+  .guide-mark {
+    position: absolute; width: 22px; height: 22px; border-radius: 999px;
+    background: #ff5a1f; color: #fff; font: 600 11px/22px var(--mono);
+    text-align: center; transform: translate(-50%, -50%); pointer-events: none;
+    box-shadow: none; border: 0;
+  }
+  .guide-lb {
+    position: fixed; inset: 0; z-index: 200; background: rgba(10,10,10,.55);
+    display: grid; place-items: center; padding: 24px; cursor: zoom-out;
+  }
+  .guide-lb[hidden] { display: none !important; }
+  .guide-lb img {
+    max-width: min(1100px, 94vw); max-height: 90vh; width: auto; height: auto;
+    border: 1px solid #e4e4e7; border-radius: 8px; background: #fff; box-shadow: none;
+  }
 
   .cmdk { position: fixed; inset: 0; z-index: 100; background: rgba(10,10,10,.35); display: grid; place-items: start center; padding-top: 12vh; }
   .cmdk[hidden] { display: none !important; }
@@ -741,6 +764,12 @@
             <li id="g-what">
               <h2>What Galleypost does</h2>
               <p>Galleypost is a content desk: it turns a brand profile and sourced facts into a LinkedIn or Instagram draft you can review. It does not invent numbers, and it does not publish anything on its own. Named after the galley proof: the newsroom proof that gets checked before anything goes to print.</p>
+              <figure class="guide-shot">
+                <button type="button" class="guide-shot-open" aria-label="Enlarge Dashboard screenshot">
+                  <img src="/assets/guide/dashboard.webp" alt="Dashboard with this week’s posts, pipeline and next action." width="1280" height="800" loading="lazy" decoding="async">
+                </button>
+                <figcaption>Dashboard: week overview, pipeline, and the next action.</figcaption>
+              </figure>
             </li>
             <li id="g-start">
               <h2>Quick start</h2>
@@ -748,14 +777,53 @@
               2. <b>Studio.</b> Find topics or add your own facts, then write a post.<br>
               3. <b>Review.</b> Read the fact-check notes, checklist and preview. Edit anything that is not sourced.<br>
               4. <b>LinkedIn.</b> Press <b>Post on LinkedIn</b>. That opens LinkedIn’s composer in a new tab with the draft filled in, and copies the text to the clipboard as a fallback. It does not auto-publish — you press Post in LinkedIn yourself.</p>
+              <figure class="guide-shot">
+                <button type="button" class="guide-shot-open" aria-label="Enlarge Brand setup screenshot">
+                  <img src="/assets/guide/brand.webp" alt="Brand profile setup with website URL, name, tagline and facts." width="1280" height="800" loading="lazy" decoding="async">
+                </button>
+                <figcaption>Brand: extract from a URL or edit the facts the Assistant may state.</figcaption>
+              </figure>
+              <figure class="guide-shot">
+                <button type="button" class="guide-shot-open" aria-label="Enlarge Studio screenshot">
+                  <img src="/assets/guide/studio.webp" alt="Studio with a written draft, pipeline checklist and LinkedIn preview." width="1280" height="800" loading="lazy" decoding="async">
+                  <span class="guide-mark" style="left:19.3%;top:22.1%" title="Write week">1</span>
+                </button>
+                <figcaption>Studio: write the week, then review the checklist and preview. Marker 1 is Write week.</figcaption>
+              </figure>
+              <figure class="guide-shot">
+                <button type="button" class="guide-shot-open" aria-label="Enlarge Post on LinkedIn screenshot">
+                  <img src="/assets/guide/linkedin.webp" alt="LinkedIn preview card with the Post on LinkedIn button highlighted." width="1280" height="800" loading="lazy" decoding="async">
+                  <span class="guide-mark" style="left:22.8%;top:88%" title="Post on LinkedIn">2</span>
+                </button>
+                <figcaption>Post on LinkedIn opens the composer in a new tab and copies the draft. Marker 2 is the button.</figcaption>
+              </figure>
+              <figure class="guide-shot">
+                <button type="button" class="guide-shot-open" aria-label="Enlarge Library screenshot">
+                  <img src="/assets/guide/library.webp" alt="Post library listing this week’s drafts with status and actions." width="1280" height="800" loading="lazy" decoding="async">
+                </button>
+                <figcaption>Library: this week’s drafts, status, and photos kept in this browser.</figcaption>
+              </figure>
             </li>
             <li id="g-instagram">
               <h2>Posting to Instagram</h2>
               <p><b>Open in Instagram</b> (no token): copies the caption, downloads the image if there is one, and opens instagram.com in a new tab so you can press + Create in your logged-in session. <b>Publish via API</b> needs <code>INSTAGRAM_ACCESS_TOKEN</code>, <code>INSTAGRAM_USER_ID</code>, and <code>PUBLIC_BASE_URL</code>. Without those it is a labelled dry-run. Captions are capped at 2,200 characters and 30 hashtags. API publish still waits for you to confirm.</p>
+              <figure class="guide-shot">
+                <button type="button" class="guide-shot-open" aria-label="Enlarge Instagram dialog screenshot">
+                  <img src="/assets/guide/instagram.webp" alt="Instagram dialog with Open in Instagram and Publish via API." width="1280" height="800" loading="lazy" decoding="async">
+                  <span class="guide-mark" style="left:17.6%;top:93.1%" title="Open in Instagram">3</span>
+                </button>
+                <figcaption>Open in Instagram (logged-in session) versus Publish via API (token or labelled dry-run). Marker 3 is Open in Instagram.</figcaption>
+              </figure>
             </li>
             <li id="g-setup">
               <h2>Settings</h2>
               <p>Local: copy <code>.env.example</code> to <code>.env</code> and set <code>OPENAI_API_KEY</code>, then restart. Hosted on Vercel: set <code>OPENAI_API_KEY</code> and <code>APP_PASSWORD</code> in project env vars (the browser asks for that password). Appearance: light is the default; switch to dark under Settings. The choice stays in this browser.</p>
+              <figure class="guide-shot">
+                <button type="button" class="guide-shot-open" aria-label="Enlarge Settings screenshot">
+                  <img src="/assets/guide/settings.webp" alt="Settings with the light/dark theme toggle and where API keys are set." width="1280" height="800" loading="lazy" decoding="async">
+                </button>
+                <figcaption>Settings: theme toggle, and the env vars used for OpenAI and Instagram. Keys are never typed into this page.</figcaption>
+              </figure>
             </li>
             <li id="g-help">
               <h2>Troubleshooting</h2>
@@ -806,6 +874,16 @@
           <label class="cost chk" style="margin-top:12px"><input type="checkbox" id="imgResearch"> Research images online (extra cost)</label>
           <p id="usageLine" class="usage hint" style="max-width:none" title="Counted since the server started. Tokens and image counts, not dollars."></p>
         </div>
+      </div>
+      <div class="glass pad" id="keysPanel" style="margin-top:12px">
+        <div class="panel-h"><h2>API keys</h2></div>
+        <p class="hint" style="max-width:none;margin:0 0 8px">Keys stay in <code>.env</code> (local) or Vercel env vars (hosted). They are never typed into this page.</p>
+        <table class="tbl">
+          <tr><th>Where</th><th>What to set</th></tr>
+          <tr><td>Local</td><td>Copy <code>.env.example</code> to <code>.env</code>. Set <code>OPENAI_API_KEY</code>. Restart the server.</td></tr>
+          <tr><td>Vercel</td><td><code>OPENAI_API_KEY</code> and <code>APP_PASSWORD</code> in project env vars.</td></tr>
+          <tr><td>Instagram API</td><td><code>INSTAGRAM_ACCESS_TOKEN</code>, <code>INSTAGRAM_USER_ID</code>, <code>PUBLIC_BASE_URL</code>. Leave blank to keep Open in Instagram plus a labelled dry-run.</td></tr>
+        </table>
       </div>
       <div class="more-grid" style="margin-top:16px">
         <button type="button" class="btn" data-go="assistant">Open Assistant</button>
@@ -2393,6 +2471,24 @@
       fillBrandSwitch();
     } catch (e) { setStatus($('brandStatus'), e.message, 'err'); toast(e.message, 'err'); }
   });
+  (function () {
+    var lb = document.createElement('div');
+    lb.id = 'guideLb'; lb.className = 'guide-lb'; lb.hidden = true; lb.setAttribute('role', 'dialog'); lb.setAttribute('aria-label', 'Screenshot');
+    lb.appendChild(h('img', { alt: '' }));
+    document.body.appendChild(lb);
+    function closeLb() { lb.hidden = true; lb.querySelector('img').removeAttribute('src'); }
+    lb.addEventListener('click', closeLb);
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !lb.hidden) closeLb(); });
+    document.querySelectorAll('.guide-shot-open').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var img = btn.querySelector('img'); if (!img) return;
+        var full = lb.querySelector('img');
+        full.src = img.currentSrc || img.src;
+        full.alt = img.alt || '';
+        lb.hidden = false;
+      });
+    });
+  })();
   fetch('/api/studio/options').then(function (r) { return r.json(); }).then(function (o) {
     runtime.options = o; renderFilters();
     var b = $('liveBadge'); b.textContent = ''; b.appendChild(h('i', { class: 'dot' })); b.appendChild(document.createTextNode(o.liveAvailable ? 'Live OpenAI' : 'Demo mode')); b.className = 'mode-badge ' + (o.liveAvailable ? 'good' : 'demo');

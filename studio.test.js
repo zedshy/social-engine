@@ -57,6 +57,9 @@ test('studio page includes the Guide nav', async () => {
   assert.match(html, /<span>Guide<\/span>/);
   assert.match(html, /id="helpLink"/);
   assert.match(html, /id="view-guide"/);
+  assert.match(html, /class="guide-shot"/);
+  assert.match(html, /\/assets\/guide\/dashboard\.webp/);
+  assert.match(html, /\/assets\/guide\/instagram\.webp/);
 });
 
 test('article is grounded in supplied facts and returns what to check', async () => {

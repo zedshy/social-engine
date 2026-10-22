@@ -1,7 +1,7 @@
 
 import assert from 'node:assert/strict';
 import { after, before, test } from 'node:test';
-import { createApp } from './server.js';
+import { createApp, GUIDE_ASSET_PATHS } from './server.js';
 
 const calls = [];
 const client = { responses: { create: async (request) => {
@@ -142,6 +142,17 @@ test('rejects incomplete or overlong model output', async () => {
   } finally { app.close(); }
 });
 
+
+test('serves each Guide screenshot as an image', async () => {
+  assert.ok(GUIDE_ASSET_PATHS.length >= 7);
+  for (const path of GUIDE_ASSET_PATHS) {
+    const image = await fetch(`${base}${path}`);
+    assert.equal(image.status, 200, path);
+    assert.match(image.headers.get('content-type') || '', /^image\/(png|webp)\b/, path);
+    const bytes = Buffer.from(await image.arrayBuffer());
+    assert.ok(bytes.length > 500, path);
+  }
+});
 
 test('example placeholder keys explain optional AI setup without contacting OpenAI', async () => {
   const app = createApp({ apiKey: 'replace-with-your-key' });
