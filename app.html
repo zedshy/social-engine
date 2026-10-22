@@ -144,19 +144,20 @@
   button.btn.primary { background: var(--ink); color: var(--bg); border-color: var(--ink); }
   button.btn.primary:hover:not(:disabled) { background: #d4d4d8; border-color: #d4d4d8; color: #0b0b0c; }
   [data-theme="light"] button.btn.primary { background: #111113; color: #fafafa; }
-  button.btn.li { background: #0a66c2; border-color: #0a66c2; color: #fff; }
-  button.btn.ig { background: #C13584; border-color: #C13584; color: #fff; }
-  button.btn.ig:hover:not(:disabled) { background: #8E245F; border-color: #8E245F; }
-  .ig-dialog { position: fixed; inset: 0; z-index: 100; background: rgba(11, 11, 12, .55); display: flex; align-items: center; justify-content: center; padding: 24px; }
+  button.btn.li { background: var(--surface-2); border-color: var(--line); color: var(--ink); }
+  button.btn.ig { background: var(--surface-2); border-color: var(--line); color: var(--ink); }
+  button.btn.ig:hover:not(:disabled), button.btn.li:hover:not(:disabled) { background: #1c1c1f; }
+  button.btn.primary.ig { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+  .ig-dialog { position: fixed; inset: 0; z-index: 110; background: rgba(11, 11, 12, .55); display: grid; place-items: center; padding: 24px; }
   .ig-dialog[hidden] { display: none; }
-  .ig-panel { background: var(--bg-2); color: var(--ink); border: 1px solid var(--line); border-radius: 8px; width: min(560px, 100%); max-height: min(90vh, 760px); overflow: auto; padding: 16px; }
-  .ig-panel h2 { font-size: 18px; margin: 8px 0 10px; letter-spacing: -.03em; }
-  .ig-panel p { margin: 8px 0; }
-  .ig-caption, .ig-requests { white-space: pre-wrap; background: var(--surface-2); padding: 10px 12px; font-size: 13px; max-height: 200px; overflow: auto; margin: 8px 0; border-radius: 6px; border: 1px solid var(--line); }
-  .ig-requests { font-family: var(--mono); font-size: 12px; }
+  .ig-panel { background: var(--bg-2); color: var(--ink); border: 1px solid var(--line); border-radius: 8px; width: min(480px, 100%); max-height: min(90vh, 720px); overflow: auto; padding: 16px; }
+  .ig-panel h2 { font-size: 18px; margin: 6px 0 10px; letter-spacing: -.03em; font-weight: 590; }
+  .ig-panel p { margin: 8px 0; font-size: 13px; color: var(--text-2); }
+  .ig-caption, .ig-requests { white-space: pre-wrap; background: var(--bg); padding: 10px 12px; font-size: 13px; max-height: 180px; overflow: auto; margin: 8px 0; border-radius: 6px; border: 1px solid var(--line); }
+  .ig-requests { font-family: var(--mono); font-size: 11px; color: var(--muted); }
   .ig-panel label { display: block; font-size: 11px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-top: 12px; }
   .ig-panel input[type="url"] { width: 100%; margin-top: 6px; padding: 7px 10px; border: 1px solid var(--line); background: var(--input); border-radius: 6px; }
-  .ig-panel ul { margin: 6px 0; padding-left: 18px; color: var(--warn); }
+  .ig-panel ul { margin: 6px 0; padding-left: 18px; color: var(--warn); font-size: 12px; }
   button.btn.sm { padding: 4px 8px; font-size: 12px; }
   button.btn svg { width: 14px; height: 14px; }
   button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible { outline: 1px solid var(--ink); outline-offset: 1px; }
@@ -514,7 +515,7 @@
         <div class="glass pad">
           <div class="panel-h"><h2>Recent posts</h2><button type="button" class="btn sm" data-go="library">Library</button></div>
           <table class="posts-table">
-            <thead><tr><th>Title</th><th>Channel</th><th>Status</th><th>Fact-check</th><th>Updated</th></tr></thead>
+            <thead><tr><th>Title</th><th>Channel</th><th>Status</th><th>Fact-check</th><th>Updated</th><th></th></tr></thead>
             <tbody id="recentPosts"></tbody>
           </table>
         </div>
@@ -605,6 +606,7 @@
           <div class="who"><div class="avatar">LT</div><div><b>London Tech Community</b><span>LinkedIn · preview</span></div></div>
           <div class="body empty" id="previewBody">Pick an idea and write a post. The preview will look like a LinkedIn card.</div>
           <div class="tags" id="previewTags"></div>
+          <div class="row" style="margin-top:10px"><button type="button" class="btn sm ig" id="previewIg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r=".8" fill="currentColor" stroke="none"/></svg>Post to Instagram</button></div>
         </div>
         <div class="li-card" id="xPreview" style="padding-top:12px">
           <div class="who"><div class="avatar">LT</div><div><b>@londontech</b><span>X · preview</span></div></div>
@@ -638,7 +640,7 @@
       <div class="glass pad" style="margin-bottom:18px">
         <div class="panel-h"><h2>This week’s posts</h2><button type="button" class="btn sm" data-go="studio">Open studio</button></div>
         <table class="posts-table">
-          <thead><tr><th>Title</th><th>Channel</th><th>Status</th><th>Fact-check</th><th>Updated</th></tr></thead>
+          <thead><tr><th>Title</th><th>Channel</th><th>Status</th><th>Fact-check</th><th>Updated</th><th></th></tr></thead>
           <tbody id="libraryPosts"></tbody>
         </table>
       </div>
@@ -943,6 +945,20 @@
     send: '<path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4z"/>'
   };
   function svg(name) { var s = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); s.setAttribute('viewBox', '0 0 24 24'); s.setAttribute('fill', 'none'); s.setAttribute('stroke', 'currentColor'); s.setAttribute('stroke-width', '1.5'); s.setAttribute('stroke-linecap', 'round'); s.setAttribute('stroke-linejoin', 'round'); s.innerHTML = ICON[name]; return s; }
+  function igGlyph() {
+    var s = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    s.setAttribute('viewBox', '0 0 24 24'); s.setAttribute('fill', 'none'); s.setAttribute('stroke', 'currentColor');
+    s.setAttribute('stroke-width', '1.5'); s.setAttribute('stroke-linecap', 'round'); s.setAttribute('stroke-linejoin', 'round'); s.setAttribute('aria-hidden', 'true');
+    s.innerHTML = '<rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r=".8" fill="currentColor" stroke="none"/>';
+    return s;
+  }
+  function igButton(onclick) {
+    var b = h('button', { type: 'button', class: 'btn sm ig' });
+    b.appendChild(igGlyph());
+    b.appendChild(document.createTextNode('Post to Instagram'));
+    b.addEventListener('click', onclick);
+    return b;
+  }
   function setStatus(el, text, kind) { if (!el) return; el.textContent = text; el.className = 'status' + (kind ? ' ' + kind : ''); }
   function clock(ts) { return new Date(ts).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); }
   function nice(date) { if (!date) return ''; var d = new Date(date + 'T12:00:00'); return isNaN(d) ? date : d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }); }
@@ -1243,13 +1259,18 @@
     if (st.idea) return { label: 'Draft', cls: 'draft' };
     return { label: 'Empty', cls: '' };
   }
-  function tableRow(title, channel, status, cls, score, updated) {
+  function tableRow(title, channel, status, cls, score, updated, ig) {
+    var action = h('td');
+    if (ig) {
+      action.appendChild(igButton(function (e) { e.stopPropagation(); ig(); }));
+    }
     return h('tr', { onclick: function () { show('studio'); } },
       h('td', { class: 'title', text: title }),
       h('td', { text: channel }),
       h('td', null, h('span', { class: 'pill ' + (cls || ''), text: status })),
       h('td', { class: 'mono', text: score }),
-      h('td', { class: 'mono', text: updated }));
+      h('td', { class: 'mono', text: updated }),
+      action);
   }
   function renderRecent(box) {
     if (!box) return;
@@ -1257,11 +1278,15 @@
     var rows = DAYS.map(function (d) {
       var p = state.posts[d.id]; if (!p) return null;
       var chip = postChip(d);
-      return tableRow(p.headline || (state.week[d.id] && state.week[d.id].title) || d.label, 'LinkedIn', chip.label, chip.cls, String(lintScore(p)), clock(p.updated || Date.now()));
+      return tableRow(p.headline || (state.week[d.id] && state.week[d.id].title) || d.label, 'LinkedIn', chip.label, chip.cls, String(lintScore(p)), clock(p.updated || Date.now()), function () {
+        openInstagram(document.getElementById('cv-' + d.id), fullText(d.id), document.getElementById('st-' + d.id));
+      });
     }).filter(Boolean);
     if (!rows.length) {
-      if (sampleMode()) DEMO_POSTS.forEach(function (p) { box.appendChild(tableRow(p.title, p.channel, p.status, p.cls, p.score, p.updated)); });
-      else box.appendChild(h('tr', null, h('td', { colspan: '5', class: 'empty-state', text: 'No drafts yet. Open Studio and write the week, or drop a PDF onto this page.' })));
+      if (sampleMode()) DEMO_POSTS.forEach(function (p) {
+        box.appendChild(tableRow(p.title, p.channel, p.status, p.cls, p.score, p.updated, function () { openInstagram(null, p.body, null); }));
+      });
+      else box.appendChild(h('tr', null, h('td', { colspan: '6', class: 'empty-state', text: 'No drafts yet. Open Studio and write the week, or drop a PDF onto this page.' })));
       return;
     }
     rows.forEach(function (row) { box.appendChild(row); });
@@ -1714,6 +1739,11 @@
   $('igDialog').addEventListener('click', function (event) { if (event.target === $('igDialog')) closeIg(); });
   $('igImageUrl').addEventListener('input', function () { clearTimeout(igTimer); igTimer = setTimeout(refreshIgPreview, 300); });
   document.addEventListener('keydown', function (event) { if (event.key === 'Escape' && !$('igDialog').hidden) closeIg(); });
+  if ($('previewIg')) $('previewIg').addEventListener('click', function () {
+    var day = DAYS.find(function (d) { return state.posts[d.id]; });
+    if (day) openInstagram(document.getElementById('cv-' + day.id), fullText(day.id), document.getElementById('st-' + day.id));
+    else openInstagram(null, DEMO_POSTS[0].body, null);
+  });
 
   function postCard(d) {
     var p = state.posts[d.id], topic = state.week[d.id], img = runtime.images[d.id];
@@ -1753,7 +1783,7 @@
         h('button', { id: 'img-' + d.id, type: 'button', class: 'btn primary sm', text: img ? 'Make a new image' : 'Create image', onclick: function () { makeImage(d.id, ''); } }),
         h('button', { type: 'button', class: 'btn sm', text: 'Download', onclick: function () { download(d.id); } }),
         h('button', { type: 'button', class: 'btn sm li', text: 'Post to LinkedIn', onclick: function () { toLinkedIn(d.id); } }),
-        h('button', { type: 'button', class: 'btn sm ig', text: 'Post to Instagram', onclick: function () { openInstagram(document.getElementById('cv-' + d.id), fullText(d.id), document.getElementById('st-' + d.id)); } })),
+        igButton(function () { openInstagram(document.getElementById('cv-' + d.id), fullText(d.id), document.getElementById('st-' + d.id)); })),
       photoTools({ get: function () { return runtime.images[d.id]; }, set: function (v) { runtime.images[d.id] = v; }, repaint: function () { paint(d.id); }, status: function (t, k) { stamp(d.id, t, k); }, after: function () { renderDash(); renderWeek(); },
         avoid: function () { return otherVisuals(d.id); },
         story: function () { return { title: topic ? topic.title : p.headline, facts: topic ? topic.facts.slice(0, 3).map(function (f) { return f.text; }) : [] }; } }),
@@ -2224,7 +2254,7 @@
         h('button', { id: 'imgc-' + i, type: 'button', class: 'btn primary sm', text: img ? 'Make a new image' : 'Create image', onclick: function () { chatImage(i, ''); } }),
         h('button', { type: 'button', class: 'btn sm', text: 'Download', onclick: function () { downloadCanvas(cv, 'your brand-assistant-post.png'); } }),
         h('button', { type: 'button', class: 'btn sm li', text: 'Post to LinkedIn', onclick: function () { var ok = sendToLinkedIn(cv, chatFullText(i), 'your brand-assistant-post.png'); chatStamp(i, ok ? LINKEDIN_OK : LINKEDIN_BLOCKED, ok ? 'ok' : 'err'); log('Sent an Assistant draft to LinkedIn’s composer'); } }),
-        h('button', { type: 'button', class: 'btn sm ig', text: 'Post to Instagram', onclick: function () { openInstagram(cv, chatFullText(i), document.getElementById('stc-' + i)); } })),
+        igButton(function () { openInstagram(cv, chatFullText(i), document.getElementById('stc-' + i)); })),
       photoTools({ get: function () { return runtime.chatImages[i]; }, set: function (v) { runtime.chatImages[i] = v; }, repaint: function () { paintTo(cv, (runtime.chatImages[i] || {}).img, d, runtime.chatImages[i]); }, status: function (t, k) { chatStamp(i, t, k); },
         story: function () { return { title: d.headline || '', facts: [d.post.slice(0, 220)] }; } }),
       (img && !img.source) ? h('div', { class: 'fields' }, correction, h('button', { id: 'fixc-' + i, type: 'button', class: 'btn sm', style: 'margin-top:8px', text: 'Fix and remake', onclick: function () { var c = correction.value.trim(); if (!c) { chatStamp(i, 'Say what is wrong first.', 'err'); return; } chatImage(i, c); } })) : null,
