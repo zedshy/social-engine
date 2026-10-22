@@ -7,6 +7,7 @@ import { dirname, extname, join } from 'node:path';
 import OpenAI from 'openai';
 import { createNewsDiscovery } from './news-discovery.js';
 import { studioHandler } from './studio.js';
+import { createInstagramPublisher } from './instagram-publisher.js';
 import { loadBrandProfile, saveBrandProfile, extractBrandFromWebsite, DEFAULT_PROFILE, validateProfile } from './brand-profile.js';
 
 const root = dirname(fileURLToPath(import.meta.url));
@@ -41,12 +42,16 @@ function json(res, status, body) {
 }
 
 async function readJson(req) {
+  return readJsonCapped(req, MAX_BODY_BYTES, 'Request is too large. Shorten the source material.');
+}
+
+async function readJsonCapped(req, limit, tooLarge = 'Request is too large.') {
   let size = 0;
   const chunks = [];
   for await (const chunk of req) {
     size += chunk.length;
-    if (size > MAX_BODY_BYTES) {
-      const error = new Error('Request is too large. Shorten the source material.');
+    if (size > limit) {
+      const error = new Error(tooLarge);
       error.status = 413;
       throw error;
     }
@@ -58,6 +63,12 @@ async function readJson(req) {
     error.status = 400;
     throw error;
   }
+}
+
+function differentOrigin(req) {
+  if (!req.headers.origin) return false;
+  try { return new URL(req.headers.origin).host !== req.headers.host; }
+  catch { return true; }
 }
 
 function validate(body) {
@@ -117,7 +128,7 @@ export function accessDenied(req, { password = process.env.APP_PASSWORD, hosted 
   return sameSecret(given, password) ? null : { status: 401, message: 'Enter the access password.' };
 }
 
-export function createHandler({ client, model = process.env.OPENAI_MODEL || 'gpt-4.1-mini', apiKey = process.env.OPENAI_API_KEY, newsOptions, studioOptions, access, profilePath = PROFILE_PATH } = {}) {
+export function createHandler({ client, model = process.env.OPENAI_MODEL || 'gpt-4.1-mini', apiKey = process.env.OPENAI_API_KEY, newsOptions, studioOptions, access, profilePath = PROFILE_PATH, instagram } = {}) {
   // Load profile once at startup, with ability to reload
   let profile = null;
   let profileLoaded = false;
@@ -137,6 +148,7 @@ export function createHandler({ client, model = process.env.OPENAI_MODEL || 'gpt
   loadProfile();
   
   const discoverNews = createNewsDiscovery(newsOptions);
+  const instagramPublisher = createInstagramPublisher(instagram);
   
   // Create studio handler with profile - will be recreated when profile changes
   let studio = null;
@@ -151,6 +163,10 @@ export function createHandler({ client, model = process.env.OPENAI_MODEL || 'gpt
     // Ensure profile is loaded
     if (!profileLoaded) await loadProfile();
     
+    const path = new URL(req.url, 'http://localhost').pathname;
+    // Instagram's servers download the JPEG with no app password. The id is unguessable and expires.
+    if (req.method === 'GET' && path.startsWith('/api/instagram/media/')) return instagramPublisher.serve(res, path);
+
     const denied = accessDenied(req, access);
     if (denied) {
       const headers = { 'Content-Type': 'text/plain; charset=utf-8', 'Cache-Control': 'no-store' };
@@ -158,11 +174,27 @@ export function createHandler({ client, model = process.env.OPENAI_MODEL || 'gpt
       res.writeHead(denied.status, headers);
       return res.end(denied.message);
     }
-    const path = new URL(req.url, 'http://localhost').pathname;
     
     // Health check
     if (req.method === 'GET' && path === '/api/health') {
       return json(res, 200, { app: 'social-engine', status: 'ok', assetVersion: 1, profileName: profile?.name || 'Social Engine' });
+    }
+
+    if (path === '/api/instagram/status' || path === '/api/instagram/preview' || path === '/api/instagram/publish') {
+      if (differentOrigin(req)) return json(res, 403, { error: 'Use this tool from its own page.' });
+      if (path === '/api/instagram/status') {
+        if (req.method !== 'GET') return json(res, 405, { error: 'Method not allowed.' });
+        return json(res, 200, instagramPublisher.status());
+      }
+      if (req.method !== 'POST') return json(res, 405, { error: 'Method not allowed.' });
+      if (req.headers['content-type']?.split(';')[0] !== 'application/json') return json(res, 415, { error: 'Send JSON content.' });
+      try {
+        const body = await readJsonCapped(req, 6 * 1024 * 1024);
+        const result = path === '/api/instagram/preview' ? instagramPublisher.preview(body) : await instagramPublisher.publish(body);
+        return json(res, result.status, result.body);
+      } catch (error) {
+        return json(res, error.status || 400, { error: error.message || 'Send a valid JSON request.' });
+      }
     }
     
     // Profile management endpoints
