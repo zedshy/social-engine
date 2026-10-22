@@ -196,7 +196,8 @@
   .next p { margin: 0 0 8px; color: var(--muted); font-size: 12px; }
 
   .stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0; margin: 0 0 16px; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: var(--bg-2); min-width: 0; }
-  .stat { padding: 12px 16px; border-right: 1px solid var(--line); position: relative; background: transparent; }
+  .stat { padding: 12px 16px; border-right: 1px solid var(--line); position: relative; background: transparent; min-width: 0; }
+  .stat .eyebrow { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .stat:last-child { border-right: 0; }
   .stat::before { display: none; }
   .stat .v { font-family: var(--mono); font-size: 24px; font-weight: 600; letter-spacing: -.03em; line-height: 1.2; margin-top: 6px; color: var(--accent); }
@@ -224,7 +225,8 @@
   .posts-table .col-status { width: 88px; white-space: nowrap; }
   .posts-table .col-check { width: 56px; white-space: nowrap; }
   .posts-table .col-updated { width: 118px; white-space: nowrap; }
-  .posts-table .col-action { width: 118px; white-space: nowrap; }
+  .posts-table .col-action { width: 200px; white-space: nowrap; }
+  .row-actions { display: flex; flex-wrap: nowrap; gap: 6px; align-items: center; }
   .posts-table .title { color: var(--ink); font-weight: 500; }
   .posts-table .title-clip {
     display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
@@ -641,7 +643,10 @@
           <div class="who"><div class="avatar">LT</div><div><b>London Tech Community</b><span>LinkedIn · preview</span></div></div>
           <div class="body empty" id="previewBody">Pick an idea and write a post. The preview will look like a LinkedIn card.</div>
           <div class="tags" id="previewTags"></div>
-          <div class="row" style="margin-top:10px"><button type="button" class="btn sm ig" id="previewIg" aria-label="Post to Instagram" title="Post to Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r=".8" fill="currentColor" stroke="none"/></svg>Instagram</button></div>
+          <div class="row" style="margin-top:10px">
+            <button type="button" class="btn sm li" id="previewLi">Post on LinkedIn</button>
+            <button type="button" class="btn sm ig" id="previewIg" aria-label="Post to Instagram" title="Post to Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r=".8" fill="currentColor" stroke="none"/></svg>Instagram</button>
+          </div>
         </div>
         <div class="li-card" id="xPreview" style="padding-top:12px">
           <div class="who"><div class="avatar">LT</div><div><b>@londontech</b><span>X · preview</span></div></div>
@@ -742,11 +747,11 @@
               <p>1. <b>Brand.</b> Paste a website URL and extract a profile, or load the London Tech Community demo.<br>
               2. <b>Studio.</b> Find topics or add your own facts, then write a post.<br>
               3. <b>Review.</b> Read the fact-check notes, checklist and preview. Edit anything that is not sourced.<br>
-              4. <b>LinkedIn.</b> Press <b>Post to LinkedIn</b>. That copies the draft and opens LinkedIn’s composer — it does not auto-publish. You paste the image (Cmd+V) and press Post in LinkedIn yourself.</p>
+              4. <b>LinkedIn.</b> Press <b>Post on LinkedIn</b>. That opens LinkedIn’s composer in a new tab with the draft filled in, and copies the text to the clipboard as a fallback. It does not auto-publish — you press Post in LinkedIn yourself.</p>
             </li>
             <li id="g-instagram">
               <h2>Posting to Instagram</h2>
-              <p><b>Dry-run</b> (no token): the dialog shows the Graph requests and does not call Instagram. <b>Live</b> needs <code>INSTAGRAM_ACCESS_TOKEN</code>, <code>INSTAGRAM_USER_ID</code>, and <code>PUBLIC_BASE_URL</code> (https origin Instagram can download a JPEG from). Captions are capped at 2,200 characters and 30 hashtags; the preview shortens over-limit text and warns. Nothing is sent until you press <b>Post</b> in the confirm dialog.</p>
+              <p><b>Open in Instagram</b> (no token): copies the caption, downloads the image if there is one, and opens instagram.com in a new tab so you can press + Create in your logged-in session. <b>Publish via API</b> needs <code>INSTAGRAM_ACCESS_TOKEN</code>, <code>INSTAGRAM_USER_ID</code>, and <code>PUBLIC_BASE_URL</code>. Without those it is a labelled dry-run. Captions are capped at 2,200 characters and 30 hashtags. API publish still waits for you to confirm.</p>
             </li>
             <li id="g-setup">
               <h2>Settings</h2>
@@ -757,7 +762,7 @@
               <table class="tbl">
                 <tr><th>Problem</th><th>What happens / what to do</th></tr>
                 <tr><td>No OpenAI key</td><td>Demo mode: Studio and Classic still open. Live research, writing and images stay locked until <code>OPENAI_API_KEY</code> is set and the server is restarted.</td></tr>
-                <tr><td>Instagram dry-run</td><td>Token or user id missing. The confirm dialog still opens; Copy caption works; nothing is published.</td></tr>
+                <tr><td>Instagram dry-run</td><td>Token or user id missing. Use <b>Open in Instagram</b> for your logged-in session, or press Publish via API for a labelled dry-run. Nothing is published until you confirm.</td></tr>
                 <tr><td>Port in use</td><td>Another process has 8080. Stop it, or run with another <code>PORT</code>. The Mac launcher will not kill the other app.</td></tr>
               </table>
             </li>
@@ -818,7 +823,7 @@
     <div class="eyebrow">Instagram</div>
     <h2 id="igTitle">Post to Instagram</h2>
     <p id="igMode" class="badge warn">Preparing…</p>
-    <p>Check the caption and image, then press Post. Nothing is published before that.</p>
+    <p id="igExplain">Two ways to post. <b>Open in Instagram</b> uses your logged-in browser session: it copies the caption, downloads the image, and opens Instagram. <b>Publish via API</b> talks to Instagram’s Graph API after you confirm — live only when <code>INSTAGRAM_ACCESS_TOKEN</code> and <code>INSTAGRAM_USER_ID</code> are set, otherwise a labelled dry-run.</p>
     <div id="igCaption" class="ig-caption" aria-label="Caption preview"></div>
     <p id="igMeta" class="hint" style="max-width:none"></p>
     <ul id="igWarnings"></ul>
@@ -830,7 +835,8 @@
     <pre id="igRequests" class="ig-requests"></pre>
     <p id="igResult" class="status" role="status" aria-live="polite"></p>
     <div class="row" style="margin-top:12px">
-      <button id="igPost" type="button" class="btn primary sm ig">Post</button>
+      <button id="igOpen" type="button" class="btn primary sm">Open in Instagram</button>
+      <button id="igPost" type="button" class="btn sm ig">Publish via API</button>
       <button id="igCopy" type="button" class="btn sm">Copy caption</button>
       <button id="igCancel" type="button" class="btn sm">Cancel</button>
     </div>
@@ -892,6 +898,15 @@
     b.appendChild(document.createTextNode('Instagram'));
     b.addEventListener('click', onclick);
     return b;
+  }
+  function liButton(onclick) {
+    var b = h('button', { type: 'button', class: 'btn sm li', 'aria-label': 'Post on LinkedIn', title: 'Post on LinkedIn' });
+    b.appendChild(document.createTextNode('LinkedIn'));
+    b.addEventListener('click', onclick);
+    return b;
+  }
+  function linkedinShareUrl(text) {
+    return 'https://www.linkedin.com/feed/?shareActive=true&text=' + encodeURIComponent(String(text || ''));
   }
   function setStatus(el, text, kind) { if (!el) return; el.textContent = text; el.className = 'status' + (kind ? ' ' + kind : ''); }
   function clock(ts) { return new Date(ts).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); }
@@ -1088,12 +1103,12 @@
     var tiles = sample ? [
       ['Posts drafted', '12', '+3'],
       ['Scheduled', '4', '+1'],
-      ['Fact-check pass', '96%', '+2pt'],
+      ['Check pass', '96%', '+2pt'],
       ['Avg lint score', '91', '+4']
     ] : [
       ['Posts drafted', String(written), written ? '+' + written : '0'],
       ['Scheduled', String(scheduled), scheduled ? '+' + scheduled : '0'],
-      ['Fact-check pass', written ? Math.round(100 * clear / written) + '%' : '—', flagged ? '-' + flagged : '+0'],
+      ['Check pass', written ? Math.round(100 * clear / written) + '%' : '—', flagged ? '-' + flagged : '+0'],
       ['Avg lint score', String(avgLint), flagged ? '-' + flagged : '+0']
     ];
     var s = $('stats'); s.textContent = '';
@@ -1205,11 +1220,12 @@
     if (st.idea) return { label: 'Draft', cls: 'draft' };
     return { label: 'Empty', cls: '' };
   }
-  function tableRow(title, channel, status, cls, score, updated, ig) {
+  function tableRow(title, channel, status, cls, score, updated, actions) {
     var action = h('td', { class: 'col-action' });
-    if (ig) {
-      action.appendChild(igButton(function (e) { e.stopPropagation(); ig(); }));
-    }
+    var row = h('div', { class: 'row-actions' });
+    if (actions && actions.linkedin) row.appendChild(liButton(function (e) { e.stopPropagation(); actions.linkedin(); }));
+    if (actions && actions.instagram) row.appendChild(igButton(function (e) { e.stopPropagation(); actions.instagram(); }));
+    if (row.childNodes.length) action.appendChild(row);
     return h('tr', { onclick: function () { show('studio'); } },
       h('td', { class: 'title col-title' }, h('span', { class: 'title-clip', text: title, title: title })),
       h('td', { class: 'col-channel', text: channel }),
@@ -1224,13 +1240,17 @@
     var rows = DAYS.map(function (d) {
       var p = state.posts[d.id]; if (!p) return null;
       var chip = postChip(d);
-      return tableRow(p.headline || (state.week[d.id] && state.week[d.id].title) || d.label, 'LinkedIn', chip.label, chip.cls, String(lintScore(p)), stampAt(p.updated || Date.now()), function () {
-        openInstagram(document.getElementById('cv-' + d.id), fullText(d.id), document.getElementById('st-' + d.id));
+      return tableRow(p.headline || (state.week[d.id] && state.week[d.id].title) || d.label, 'LinkedIn', chip.label, chip.cls, String(lintScore(p)), stampAt(p.updated || Date.now()), {
+        linkedin: function () { handoffLinkedIn(fullText(d.id), document.getElementById('cv-' + d.id), 'post-' + d.id + '.png'); },
+        instagram: function () { openInstagram(document.getElementById('cv-' + d.id), fullText(d.id), document.getElementById('st-' + d.id)); }
       });
     }).filter(Boolean);
     if (!rows.length) {
       if (sampleMode()) DEMO_POSTS.forEach(function (p) {
-        box.appendChild(tableRow(p.title, p.channel, p.status, p.cls, p.score, p.updated, function () { openInstagram(null, p.body, null); }));
+        box.appendChild(tableRow(p.title, p.channel, p.status, p.cls, p.score, p.updated, {
+          linkedin: function () { handoffLinkedIn(p.body); },
+          instagram: function () { openInstagram(null, p.body, null); }
+        }));
       });
       else box.appendChild(h('tr', null, h('td', { colspan: '6', class: 'empty-state', text: 'No drafts yet. Open Studio and write the week, or drop a PDF onto this page.' })));
       return;
@@ -1548,18 +1568,29 @@
   function refreshButtons(day) { var a = document.getElementById('img-' + day); if (a) a.disabled = Boolean(runtime.busy['img' + day]); var f = document.getElementById('fix-' + day); if (f) f.disabled = Boolean(runtime.busy['img' + day]); renderWeek(); }
   function downloadCanvas(canvas, name) { canvas.toBlob(function (blob) { var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000); }, 'image/png'); }
   function download(day) { downloadCanvas(document.getElementById('cv-' + day), 'post-' + day + '.png'); }
-  var LINKEDIN_OK = 'LinkedIn is open with your text. Click in the post box and press Cmd+V (Ctrl+V on Windows) to attach the image, or use the photo icon and pick the downloaded file. Then press Post.';
-  var LINKEDIN_BLOCKED = 'Your browser blocked the LinkedIn tab. Allow pop-ups for this page and try again.';
-  function sendToLinkedIn(canvas, text, fileName) {
-    var png = new Promise(function (resolve) { canvas.toBlob(resolve, 'image/png'); });
-    try { if (navigator.clipboard && window.ClipboardItem) navigator.clipboard.write([new ClipboardItem({ 'image/png': png })]).catch(function () {}); } catch (e) {}
-    var win = window.open('https://www.linkedin.com/feed/?shareActive=true&text=' + encodeURIComponent(text), '_blank'); if (win) win.opener = null;
-    png.then(function (blob) { var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = fileName; document.body.appendChild(a); a.click(); a.remove(); setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000); });
+  var LINKEDIN_OK = 'Opened LinkedIn composer, text copied';
+  var LINKEDIN_BLOCKED = 'Your browser blocked the LinkedIn tab. Allow pop-ups for this page and try again. The draft is still copied.';
+  function handoffLinkedIn(text, canvas, fileName) {
+    var draft = String(text || '');
+    copyCaption(draft).then(function () { toast(LINKEDIN_OK); }).catch(function () { toast(LINKEDIN_OK); });
+    var win = window.open(linkedinShareUrl(draft), '_blank');
+    if (win) win.opener = null;
+    if (canvas && canvas.toBlob && fileName) {
+      try {
+        canvas.toBlob(function (blob) {
+          if (!blob) return;
+          var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = fileName;
+          document.body.appendChild(a); a.click(); a.remove();
+          setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+        }, 'image/png');
+      } catch (e) {}
+    }
     return Boolean(win);
   }
+  function sendToLinkedIn(canvas, text, fileName) { return handoffLinkedIn(text, canvas, fileName); }
   function toLinkedIn(day) {
     var text = fullText(day); if (!text) return;
-    var ok = sendToLinkedIn(document.getElementById('cv-' + day), text, 'post-' + day + '.png');
+    var ok = handoffLinkedIn(text, document.getElementById('cv-' + day), 'post-' + day + '.png');
     stamp(day, ok ? LINKEDIN_OK : LINKEDIN_BLOCKED, ok ? 'ok' : 'err');
   }
 
@@ -1579,8 +1610,13 @@
   }
   function paintIg(data, done) {
     var mode = $('igMode');
-    mode.textContent = data.dryRun ? 'Demo dry-run — nothing is sent to Instagram' : 'Live — Instagram publishes only after you press Post';
+    mode.textContent = data.dryRun ? 'API not configured — use Open in Instagram, or dry-run Publish via API' : 'API configured — Publish via API, or Open in Instagram for your logged-in session';
     mode.className = 'badge ' + (data.dryRun ? 'warn' : 'good');
+    var openBtn = $('igOpen'), apiBtn = $('igPost');
+    if (openBtn && apiBtn) {
+      if (data.dryRun) { openBtn.className = 'btn primary sm'; apiBtn.className = 'btn sm ig'; }
+      else { apiBtn.className = 'btn primary sm ig'; openBtn.className = 'btn sm'; }
+    }
     $('igCaption').textContent = data.caption || '(empty caption)';
     $('igMeta').textContent = (data.length || 0) + ' / 2,200 characters · ' + (data.hashtagCount || 0) + ' / 30 hashtags';
     var warnings = $('igWarnings');
@@ -1600,10 +1636,10 @@
       if (igJob && igJob.statusEl) setStatus(igJob.statusEl, result.textContent, ok ? 'ok' : 'err');
     } else {
       result.className = 'status';
-      result.textContent = data.dryRun ? 'Instagram is not configured. Press Post to finish the dry-run, or copy the caption.' : 'Nothing is published until you press Post.';
+      result.textContent = data.dryRun ? 'API is not configured. Open in Instagram uses your logged-in session. Publish via API runs a labelled dry-run.' : 'Nothing is published via API until you press Publish via API.';
     }
     $('igPost').disabled = finished || !data.canPublish;
-    $('igPost').textContent = finished ? 'Done' : 'Post';
+    $('igPost').textContent = finished ? 'Done' : 'Publish via API';
     if (igJob && igJob.focus) {
       igJob.focus = false;
       var focusEl = $('igPost').disabled ? $('igImageUrl') : $('igPost');
@@ -1648,10 +1684,26 @@
       $('igResult').textContent = e.message;
       $('igResult').className = 'status err';
       $('igPost').disabled = false;
-      $('igPost').textContent = 'Post';
+      $('igPost').textContent = 'Publish via API';
       if (igJob && igJob.statusEl) setStatus(igJob.statusEl, e.message, 'err');
     }
   }
+  function openInInstagram() {
+    if (!igJob) return;
+    var text = (igJob.preview && igJob.preview.caption) || igJob.text || '';
+    copyCaption(text).then(function () {
+      if (igJob && igJob.canvas && igJob.canvas.toBlob) downloadCanvas(igJob.canvas, 'galleypost-instagram.png');
+      var win = window.open('https://www.instagram.com/', '_blank');
+      if (win) win.opener = null;
+      toast('Caption copied, click + Create on Instagram and paste');
+      $('igResult').textContent = 'Caption copied, click + Create on Instagram and paste';
+      $('igResult').className = 'status ok';
+    }).catch(function () {
+      $('igResult').textContent = 'Could not copy the caption. Select it and copy it manually, then open Instagram.';
+      $('igResult').className = 'status err';
+    });
+  }
+  $('igOpen').addEventListener('click', openInInstagram);
   $('igCancel').addEventListener('click', closeIg);
   function copyCaption(text) {
     function fallback() {
@@ -1685,10 +1737,19 @@
   $('igDialog').addEventListener('click', function (event) { if (event.target === $('igDialog')) closeIg(); });
   $('igImageUrl').addEventListener('input', function () { clearTimeout(igTimer); igTimer = setTimeout(refreshIgPreview, 300); });
   document.addEventListener('keydown', function (event) { if (event.key === 'Escape' && !$('igDialog').hidden) closeIg(); });
-  if ($('previewIg')) $('previewIg').addEventListener('click', function () {
+  function previewDraft() {
     var day = DAYS.find(function (d) { return state.posts[d.id]; });
-    if (day) openInstagram(document.getElementById('cv-' + day.id), fullText(day.id), document.getElementById('st-' + day.id));
-    else openInstagram(null, DEMO_POSTS[0].body, null);
+    return day
+      ? { canvas: document.getElementById('cv-' + day.id), text: fullText(day.id), statusEl: document.getElementById('st-' + day.id), file: 'post-' + day.id + '.png' }
+      : { canvas: null, text: DEMO_POSTS[0].body, statusEl: null, file: 'galleypost-linkedin.png' };
+  }
+  if ($('previewLi')) $('previewLi').addEventListener('click', function () {
+    var d = previewDraft();
+    handoffLinkedIn(d.text, d.canvas, d.file);
+  });
+  if ($('previewIg')) $('previewIg').addEventListener('click', function () {
+    var d = previewDraft();
+    openInstagram(d.canvas, d.text, d.statusEl);
   });
 
   function postCard(d) {
@@ -1728,14 +1789,14 @@
       h('div', { class: 'row', style: 'margin-top:12px' },
         h('button', { id: 'img-' + d.id, type: 'button', class: 'btn primary sm', text: img ? 'Make a new image' : 'Create image', onclick: function () { makeImage(d.id, ''); } }),
         h('button', { type: 'button', class: 'btn sm', text: 'Download', onclick: function () { download(d.id); } }),
-        h('button', { type: 'button', class: 'btn sm li', text: 'Post to LinkedIn', onclick: function () { toLinkedIn(d.id); } }),
+        h('button', { type: 'button', class: 'btn sm li', text: 'Post on LinkedIn', onclick: function () { toLinkedIn(d.id); } }),
         igButton(function () { openInstagram(document.getElementById('cv-' + d.id), fullText(d.id), document.getElementById('st-' + d.id)); })),
       photoTools({ get: function () { return runtime.images[d.id]; }, set: function (v) { runtime.images[d.id] = v; }, repaint: function () { paint(d.id); }, status: function (t, k) { stamp(d.id, t, k); }, after: function () { renderDash(); renderWeek(); },
         avoid: function () { return otherVisuals(d.id); },
         story: function () { return { title: topic ? topic.title : p.headline, facts: topic ? topic.facts.slice(0, 3).map(function (f) { return f.text; }) : [] }; } }),
       (img && !img.source) ? h('div', { class: 'fields' }, correction, h('button', { id: 'fix-' + d.id, type: 'button', class: 'btn sm', style: 'margin-top:8px', text: 'Fix and remake', onclick: function () { var c = correction.value.trim(); if (!c) { stamp(d.id, 'Say what is wrong first.', 'err'); return; } makeImage(d.id, c); } })) : null,
       brief, h('div', { id: 'st-' + d.id, class: 'status', role: 'status', 'aria-live': 'polite', style: 'max-width:380px;margin-top:8px' }),
-      h('p', { class: 'hint', text: 'Post to LinkedIn opens LinkedIn’s composer; you attach the image and press Post yourself. Post to Instagram asks you to confirm. Without Instagram credentials it runs a labelled dry-run.' }));
+      h('p', { class: 'hint', text: 'Post on LinkedIn opens LinkedIn’s composer with the draft filled in and copies the text. Post to Instagram can Open in Instagram (your logged-in session) or Publish via API (dry-run unless tokens are set).' }));
     return h('article', { class: 'glass post' }, left, right);
   }
   function renderPosts() {
@@ -2199,13 +2260,13 @@
       h('div', { class: 'row', style: 'margin-top:12px' },
         h('button', { id: 'imgc-' + i, type: 'button', class: 'btn primary sm', text: img ? 'Make a new image' : 'Create image', onclick: function () { chatImage(i, ''); } }),
         h('button', { type: 'button', class: 'btn sm', text: 'Download', onclick: function () { downloadCanvas(cv, 'your brand-assistant-post.png'); } }),
-        h('button', { type: 'button', class: 'btn sm li', text: 'Post to LinkedIn', onclick: function () { var ok = sendToLinkedIn(cv, chatFullText(i), 'your brand-assistant-post.png'); chatStamp(i, ok ? LINKEDIN_OK : LINKEDIN_BLOCKED, ok ? 'ok' : 'err'); log('Sent an Assistant draft to LinkedIn’s composer'); } }),
+        h('button', { type: 'button', class: 'btn sm li', text: 'Post on LinkedIn', onclick: function () { var ok = handoffLinkedIn(chatFullText(i), cv, 'your brand-assistant-post.png'); chatStamp(i, ok ? LINKEDIN_OK : LINKEDIN_BLOCKED, ok ? 'ok' : 'err'); log('Opened LinkedIn composer for an Assistant draft'); } }),
         igButton(function () { openInstagram(cv, chatFullText(i), document.getElementById('stc-' + i)); })),
       photoTools({ get: function () { return runtime.chatImages[i]; }, set: function (v) { runtime.chatImages[i] = v; }, repaint: function () { paintTo(cv, (runtime.chatImages[i] || {}).img, d, runtime.chatImages[i]); }, status: function (t, k) { chatStamp(i, t, k); },
         story: function () { return { title: d.headline || '', facts: [d.post.slice(0, 220)] }; } }),
       (img && !img.source) ? h('div', { class: 'fields' }, correction, h('button', { id: 'fixc-' + i, type: 'button', class: 'btn sm', style: 'margin-top:8px', text: 'Fix and remake', onclick: function () { var c = correction.value.trim(); if (!c) { chatStamp(i, 'Say what is wrong first.', 'err'); return; } chatImage(i, c); } })) : null,
       brief, h('div', { id: 'stc-' + i, class: 'status', role: 'status', 'aria-live': 'polite', style: 'max-width:340px;margin-top:8px' }),
-      h('p', { class: 'hint', text: 'Images the studio makes are AI-generated illustrations: check them before publishing. Post to Instagram asks you to confirm, and runs a labelled dry-run when Instagram is not configured.' }));
+      h('p', { class: 'hint', text: 'Images the studio makes are AI-generated illustrations: check them before publishing. Instagram: Open in Instagram uses your logged-in session; Publish via API dry-runs unless tokens are set.' }));
     return h('article', { class: 'glass draft' }, left, right);
   }
   function renderChat() {

@@ -171,8 +171,11 @@ test('the studio page offers Instagram next to LinkedIn, and the route dry-runs'
   const page = await fetch(base);
   const html = await page.text();
   assert.match(html, /Post to Instagram/);
+  assert.match(html, /Open in Instagram/);
+  assert.match(html, /Publish via API/);
   assert.match(html, /Copy caption/);
   assert.match(html, /id="igDialog"/);
+  assert.match(html, /id="igOpen"/);
   const status = await (await fetch(`${base}/api/instagram/status`)).json();
   assert.equal(status.dryRun, true);
   assert.equal(status.configured, false);
