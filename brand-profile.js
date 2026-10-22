@@ -87,7 +87,8 @@ export const DEFAULT_PROFILE = {
       /unlock/i,
       /seamless/i,
       /streamlin/i,
-      /leverag/i
+      /leverag/i,
+      /[\u{1F300}-\u{1FAFF}☀-➿]/u
     ]
   },
 

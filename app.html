@@ -1680,7 +1680,7 @@
         plan = { mustShow: pr.mustShow, mustNotShow: pr.mustNotShow };
       }
       chatStamp(i, 'Making the image, up to two minutes…');
-      var out = await post('/api/studio/image', { scene: 'custom', extra: d.visual || d.headline || 'A calm logistics scene', story: story, plan: plan || undefined, correction: correction || undefined, quality: prefs.quality });
+      var out = await post('/api/studio/image', { scene: 'custom', extra: d.visual || d.headline || 'A calm community scene', story: story, plan: plan || undefined, correction: correction || undefined, quality: prefs.quality });
       var img = new Image(); await new Promise(function (resolve, reject) { img.onload = resolve; img.onerror = reject; img.src = out.image; });
       runtime.chatImages[i] = { img: img }; log('Created an Assistant image'); renderChat();
       chatStamp(i, 'Image made live by OpenAI (' + (out.model || 'image model') + ') at ' + clock(Date.now()) + '.', 'ok');

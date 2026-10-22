@@ -25,7 +25,7 @@ function mock({ searched = true, topics, drafts = [], checks = [], throwOnTools 
   } } };
 }
 const draft = (post, extra = {}) => ({ post, headline: 'Meetups reopen', hashtags: ['Community'], visual: 'A meetup in a co-working space', scene: 'event', toCheck: [], ...extra });
-const GOOD = 'Organisers are tentatively returning to an in-person meetup.\n\nAccording to Reuters, organisers are tentatively returning to an in-person meetup across London. The report describes the move as tentative and says it applies to a meetup and hackathon format most affected by the shift to hybrid rooms over recent months.\n\nFor community organisers tracking venues and attendance on those nights, the reporting is worth watching closely as calendars are confirmed. These venue decisions have implications for newcomers and volunteer capacity.\n\nHow are you planning around the calendar changes?';
+const GOOD = 'Organisers are tentatively returning to an in-person meetup.\n\nAccording to Reuters, organisers are tentatively returning to an in-person meetup across London. The report describes the move as tentative and says it applies to a meetup and hackathon format most affected by the shift to hybrid rooms over recent months.\n\nFor community organisers tracking venues and attendance on those nights, the reporting is worth watching closely as calendars are confirmed. These venue decisions have implications for newcomers and volunteer capacity.\n\nHosts can compare notes on room layouts, access hours, and how they greet first-time attendees. Sharing what worked last season helps the next organiser spend less time guessing and more time making space for people who want to learn together in the room.\n\nHow are you planning around the calendar changes?';
 
 test('research prompt demands recent, sourced, searched topics and flags sensitive news', () => {
   const text = topicsInstructions('2026-10-20');
@@ -82,7 +82,7 @@ test('irrelevant, duplicate and tracked topics are cleaned up', () => {
 });
 
 test('a topic whose facts never match profile keywords is dropped even if the model says it is relevant', () => {
-  const profile = { research: { categories: { 'industry-news': 'Industry News' }, keywords: ['shipping', 'logistics', 'freight'] } };
+  const profile = { research: { categories: { 'industry-news': 'Industry News' }, keywords: ['agriculture', 'mining', 'forestry'] } };
   const f = { ...FACT, text: 'The FTC settled with Southern Glazer\'s over discriminatory pricing to smaller retailers.', url: 'https://apnews.com/article/1', date: '2026-10-02' };
   const out = cleanTopics({ topics: [{ title: 'FTC settles with distributor', category: 'industry-news', whyItMatters: 'x', affectsTargetAudience: true, sensitive: false, bestDay: 'mon', facts: [f] }] }, { now: NOW, profile });
   assert.equal(out.length, 0);
