@@ -1,9 +1,10 @@
 <!doctype html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="light">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Social Engine</title>
+<link rel="icon" href="/assets/brand/logo-icon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,400;0,14..32,500;0,14..32,600;1,14..32,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -11,51 +12,56 @@
   (function () { try { var t = localStorage.getItem('social-engine-theme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) {} })();
 </script>
 <style>
-  :root, [data-theme="dark"] {
+  :root, [data-theme="light"] {
+    color-scheme: light;
+    --bg: #ffffff;
+    --bg-2: #fafafa;
+    --surface: #ffffff;
+    --surface-2: #f4f4f5;
+    --pane: #ffffff;
+    --line: #e4e4e7;
+    --line-2: #d4d4d8;
+    --ink: #0a0a0a;
+    --text-2: #27272a;
+    --muted: #52525b;
+    --link: #0a0a0a;
+    --btn: #ffffff;
+    --btn-ink: #0a0a0a;
+    --btn-hover: #f4f4f5;
+    --good: #15803d; --good-bg: #dcfce7;
+    --warn: #c2410c; --warn-bg: #ffedd5;
+    --bad: #c2410c; --bad-bg: #ffedd5;
+    --input: #ffffff;
+    --accent: #ff5a1f;
+    --accent-2: #ff5a1f;
+    --accent-hover: #e04e19;
+    --accent-soft: #fff4ed;
+    --radius: 8px;
+    --radius-sm: 6px;
+    --shadow: none;
+    --charcoal: #0a0a0a; --slate: #52525b; --mist: #52525b; --sky: #52525b; --stucco: #f4f4f5; --cream: #fafafa; --signal: #ff5a1f;
+    --font: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  [data-theme="dark"] {
     color-scheme: dark;
-    --bg: #0b0b0c;
-    --bg-2: #111113;
-    --surface: #111113;
-    --surface-2: #161618;
-    --pane: #111113;
-    --line: #232326;
-    --line-2: #2e2e32;
-    --ink: #ededed;
-    --text-2: #c6c6c9;
-    --muted: #8a8a8f;
-    --link: #ededed;
-    --btn: #161618;
-    --btn-ink: #ededed;
-    --btn-hover: #1c1c1f;
+    --bg: #0b0b0c; --bg-2: #111113;
+    --surface: #111113; --surface-2: #161618; --pane: #111113;
+    --line: #232326; --line-2: #2e2e32;
+    --ink: #ededed; --text-2: #d4d4d8; --muted: #a1a1aa; --link: #ededed;
+    --btn: #161618; --btn-ink: #ededed; --btn-hover: #1c1c1f;
     --good: #3dd68c; --good-bg: rgba(61,214,140,.12);
     --warn: #ffb020; --warn-bg: rgba(255,176,32,.12);
     --bad: #ff6a3d; --bad-bg: rgba(255,106,61,.12);
     --input: #0b0b0c;
-    --accent: #ff6a3d;
-    --accent-2: #ff6a3d;
-    --radius: 8px;
-    --radius-sm: 6px;
-    --shadow: none;
-    --charcoal: #111113; --slate: #8a8a8f; --mist: #8a8a8f; --sky: #8a8a8f; --stucco: #161618; --cream: #161618; --signal: #ff6a3d;
-    --font: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
-    --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
-  }
-  [data-theme="light"] {
-    color-scheme: light;
-    --bg: #f7f7f8; --bg-2: #ffffff;
-    --surface: #ffffff; --surface-2: #f2f2f3; --pane: #ffffff;
-    --line: #e6e6e8; --line-2: #d4d4d8;
-    --ink: #111113; --text-2: #3f3f46; --muted: #71717a; --link: #111113;
-    --btn: #111113; --btn-ink: #fafafa; --btn-hover: #27272a;
-    --good: #15803d; --good-bg: #dcfce7; --warn: #b45309; --warn-bg: #fef3c7; --bad: #c2410c; --bad-bg: #ffedd5;
-    --input: #ffffff; --accent: #c2410c; --accent-2: #c2410c;
-    --charcoal: #111113; --slate: #71717a; --sky: #71717a; --signal: #c2410c;
+    --accent: #ff5a1f; --accent-2: #ff5a1f; --accent-hover: #ff7a4d; --accent-soft: #2a1610;
+    --charcoal: #111113; --slate: #a1a1aa; --sky: #a1a1aa; --signal: #ff5a1f;
   }
   * { box-sizing: border-box; }
   html, body { margin: 0; min-height: 100%; }
   body {
     background: var(--bg); color: var(--ink);
-    font: 13px/1.45 var(--font);
+    font: 14px/1.5 var(--font);
     font-feature-settings: "tnum" 1, "cv11" 1;
     font-variant-numeric: tabular-nums;
     -webkit-font-smoothing: antialiased;
@@ -63,7 +69,7 @@
   }
   button, input, select, textarea { font: inherit; color: inherit; }
   a { color: var(--ink); }
-  h1, h2, h3 { letter-spacing: -.03em; margin: 0; font-weight: 590; }
+  h1, h2, h3 { letter-spacing: -.03em; margin: 0; font-weight: 600; }
   .bg { display: none; }
   kbd {
     font: 10px/1 var(--mono); color: var(--muted); border: 1px solid var(--line);
@@ -74,7 +80,7 @@
   .side {
     position: sticky; top: 0; height: 100vh; padding: 12px 10px 12px;
     display: flex; flex-direction: column; gap: 2px;
-    background: var(--bg); border-right: 1px solid var(--line); color: var(--muted);
+    background: var(--bg-2); border-right: 1px solid var(--line); color: var(--muted);
   }
   .brand { padding: 6px 8px 12px; display: flex; align-items: center; gap: 8px; }
   .brand img { height: 18px; display: block; }
@@ -83,12 +89,15 @@
   .nav { display: grid; gap: 1px; }
   .nav button {
     position: relative; display: flex; align-items: center; gap: 8px; width: 100%;
-    text-align: left; padding: 6px 8px; border: 0; background: none; color: var(--text-2);
-    font-weight: 500; font-size: 13px; cursor: pointer; border-radius: 6px; transition: background .12s;
+    text-align: left; padding: 7px 8px; border: 0; background: none; color: var(--ink);
+    font-weight: 600; font-size: 14px; cursor: pointer; border-radius: 6px; transition: background .12s, color .12s;
   }
   .nav button:hover { background: var(--surface-2); color: var(--ink); }
-  .nav button[aria-current="page"] { color: var(--ink); background: var(--surface-2); }
-  .nav button[aria-current="page"]::before { display: none; }
+  .nav button[aria-current="page"] { color: var(--accent); background: var(--accent-soft); }
+  .nav button[aria-current="page"]::before {
+    content: ""; display: block; position: absolute; left: 0; top: 8px; bottom: 8px; width: 2px;
+    background: var(--accent); border-radius: 1px;
+  }
   .nav svg { width: 16px; height: 16px; flex: none; stroke-width: 1.5; }
   .nav .nav-sub { margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--line); }
   .side .grow { flex: 1; }
@@ -115,10 +124,10 @@
     border: 1px solid var(--line); background: transparent; font-size: 11px; font-weight: 500;
     letter-spacing: .02em; color: var(--muted); text-transform: none;
   }
-  .mode-badge.good, .badge.good { color: var(--good); border-color: #1f3d30; }
+  .mode-badge.good, .badge.good { color: var(--good); border-color: color-mix(in srgb, var(--good) 40%, var(--line)); }
   .mode-badge.demo, .mode-badge.bad { color: var(--muted); }
-  .badge.warn { color: var(--warn); border-color: #3d3220; }
-  .badge.bad { color: var(--accent); border-color: #3d241c; }
+  .badge.warn { color: var(--accent); border-color: color-mix(in srgb, var(--accent) 40%, var(--line)); }
+  .badge.bad { color: var(--accent); border-color: color-mix(in srgb, var(--accent) 40%, var(--line)); }
   .badge.ai { color: var(--muted); background: transparent; }
   .dot { width: 6px; height: 6px; background: currentColor; display: inline-block; border-radius: 99px; }
 
@@ -134,21 +143,20 @@
   .grow { flex: 1; }
 
   button.btn {
-    cursor: pointer; border-radius: 6px; border: 1px solid var(--line); background: var(--surface-2);
-    padding: 6px 10px; font-weight: 500; font-size: 13px; display: inline-flex; gap: 6px; align-items: center;
-    transition: background .12s, border-color .12s; color: var(--ink);
+    cursor: pointer; border-radius: 6px; border: 1px solid var(--line); background: var(--btn);
+    padding: 7px 12px; font-weight: 600; font-size: 14px; display: inline-flex; gap: 6px; align-items: center;
+    transition: background .12s, border-color .12s, color .12s; color: var(--btn-ink);
   }
-  button.btn:hover:not(:disabled) { background: #1c1c1f; }
-  [data-theme="light"] button.btn:hover:not(:disabled) { background: #ececee; }
+  button.btn:hover:not(:disabled) { background: var(--btn-hover); }
   button.btn:disabled { opacity: .4; cursor: default; }
-  button.btn.primary { background: var(--ink); color: var(--bg); border-color: var(--ink); }
-  button.btn.primary:hover:not(:disabled) { background: #d4d4d8; border-color: #d4d4d8; color: #0b0b0c; }
-  [data-theme="light"] button.btn.primary { background: #111113; color: #fafafa; }
-  button.btn.li { background: var(--surface-2); border-color: var(--line); color: var(--ink); }
-  button.btn.ig { background: var(--surface-2); border-color: var(--line); color: var(--ink); }
-  button.btn.ig:hover:not(:disabled), button.btn.li:hover:not(:disabled) { background: #1c1c1f; }
-  button.btn.primary.ig { background: var(--ink); color: var(--bg); border-color: var(--ink); }
-  .ig-dialog { position: fixed; inset: 0; z-index: 110; background: rgba(11, 11, 12, .55); display: grid; place-items: center; padding: 24px; }
+  button.btn.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+  button.btn.primary:hover:not(:disabled) { background: var(--accent-hover); border-color: var(--accent-hover); color: #fff; }
+  button.btn.ink { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+  button.btn.ink:hover:not(:disabled) { background: var(--text-2); border-color: var(--text-2); color: var(--bg); }
+  button.btn.li, button.btn.ig { background: var(--btn); border-color: var(--line); color: var(--ink); }
+  button.btn.ig:hover:not(:disabled), button.btn.li:hover:not(:disabled) { background: var(--btn-hover); }
+  button.btn.primary.ig { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .ig-dialog { position: fixed; inset: 0; z-index: 110; background: rgba(10, 10, 10, .4); display: grid; place-items: center; padding: 24px; }
   .ig-dialog[hidden] { display: none; }
   .ig-panel { background: var(--bg-2); color: var(--ink); border: 1px solid var(--line); border-radius: 8px; width: min(480px, 100%); max-height: min(90vh, 720px); overflow: auto; padding: 16px; }
   .ig-panel h2 { font-size: 18px; margin: 6px 0 10px; letter-spacing: -.03em; font-weight: 590; }
@@ -160,13 +168,13 @@
   .ig-panel ul { margin: 6px 0; padding-left: 18px; color: var(--warn); font-size: 12px; }
   button.btn.sm { padding: 4px 8px; font-size: 12px; }
   button.btn svg { width: 14px; height: 14px; }
-  button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible { outline: 1px solid var(--ink); outline-offset: 1px; }
+  button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
   .status { font-size: 12px; color: var(--muted); min-height: 18px; }
   .status.err { color: var(--accent); } .status.ok { color: var(--good); }
 
   .page-h { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin: 0 0 16px; padding: 0 0 12px; border-bottom: 1px solid var(--line); }
-  .page-h h1 { font-size: 24px; font-weight: 590; letter-spacing: -.04em; }
-  .page-h p { margin: 4px 0 0; color: var(--muted); font-size: 13px; }
+  .page-h h1 { font-size: 26px; font-weight: 600; letter-spacing: -.04em; }
+  .page-h p { margin: 4px 0 0; color: var(--muted); font-size: 14px; }
 
   .hero { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; padding: 0 0 16px; min-height: 0; background: none; isolation: auto; }
   .hero-art { display: none; }
@@ -183,14 +191,14 @@
   .stat { padding: 12px 16px; border-right: 1px solid var(--line); position: relative; background: transparent; }
   .stat:last-child { border-right: 0; }
   .stat::before { display: none; }
-  .stat .v { font-family: var(--mono); font-size: 22px; font-weight: 500; letter-spacing: -.03em; line-height: 1.2; margin-top: 6px; color: var(--ink); }
+  .stat .v { font-family: var(--mono); font-size: 24px; font-weight: 600; letter-spacing: -.03em; line-height: 1.2; margin-top: 6px; color: var(--accent); }
   .stat .v small { font-size: 12px; color: var(--muted); font-weight: 400; }
   .stat .s { font-family: var(--mono); font-size: 11px; color: var(--muted); margin-top: 4px; }
-  .stat .delta { font-family: var(--mono); font-size: 11px; color: var(--good); margin-left: 6px; }
-  .stat .delta.down { color: var(--accent); }
+  .stat .delta { font-family: var(--mono); font-size: 12px; color: var(--accent); margin-left: 6px; font-weight: 600; }
+  .stat .delta.down { color: var(--ink); }
 
-  .spark { display: block; width: 100%; height: 72px; margin: 0; }
-  .spark path { fill: none; stroke: var(--ink); stroke-width: 1.25; }
+  .spark { display: block; width: 100%; height: 72px; margin: 0; color: var(--accent); }
+  .spark path { fill: none; stroke: var(--accent); stroke-width: 1.5; }
 
   .data-grid { display: grid; grid-template-columns: 1.5fr .9fr; gap: 12px; margin-top: 12px; }
   .panel-h { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; gap: 8px; padding-bottom: 8px; border-bottom: 1px solid var(--line); }
@@ -231,10 +239,10 @@
   .mini .item:last-child { border-bottom: 0; }
   .mini .item b { font-size: 13px; line-height: 1.35; display: block; font-weight: 500; }
   .mini .item .meta { margin: 6px 0 8px; }
-  .pill { display: inline-flex; align-items: center; padding: 1px 7px; border: 1px solid var(--line); border-radius: 999px; font-size: 11px; color: var(--muted); }
-  .pill.good { color: var(--good); border-color: #1f3d30; }
-  .pill.warn { color: var(--warn); border-color: #3d3220; }
-  .pill.draft { color: var(--text-2); }
+  .pill { display: inline-flex; align-items: center; padding: 1px 7px; border: 1px solid var(--line); border-radius: 999px; font-size: 11px; font-weight: 600; color: var(--muted); }
+  .pill.good { color: var(--ink); border-color: var(--ink); }
+  .pill.warn { color: var(--accent); border-color: var(--accent); }
+  .pill.draft { color: var(--muted); }
   .log { display: grid; max-height: 220px; overflow: auto; }
   .log div { display: grid; grid-template-columns: 52px 1fr; gap: 8px; font-size: 12px; padding: 6px 0; border-bottom: 1px solid var(--line); }
   .log time { color: var(--muted); font-family: var(--mono); font-size: 11px; }
@@ -279,7 +287,7 @@
   .chips { display: flex; flex-wrap: wrap; gap: 6px; }
   .chip { cursor: pointer; border-radius: 6px; padding: 4px 8px; font-size: 12px; background: transparent; border: 1px solid var(--line); font-weight: 500; color: var(--text-2); }
   .chip:hover { background: var(--surface-2); }
-  .chip[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+  .chip[aria-pressed="true"] { background: var(--accent); color: #fff; border-color: var(--accent); }
   .ideas { display: grid; grid-template-columns: 1fr; gap: 8px; }
   .card { padding: 12px 14px; display: flex; flex-direction: column; gap: 8px; }
   .card h3 { font-size: 14px; line-height: 1.3; font-weight: 590; }
@@ -292,7 +300,7 @@
   .assign button { flex: 1; cursor: pointer; padding: 6px 0; font-size: 12px; font-weight: 500; border: 0; border-right: 1px solid var(--line); background: transparent; }
   .assign button:last-child { border-right: 0; }
   .assign button:hover { background: var(--surface-2); }
-  .assign button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+  .assign button[aria-pressed="true"] { background: var(--accent); color: #fff; }
   .own { padding: 14px 16px; margin-bottom: 12px; }
   .own label, .fields label { display: block; font-size: 11px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin: 10px 0 4px; }
   input[type=text], textarea { width: 100%; padding: 7px 10px; background: var(--input); border: 1px solid var(--line); border-radius: 6px; }
@@ -425,7 +433,7 @@
   .more-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 8px; }
   @media (max-width: 860px) { .guide { grid-template-columns: 1fr; } .toc { position: static; } }
 
-  .cmdk { position: fixed; inset: 0; z-index: 100; background: rgba(11,11,12,.55); display: grid; place-items: start center; padding-top: 12vh; }
+  .cmdk { position: fixed; inset: 0; z-index: 100; background: rgba(10,10,10,.35); display: grid; place-items: start center; padding-top: 12vh; }
   .cmdk[hidden] { display: none !important; }
   .cmdk .box { width: min(520px, 92vw); background: var(--bg-2); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
   .cmdk input { width: 100%; border: 0; border-bottom: 1px solid var(--line); background: transparent; padding: 12px 14px; font-size: 14px; }
@@ -458,7 +466,7 @@
   <aside class="side">
     <div class="ws-switch">
       <label>Workspace</label>
-      <div class="brand"><img id="brandLogo" src="/assets/brand/logo-reversed.svg" alt="Social Engine"></div>
+      <div class="brand"><img id="brandLogo" src="/assets/brand/logo.svg" alt="Social Engine"></div>
       <select id="brandSwitch" aria-label="Active brand profile"></select>
     </div>
     <nav class="nav" aria-label="Main">
@@ -522,7 +530,7 @@
         <div class="glass pad">
           <div class="panel-h"><h2>Activity</h2><span class="mono" style="font-size:11px;color:var(--muted)">12h</span></div>
           <svg class="spark" id="spark" viewBox="0 0 320 72" preserveAspectRatio="none" aria-hidden="true">
-            <path id="sparkPath" d="M0 48 L320 48" fill="none" stroke="currentColor" stroke-width="1.25"/>
+            <path id="sparkPath" d="M0 48 L320 48" fill="none" stroke="currentColor" stroke-width="1.5"/>
           </svg>
           <div class="log" id="log"></div>
         </div>
@@ -857,8 +865,8 @@
       <div class="two">
         <div class="glass pad">
           <div class="panel-h"><h2>Appearance</h2></div>
-          <button type="button" class="btn" id="theme">Switch to light mode</button>
-          <p class="hint" style="max-width:none">Dark is the default. Your choice is kept in this browser.</p>
+          <button type="button" class="btn" id="theme">Switch to dark mode</button>
+          <p class="hint" style="max-width:none">Light is the default for projector demos. Dark is optional. Your choice is kept in this browser.</p>
         </div>
         <div class="glass pad">
           <div class="panel-h"><h2>Generation</h2></div>
@@ -969,7 +977,13 @@
   function savePrefs() { try { localStorage.setItem('social-engine-prefs', JSON.stringify(prefs)); } catch (e) {} }
   
   // Brand profile loaded from the server
-  var brand = { name: 'Social Engine', website: '', tagline: '' };
+  var brand = { name: 'Social Engine', website: '', tagline: '', logo: { light: '/assets/brand/logo.svg', dark: '/assets/brand/logo-reversed.svg' } };
+  function applyBrandLogo() {
+    var logoEl = $('brandLogo'); if (!logoEl) return;
+    var dark = document.documentElement.getAttribute('data-theme') === 'dark';
+    var src = dark ? (brand.logo && brand.logo.dark) : (brand.logo && brand.logo.light);
+    if (src) logoEl.src = src;
+  }
   async function loadBrand() {
     try {
       var res = await fetch('/api/profile');
@@ -979,9 +993,8 @@
           brand = data.profile;
           runtime.brandUrl = (brand.website || '').replace(/^https?:\/\//, '').replace(/\/$/, '');
           // Update UI with brand info
-          var logoEl = $('brandLogo');
-          if (logoEl && brand.logo && brand.logo.dark) logoEl.src = brand.logo.dark;
-          if (logoEl && brand.name) logoEl.alt = brand.name;
+          applyBrandLogo();
+          if (brand.name) { var logoEl = $('brandLogo'); if (logoEl) logoEl.alt = brand.name; }
           document.title = brand.name + ' - Content Studio';
           DAYS.forEach(function (d) { paint(d.id); });
           fillBrandForm();
@@ -1102,6 +1115,7 @@
     var next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
     document.documentElement.setAttribute('data-theme', next); try { localStorage.setItem('social-engine-theme', next); } catch (e) {}
     $('theme').textContent = next === 'dark' ? 'Switch to light mode' : 'Switch to dark mode';
+    applyBrandLogo();
   });
 
   /* ---------- Dashboard ---------- */
@@ -1214,7 +1228,7 @@
     path.setAttribute('d', d);
     path.setAttribute('fill', 'none');
     path.setAttribute('stroke', 'currentColor');
-    path.setAttribute('stroke-width', '1.25');
+    path.setAttribute('stroke-width', '1.5');
   }
   function renderKanban() {
     var pipe = $('pipe'); if (!pipe) return; pipe.textContent = '';

@@ -1,64 +1,43 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Social Engine</title>
+<link rel="icon" href="assets/brand/logo-icon.svg" type="image/svg+xml">
+<script>
+  (function () { try { var t = localStorage.getItem('sse-theme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) {} })();
+</script>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
 <style>
   :root {
     color-scheme: light;
-    --paper: #F2F5F8;
-    --surface: #FFFFFF;
-    --rail: #FFFFFF;
+    --paper: #ffffff;
+    --surface: #fafafa;
+    --rail: #fafafa;
     --on-accent: #FFFFFF;
-    --surface-2: #EAF0F5;
-    --sidebar-badge: #EAF0F5;
-    --ink: #111E2C;
-    --ink-2: #42576C;
-    --muted: #596D81;
-    --line: #D5DFE8;
-    --line-2: #70859A;
-    --navy: #17658C;
-    --navy-soft: #E4F0F7;
-    --amber: #966918;
-    --amber-soft: #F5EFDF;
-    --teal: #087256;
-    --teal-soft: #E1F1EA;
-    --c1: #2266AA;
-    --c2: #C06A10;
-    --c3: #0B8060;
-    --good: #087256;
-    --warn: #806017;
-    --warn-soft: #F5EFDF;
-    --bad: #A63C3D;
-    --bad-soft: #F8E9E9;
-    --shadow: 0 1px 2px rgba(17,30,44,.06);
-  }
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) {
-      color-scheme: dark;
-      --paper: #0A1018;
-      --surface: #111B27;
-      --rail: #0D1620;
-      --on-accent: #081522;
-      --surface-2: #172432;
-      --ink: #EDF3F8;
-      --ink-2: #B4C3D2;
-      --muted: #8DA0B3;
-      --line: #273849;
-      --line-2: #54728C;
-      --navy: #6DB8DE;
-      --navy-soft: #152E40;
-      --amber: #D4A052;
-      --amber-soft: #29251B;
-      --teal: #70C5A7;
-      --teal-soft: #142C28;
-      --c1: #4A90C8;
-      --c2: #C58430;
-      --c3: #279272;
-      --good: #70C5A7;
-      --warn: #D4B76C;
-      --warn-soft: #29251B;
-      --bad: #E59A96;
-      --bad-soft: #321F25;
-      --shadow: 0 1px 2px rgba(0,0,0,.2);
-    }
+    --surface-2: #f4f4f5;
+    --sidebar-badge: #fff4ed;
+    --ink: #0a0a0a;
+    --ink-2: #27272a;
+    --muted: #52525b;
+    --line: #e4e4e7;
+    --line-2: #a1a1aa;
+    --navy: #ff5a1f;
+    --navy-soft: #fff4ed;
+    --amber: #c2410c;
+    --amber-soft: #ffedd5;
+    --teal: #15803d;
+    --teal-soft: #dcfce7;
+    --c1: #0a0a0a;
+    --c2: #ff5a1f;
+    --c3: #15803d;
+    --good: #15803d;
+    --warn: #c2410c;
+    --warn-soft: #ffedd5;
+    --bad: #c2410c;
+    --bad-soft: #ffedd5;
+    --shadow: none;
   }
   :root[data-theme="dark"] {
     color-scheme: dark;
@@ -107,9 +86,6 @@
   :root { --app-bar-height: 64px; --app-bar-gap: 20px; --shell-clearance: calc(var(--app-bar-height) + var(--app-bar-gap) + 24px); }
   .app-bar { position: sticky; top: calc(var(--app-bar-gap) + env(safe-area-inset-top, 0px)); z-index: 30; width: min(calc(100% - 32px), 820px); height: var(--app-bar-height); margin: calc(var(--app-bar-gap) + env(safe-area-inset-top, 0px)) auto 0; padding: 0 16px; display: grid; grid-template-columns: 100px minmax(0, 1fr) 36px; gap: 12px; align-items: center; background: var(--rail); border: 1px solid var(--line); border-radius: 10px; box-shadow: var(--shadow), 0 6px 18px rgba(0,0,0,.08); }
   :root[data-theme="dark"] .app-bar { background: #142231; }
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) .app-bar { background: #142231; }
-  }
   .app-brand { display: flex; align-items: center; gap: 10px; min-width: 0; max-width: 100%; justify-self: start; }
   .sidebar-identity { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; margin-bottom: 28px; }
   .sidebar-identity h1 { margin: 0; font-size: 14px; }
@@ -169,10 +145,6 @@
   .nav-icon { width: 18px; height: 18px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
   :root[data-theme="dark"] .app-logo-light { display: none; }
   :root[data-theme="dark"] .app-logo-dark { display: block; }
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) .app-logo-light { display: none; }
-    :root:not([data-theme="light"]) .app-logo-dark { display: block; }
-  }
   .rail-control { appearance: none; display: flex; align-items: center; justify-content: center; width: 44px; min-height: 44px; padding: 6px; border: 1px solid transparent; border-radius: 4px; background: none; color: var(--ink-2); font: inherit; cursor: pointer; }
   .sidebar-toggle { border: 0; position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
   .sidebar-toggle:focus-visible { width: calc(100% - 16px); height: auto; left: 8px; bottom: 24px; margin: 0; padding: 8px 4px; overflow: visible; clip-path: none; white-space: normal; z-index: 1; border: 1px solid var(--line); border-radius: 4px; background: var(--surface); color: var(--ink); font: inherit; font-size: 12px; cursor: pointer; }
@@ -899,6 +871,8 @@
   .news-opportunity p { margin: 8px 0 0; font-size: 13px; line-height: 1.65; }
   .news-exclusions { margin-top: 12px; }
 </style>
+</head>
+<body>
 
 <header class="app-bar">
     <div class="app-brand">
@@ -1627,7 +1601,7 @@ var PostLibrary = (function () {
 
   function currentTheme() {
     var explicit = root.getAttribute('data-theme');
-    return explicit === 'light' || explicit === 'dark' ? explicit : (systemTheme.matches ? 'dark' : 'light');
+    return explicit === 'light' || explicit === 'dark' ? explicit : 'light';
   }
   function updateThemeControl() {
     var mode = currentTheme();
@@ -3385,3 +3359,5 @@ var PostLibrary = (function () {
   if (!panel.hidden) load();
 })();
 </script>
+</body>
+</html>
