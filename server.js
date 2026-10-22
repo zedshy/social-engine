@@ -23,6 +23,7 @@ const choices = {
 const assets = new Map([
   ['/', ['app.html', 'text/html; charset=utf-8']],
   ['/app', ['app.html', 'text/html; charset=utf-8']],
+  ['/app.html', ['app.html', 'text/html; charset=utf-8']],
   ['/studio', ['app.html', 'text/html; charset=utf-8']],
   ['/classic', ['index.html', 'text/html; charset=utf-8']],
   ['/index.html', ['index.html', 'text/html; charset=utf-8']],

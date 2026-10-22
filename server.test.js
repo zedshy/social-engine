@@ -25,6 +25,11 @@ test('serves the existing frontend but not local secrets', async () => {
   const home = await fetch(base);
   assert.equal(home.status, 200);
   assert.match(await home.text(), /Social Engine/);
+  for (const studioPath of ['/app', '/app.html', '/studio']) {
+    const studio = await fetch(`${base}${studioPath}`);
+    assert.equal(studio.status, 200, studioPath);
+    assert.match(await studio.text(), /Social Engine/);
+  }
   const page = await fetch(`${base}/classic`);
   assert.equal(page.status, 200);
   assert.match(await page.text(), /Generate Posts/);

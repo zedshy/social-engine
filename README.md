@@ -33,7 +33,8 @@ That is the difference between “write me some posts” and an editor’s desk 
 ```bash
 npm install
 npm start
-# Open http://127.0.0.1:8080
+# Studio:  http://127.0.0.1:8080
+# Classic: http://127.0.0.1:8080/classic
 ```
 
 **Demo mode (no API key):** the Studio UI, Classic view, prepared demo week, and library all work. Live research, writing and images need a key.
