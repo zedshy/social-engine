@@ -27,7 +27,7 @@ export const DEFAULT_PROFILE = {
 
   // Voice and tone
   voice: {
-    description: 'Friendly, inclusive and enthusiastic about tech. We celebrate builders, learners and community members.',
+    description: 'Friendly, inclusive and excited about tech. We celebrate builders, learners and community members.',
     tone: 'Warm and energetic, like a friend who is genuinely excited to share news with you. Inclusive, never gatekeepy.',
     perspective: 'company', // 'founder' or 'company'
     audienceDescription: "Software developers, tech founders, designers, and anyone building or learning in London's tech scene"
@@ -243,17 +243,17 @@ export function getChatInstructions(profile, today) {
 
 // Get the categories for the profile
 export function getCategories(profile) {
-  return profile.research?.categories || DEFAULT_PROFILE.research.categories;
+  return profile?.research?.categories || DEFAULT_PROFILE.research.categories;
 }
 
 // Get the days configuration for the profile
 export function getDays(profile) {
-  return profile.posts?.days || DEFAULT_PROFILE.posts.days;
+  return profile?.posts?.days || DEFAULT_PROFILE.posts.days;
 }
 
 // Get banned wording patterns
 export function getBannedWording(profile) {
-  return profile.posts?.bannedWording || DEFAULT_PROFILE.posts.bannedWording;
+  return profile?.posts?.bannedWording || DEFAULT_PROFILE.posts.bannedWording;
 }
 
 // Validate and clean a profile for saving

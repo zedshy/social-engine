@@ -4,7 +4,7 @@ import { after, before, test } from 'node:test';
 import { createApp } from './server.js';
 import { chatInstructions, chatTurn, validateChat, checkFact, verifySources, cleanTopics, findTopics, findTopicsMulti, mergeTopics, lintPost, postInstructions, topicsInstructions, verifyInstructions, writePost } from './studio-content.js';
 
-const FACT = { text: 'Organisers are tentatively returning to in-person events across London.', source: 'Reuters', url: 'https://reuters.com/london-tech', date: '2026-10-01' };
+const FACT = { text: 'Organisers are tentatively returning to an in-person meetup across London.', source: 'Reuters', url: 'https://reuters.com/london-tech', date: '2026-10-01' };
 const topic = { title: 'Organisers return to in-person events', sensitive: false, facts: [FACT] };
 
 function mock({ searched = true, topics, drafts = [], checks = [], throwOnTools } = {}) {
@@ -25,7 +25,7 @@ function mock({ searched = true, topics, drafts = [], checks = [], throwOnTools 
   } } };
 }
 const draft = (post, extra = {}) => ({ post, headline: 'Meetups reopen', hashtags: ['Community'], visual: 'A meetup in a co-working space', scene: 'event', toCheck: [], ...extra });
-const GOOD = 'Organisers are tentatively returning to in-person events.\n\nAccording to Reuters, organisers are tentatively returning to in-person events across London. The report describes the move as tentative and says it applies to meetups and hackathons, which is the format most affected by the shift to hybrid rooms over recent months.\n\nFor community organisers tracking venues and attendance on those nights, the reporting is worth watching closely as calendars are confirmed. These venue decisions have implications for newcomers and volunteer capacity.\n\nHow are you planning around the calendar changes?';
+const GOOD = 'Organisers are tentatively returning to an in-person meetup.\n\nAccording to Reuters, organisers are tentatively returning to an in-person meetup across London. The report describes the move as tentative and says it applies to a meetup and hackathon format most affected by the shift to hybrid rooms over recent months.\n\nFor community organisers tracking venues and attendance on those nights, the reporting is worth watching closely as calendars are confirmed. These venue decisions have implications for newcomers and volunteer capacity.\n\nHow are you planning around the calendar changes?';
 
 test('research prompt demands recent, sourced, searched topics and flags sensitive news', () => {
   const text = topicsInstructions('2026-10-20');
@@ -72,10 +72,13 @@ test('irrelevant, duplicate and tracked topics are cleaned up', () => {
     { ...base, title: 'FTC settles with distributor', affectsTargetAudience: false, facts: [f('https://apnews.com/article/1')] },
     { ...base, title: 'Tech exports fall 11.8%', facts: [f('https://techcrunch.com/news/fullstory.php/aid/1')] }
   ] }, { now: NOW });
+  const flood = cleaned.find(t => t.title === 'Tech industry trends flood the market');
+  const exports = cleaned.find(t => t.title === 'Tech exports fall 11.8%');
   assert.deepEqual(new Set(cleaned.map(t => t.title)), new Set(['Tech industry trends flood the market', 'Tech exports fall 11.8%']));
-  assert.equal(cleaned[0].facts.length, 3, 'at most three facts per link');
-  assert.ok(cleaned[0].facts.every(x => !/utm_|lctg/.test(x.url)));
-  assert.match(cleaned[0].facts[0].url, /id=7/, 'real article ids survive');
+  assert.equal(flood.facts.length, 3, 'at most three facts per link');
+  assert.ok(flood.facts.every(x => !/utm_|lctg/.test(x.url)));
+  assert.match(flood.facts[0].url, /id=7/, 'real article ids survive');
+  assert.ok(exports);
 });
 
 test('a topic whose facts never match profile keywords is dropped even if the model says it is relevant', () => {
@@ -167,8 +170,8 @@ const post = (path, body) => fetch(base + path, { method: 'POST', headers: { 'Co
 
 test('topics and post routes work end to end and validate input', async () => {
   const topics = await (await post('/api/studio/topics', {})).json();
-  const chosen = (topics.topics || []).find(t => t.title === 'T') || (topics.topics || [])[0];
-  assert.ok(chosen === undefined || chosen.title === 'T');
+  const chosen = (topics.topics || []).find(t => t.title === 'T');
+  assert.ok(chosen, 'expected a researched topic titled T');
   const ok = await post('/api/studio/post', { day: 'mon', topic: chosen });
   assert.equal(ok.status, 200);
   assert.equal((await ok.json()).verified, true);
